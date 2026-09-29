@@ -63,7 +63,11 @@ romantic:[
   ["What's a compliment I've given you that stuck?", "Why do you think that one landed?"],
   ["What's the best meal we've had together?", "What made it more than just the food?"],
   ["If we opened a tiny shop together, what would we sell?", "Who would be the boss, honestly?"],
-  ["What's something about me you'd brag about to a stranger?", "Have you ever actually bragged about it?"]
+  ["What's something about me you'd brag about to a stranger?", "Have you ever actually bragged about it?"],
+  ["What's a tiny thing you'd add to our home that would make it feel more like us?", "Where would you put it?", "play"],
+  ["What's a smell that instantly reminds you of us?", "What's the first memory that comes with it?", "story"],
+  ["If we swapped jobs for a week, what would you do differently with mine?", "What would you be terrible at?", "play"],
+  ["What's something this year you're quietly excited about for us?", "How can I make it even better?", "future"]
  ],
  [
   ["What did you think of me the first time we met?", "What did you get right, and what did you get wrong?"],
@@ -81,7 +85,11 @@ romantic:[
   ["What's the most attractive thing about me that has nothing to do with looks?", "When does it show the most?"],
   ["What do you think we'd have been like if we'd met at sixteen?", "Would we have liked each other?"],
   ["Which of your friends did you most want me to meet, and why?", "What did they say about me afterwards?"],
-  ["What's a small ritual of ours you'd miss most?", "When did it become a thing?"]
+  ["What's a small ritual of ours you'd miss most?", "When did it become a thing?"],
+  ["Tell me about a moment this month when you were really glad we're together.", "What was happening right before it?", "appreciate"],
+  ["What's something you did for the first time because of me?", "Did you like it more than you expected?", "story"],
+  ["What's a tiny adventure we could have in the next two weeks that we've never done?", "What would make it feel like a real event?", "future"],
+  ["What's a word or joke only we understand, and how did it start?", "Who else would never get it?", "story"]
  ],
  [
   ["What's something you're working on in yourself right now?", "How can I help, without trying to fix it?"],
@@ -99,7 +107,11 @@ romantic:[
   ["What's a way I've changed you for the better?", "What would the old you think of that?"],
   ["What part of our life together feels most like home?", "What would make it feel even more like home?"],
   ["What's something you admire about how I handle hard things?", "Have you learned anything from it?"],
-  ["What do you think we're both still learning about each other?", "What's the latest thing you've learned about me?"]
+  ["What do you think we're both still learning about each other?", "What's the latest thing you've learned about me?"],
+  ["What's a fear you had about us early on that turned out to be wrong?", "What changed your mind?", "inner"],
+  ["What have you learned about love from watching other couples?", "Which couple makes you think, that's what I want?", "inner"],
+  ["Which moment this year made you love me more than you expected to?", "Did I know it was happening?", "appreciate"],
+  ["What's a role you take on in our relationship that you'd like to share more?", "How could we split it?", "inner"]
  ],
  [
   ["What's a fear you have about our future together?", "What would help it feel smaller?"],
@@ -117,7 +129,11 @@ romantic:[
   ["When have you felt most distant from me?", "What brought us back?"],
   ["What's a way I love you that doesn't quite land?", "What would land instead?"],
   ["What are you afraid would happen if you were completely honest with me?", "Could we try it with something small?"],
-  ["What part of me do you think I hide from you?", "Why do you think I hide it?"]
+  ["What part of me do you think I hide from you?", "Why do you think I hide it?"],
+  ["When did you last hold something back to keep the peace?", "What would you have said if it felt safe?", "inner"],
+  ["When did I show up in exactly the way you needed?", "What did that do for you?", "appreciate"],
+  ["What do you envy about other people's relationships, and what don't you?", "What does that say about what you want?", "inner"],
+  ["What's a part of our story that you tell differently than I do?", "Whose version is closer to the truth?", "story"]
  ],
  [
   ["What's something you've never felt safe telling me?", "What would help you feel safe enough?"],
@@ -135,7 +151,11 @@ romantic:[
   ["What do you want to be forgiven for?", "What would forgiveness look like?"],
   ["What's the truest thing you could say about us right now?", "How does it feel to say it out loud?"],
   ["How do you want to be loved when you're at your worst?", "Have I ever gotten it right?"],
-  ["What do you want our love to feel like in twenty years?", "What's one thing we can do this year to get there?"]
+  ["What do you want our love to feel like in twenty years?", "What's one thing we can do this year to get there?"],
+  ["What's something you're grateful I forgave you for?", "What did that forgiveness feel like?", "appreciate"],
+  ["If we could be completely honest for one evening with no consequences, what would you want to talk about?", "What's stopping us from doing it anyway?", "inner"],
+  ["Who do you become when you feel loved, and who when you don't?", "Which one do I see more?", "inner"],
+  ["What would you want me to say to the part of you that's scared this won't last?", "Can I say it now?", "appreciate"]
  ]
 ],
 situationship:[
@@ -155,7 +175,11 @@ situationship:[
   ["If our hangouts were a TV show, what would it be called?", "Who's the main character?"],
   ["What's something you pretend to be chill about but aren't?", "Does that include this?"],
   ["What's the best thing about keeping things low-key?", "And the worst?"],
-  ["Who texts first more often, honestly?", "What does that mean, if anything?"]
+  ["Who texts first more often, honestly?", "What does that mean, if anything?"],
+  ["If we could redo our first hangout, what would you keep exactly the same?", "And what would you change?", "play"],
+  ["What's a song you'd want to send me but haven't?", "What would the message say?", "play"],
+  ["What's a place in this city you'd take me if I promised not to make it weird?", "What's the story behind why you love it?", "story"],
+  ["What's the most romantic small thing someone has ever done for you?", "Was it the thing, or the timing?", "story"]
  ],
  [
   ["What did you actually think of me the first time we hung out?", "What made you want a second time?"],
@@ -173,7 +197,11 @@ situationship:[
   ["What's a text you almost sent me but deleted?", "What stopped you?"],
   ["How are you different around me than around other people?", "Which version is more you?"],
   ["Which do you like more: late-night me or daytime me?", "What's the difference, according to you?"],
-  ["What's the best conversation we've had so far?", "What made it good?"]
+  ["What's the best conversation we've had so far?", "What made it good?"],
+  ["What should I know about how you text?", "What does a long silence usually mean for you?", "inner"],
+  ["What's a moment with me you replayed on the way home?", "What was it about that one?", "story"],
+  ["What's something we could try that would teach us more about each other?", "What do you think it would show?", "future"],
+  ["What's a compliment you'd love to hear from someone you like?", "Has anyone said it yet?", "appreciate"]
  ],
  [
   ["What made you want to keep this casual?", "Is that still true?"],
@@ -191,7 +219,11 @@ situationship:[
   ["How much do you want to know about my life outside of us?", "What would you want to know first?"],
   ["What's a boundary you need that you haven't said out loud?", "How would you want me to respond?"],
   ["What does a good week between us look like?", "How many of those have we had?"],
-  ["Do you think you're easy to date?", "What would your last partner say?"]
+  ["Do you think you're easy to date?", "What would your last partner say?"],
+  ["What kind of care makes you feel someone likes you, not just enjoys your company?", "Have I done any of it?", "appreciate"],
+  ["What did the last thing that ended teach you to ask for early?", "What are you asking for now?", "inner"],
+  ["What would need to be true for you to feel calm about where this is going?", "What's one thing we could do this week?", "future"],
+  ["What's a story you tell about yourself in relationships that might be out of date?", "What's the newer version?", "story"]
  ],
  [
   ["Have you been holding back from me on purpose?", "What are you protecting?"],
@@ -209,7 +241,11 @@ situationship:[
   ["When have you acted like you cared less than you did?", "What were you afraid of?"],
   ["What's a mixed signal I've sent you?", "What did you think I meant?"],
   ["What's your biggest fear about getting attached?", "Where does that fear come from?"],
-  ["What haven't you told your friends about us?", "Why keep that one to yourself?"]
+  ["What haven't you told your friends about us?", "Why keep that one to yourself?"],
+  ["What do you do when you start to like someone more than you planned?", "What do you want to do this time?", "inner"],
+  ["When did you feel safe enough with me to drop the act?", "What was different about that moment?", "appreciate"],
+  ["What are you afraid I'd say if you asked how I feel?", "What would you hope I'd say?", "inner"],
+  ["What does being 'too much' mean to you, and who taught you that?", "Do you feel it with me?", "inner"]
  ],
  [
   ["So honestly, what are we?", "Is that what you want us to be?"],
@@ -227,7 +263,11 @@ situationship:[
   ["If we stopped playing it cool, what would you say first?", "Say it."],
   ["What's the thing you most need me to be honest about?", "Are you ready for the answer?"],
   ["If this ended, what would a good ending look like?", "And what would a good beginning look like?"],
-  ["What do you want me to know about you before either of us decides anything?", "Why that, first?"]
+  ["What do you want me to know about you before either of us decides anything?", "Why that, first?"],
+  ["If we each said exactly what we want from the next month, what would you ask for?", "Can I give you that?", "future"],
+  ["What's something about how you feel that you'd rather I hear from you than guess?", "Say it your way.", "inner"],
+  ["What would it mean to you if I chose you clearly, out loud?", "What do you need to feel that?", "appreciate"],
+  ["Whatever this becomes, what do you want us to always be able to say to each other?", "Can we say part of it now?", "inner"]
  ]
 ],
 dating:[
@@ -247,7 +287,11 @@ dating:[
   ["What were you obsessed with at twelve?", "Is any of it still there?"],
   ["Where do you go when you want to feel like yourself?", "When were you last there?"],
   ["What's the best trip you've ever taken?", "Who were you with?"],
-  ["What's something you're looking forward to right now?", "What's the best part about waiting for it?"]
+  ["What's something you're looking forward to right now?", "What's the best part about waiting for it?"],
+  ["What's a tiny thing you're weirdly good at?", "How did anyone find out?", "play"],
+  ["What's a place you'd send a visitor to that isn't in any guidebook?", "What would you order there?", "story"],
+  ["What's the last thing that made you laugh so hard you had to stop?", "Can you get me to laugh like that?", "story"],
+  ["What's something coming up this month that you're excited about?", "What's the best-case version?", "future"]
  ],
  [
   ["What do people usually get wrong about you at first?", "What's the truth?"],
@@ -265,7 +309,11 @@ dating:[
   ["What's a red flag you've learned to spot?", "How did you learn it?"],
   ["What makes you laugh the hardest?", "Who makes you laugh like that?"],
   ["What would your best friend say is your best quality?", "Would you agree?"],
-  ["What's a risk you're glad you took?", "What almost stopped you?"]
+  ["What's a risk you're glad you took?", "What almost stopped you?"],
+  ["What's a moment from this year you'd put in a highlight reel of your life?", "Who was there?", "story"],
+  ["What did you do as a kid that shows who you are now?", "Who noticed it first?", "story"],
+  ["What's something you're building in your life right now, and what's the next step?", "Who's helping you?", "future"],
+  ["What do you tend to admire in people you've just met?", "What have you noticed about me so far?", "appreciate"]
  ],
  [
   ["What's a turning point that changed the direction of your life?", "Who would you be without it?"],
@@ -283,7 +331,11 @@ dating:[
   ["What's a dream you've let go of?", "Do you miss it?"],
   ["What's something you wish more people asked you about?", "Consider this me asking."],
   ["What's a decision you made that surprised the people who know you?", "Were you surprised too?"],
-  ["What makes you trust someone?", "How long does it usually take?"]
+  ["What makes you trust someone?", "How long does it usually take?"],
+  ["What's a habit you're proud of building?", "What kept you going when it got hard?", "story"],
+  ["What did someone say to you at a hard time that you still remember?", "Why did it work?", "story"],
+  ["What kind of partner do you become when you feel secure?", "What helps you get there?", "inner"],
+  ["What's a question about life you've been turning over lately?", "Where are you leaning?", "inner"]
  ],
  [
   ["What's something you're still healing from?", "What has helped the most?"],
@@ -301,7 +353,11 @@ dating:[
   ["What do you need to feel safe opening up?", "How am I doing so far?"],
   ["What's the most alone you've felt in a relationship?", "What would have helped?"],
   ["What's a part of your past you're still making peace with?", "What would peace look like?"],
-  ["What's a compliment you find hard to accept?", "Why do you think it's hard?"]
+  ["What's a compliment you find hard to accept?", "Why do you think it's hard?"],
+  ["What's a version of yourself you've outgrown?", "What replaced it?", "story"],
+  ["What did letting someone go, or being let go, teach you?", "What would you tell yourself back then?", "inner"],
+  ["What makes you feel most vulnerable on a first date?", "What would put you more at ease?", "inner"],
+  ["When did someone's kindness change your week, or your year?", "Have you passed it on?", "appreciate"]
  ],
  [
   ["What do you hope the right person understands about you?", "What would it feel like to be understood that way?"],
@@ -319,7 +375,11 @@ dating:[
   ["When have you felt truly chosen?", "What did that person do?"],
   ["What's something from tonight you'll remember?", "Why that moment?"],
   ["What are you most afraid someone will see if they get close?", "What would you want them to do if they saw it?"],
-  ["What's a question you wish I'd ask you?", "Now answer it."]
+  ["What's a question you wish I'd ask you?", "Now answer it."],
+  ["What does being loved well look like in the small daily details?", "Have you had a glimpse of it?", "future"],
+  ["What's something you hope you never have to apologize for in love?", "What are you doing so you won't?", "inner"],
+  ["What's a fear about being fully known that you'd like to test, just a little?", "How's it going so far?", "inner"],
+  ["What do you want the next ten years to feel like?", "What would you need to change to get there?", "future"]
  ]
 ],
 friend:[
@@ -339,7 +399,11 @@ friend:[
   ["What's a group chat you'd never let me read?", "What's the most chaotic thing in it?"],
   ["What's the best night out we've had?", "What made it that good?"],
   ["What's a place you could happily spend a whole day in?", "Want to go together?"],
-  ["What's something you've been excited about recently?", "Tell me everything."]
+  ["What's something you've been excited about recently?", "Tell me everything."],
+  ["What's a small ritual of ours that I probably take for granted?", "When did it start?", "appreciate"],
+  ["What's the worst advice we've ever given each other?", "Who actually took it?", "play"],
+  ["If we had one playlist for a long road trip, what's the first song on it?", "What's the song I'd sneak in that you'd hate?", "play"],
+  ["What's a story from before we met that you think I'd love?", "Who else is in it?", "story"]
  ],
  [
   ["What's your favorite memory of us?", "What do you remember that I might have forgotten?"],
@@ -357,7 +421,11 @@ friend:[
   ["What's something about you that most people don't know?", "Why don't they know?"],
   ["What's our best inside joke?", "Where did it even come from?"],
   ["If we had a whole week off together, what would we do?", "Which part should we actually do?"],
-  ["Who's someone you'd like me to meet?", "Why them?"]
+  ["Who's someone you'd like me to meet?", "Why them?"],
+  ["When did you feel really lucky to have me around?", "Did I know?", "appreciate"],
+  ["What used to matter a lot to you and doesn't now?", "What changed?", "story"],
+  ["What do you want our friendship to look like in five years?", "What do we need to start now?", "future"],
+  ["What's a memory of ours that you tell other people?", "How do you tell it?", "story"]
  ],
  [
   ["What's been weighing on you lately?", "What would help, even a little?"],
@@ -375,7 +443,11 @@ friend:[
   ["Where do you feel most at home?", "When were you last there?"],
   ["What's a way you've grown that I might have missed?", "What helped you grow?"],
   ["What's a decision you're wrestling with?", "What does your gut say?"],
-  ["How do you think we've changed as friends?", "What do you hope stays the same?"]
+  ["How do you think we've changed as friends?", "What do you hope stays the same?"],
+  ["What's a season of your life you'd like me to know more about?", "What was the hard part?", "story"],
+  ["What do you need more of right now that a friend could help with?", "What's one thing I could do?", "inner"],
+  ["What's a strength of mine you've counted on more than I realize?", "When did it matter most?", "appreciate"],
+  ["How do you show up differently around me than around other people?", "What does that say about us?", "inner"]
  ],
  [
   ["Is there a time I let you down that we never talked about?", "What would you have needed from me?"],
@@ -393,7 +465,11 @@ friend:[
   ["What's a part of your life you feel stuck in?", "What would unstuck look like?"],
   ["What do you think I avoid talking about?", "Why do you think I avoid it?"],
   ["What's something you're still angry about?", "What would help you let it go?"],
-  ["When did you last feel really understood by someone?", "What did they get right?"]
+  ["When did you last feel really understood by someone?", "What did they get right?"],
+  ["When did you last pretend to be fine around me?", "What would have helped you not pretend?", "inner"],
+  ["When did I help you without knowing it?", "What did it change?", "appreciate"],
+  ["What worry are you afraid to say out loud because it might sound silly?", "What does it sound like now?", "inner"],
+  ["What do you hope your friends say about you when you're not in the room?", "Are they saying it?", "inner"]
  ],
  [
   ["What's something you've never told anyone that you'd tell me?", "Why me?"],
@@ -411,7 +487,11 @@ friend:[
   ["What do you want your life to mean?", "Are you on the way there?"],
   ["What moment in our friendship would you want to relive at the very end?", "Why that one?"],
   ["What's something you've wanted to thank me for?", "Why now?"],
-  ["What's one thing you'd never usually say to me, but will now?", "How does it feel to have said it?"]
+  ["What's one thing you'd never usually say to me, but will now?", "How does it feel to have said it?"],
+  ["When did you think about what I mean to you but didn't say it?", "Say it now.", "appreciate"],
+  ["If a really hard time came, what would you want me to do first?", "And what should I not do?", "inner"],
+  ["What would you want me to tell you if you ever lost yourself?", "Can I tell you a little of it now?", "appreciate"],
+  ["What do you want to have done by the time we're old, with me or without me?", "What could we do together?", "future"]
  ]
 ],
 family:[
@@ -431,7 +511,11 @@ family:[
   ["What's a smell that takes you straight back to childhood?", "Where does it take you?"],
   ["Who in the family do you call first with good news?", "Why them?"],
   ["What's a house rule from growing up that you still follow?", "Would you make your own kids follow it?"],
-  ["What's the funniest thing I did as a kid, according to you?", "Is there photographic evidence?"]
+  ["What's the funniest thing I did as a kid, according to you?", "Is there photographic evidence?"],
+  ["What's a story our family tells about you that's only half true?", "What really happened?", "story"],
+  ["What did you love doing when the whole family was in one house?", "Do you miss it?", "story"],
+  ["If our family had a theme song, what would it be?", "Whose part is the loudest?", "play"],
+  ["What's something small I do that makes you think of home?", "When did you first notice?", "appreciate"]
  ],
  [
   ["What's a favorite memory of the two of us?", "What made it special?"],
@@ -449,7 +533,11 @@ family:[
   ["What's a memory of home you go back to when you need comfort?", "What's in it?"],
   ["How are we most alike?", "And most different?"],
   ["When were you proud to be part of this family?", "Who made that happen?"],
-  ["What's a family dish we should learn to make together?", "Who should teach us?"]
+  ["What's a family dish we should learn to make together?", "Who should teach us?"],
+  ["What did you do as a kid that made the family proud of you?", "What do you remember about that day?", "story"],
+  ["What should we do together the next time we're in the same place?", "What can we plan now?", "future"],
+  ["What do you admire about how I show up for the family?", "When did you first notice it?", "appreciate"],
+  ["What was a family rule that only made sense years later?", "What do you think it was for?", "story"]
  ],
  [
   ["What did our family do really well?", "How do you carry that into your own life?"],
@@ -467,7 +555,11 @@ family:[
   ["What do you think the family gets wrong about you?", "What's the truth?"],
   ["How do you want our relationship to look in ten years?", "What can we start now?"],
   ["What's a value from home you've made your own?", "When did you realize it was yours?"],
-  ["When did you feel most supported by the family?", "Who showed up?"]
+  ["When did you feel most supported by the family?", "Who showed up?"],
+  ["What did you want to be when you were little, and what does that say about you?", "How much of it is left?", "story"],
+  ["What's a moment from our shared past that you see differently now?", "What changed your mind?", "story"],
+  ["What do you hope to be for the next generation of our family?", "What are you already doing about it?", "future"],
+  ["What did you learn from me without either of us noticing?", "When did you catch yourself doing it?", "appreciate"]
  ],
  [
   ["Is there something from growing up you wish had gone differently?", "How does it affect you now?"],
@@ -485,7 +577,11 @@ family:[
   ["Is there a way I've hurt you that I might not know about?", "What do you need from me now?"],
   ["Which family pattern do you most want to break?", "What would you do instead?"],
   ["What do you wish the family understood about your life now?", "How could we understand it better?"],
-  ["When did you feel most alone in this family?", "What would have helped?"]
+  ["When did you feel most alone in this family?", "What would have helped?"],
+  ["When did you need the family but weren't sure how to ask?", "What did you do instead?", "inner"],
+  ["Which of your parents' habits do you find yourself repeating, and which do you fight?", "What sets it off?", "inner"],
+  ["What do you appreciate now that you didn't when we were young?", "What changed?", "appreciate"],
+  ["What did you have to grow up too fast for?", "Who noticed?", "story"]
  ],
  [
   ["Is there anything you want to forgive me for, or be forgiven for?", "What would forgiveness look like?"],
@@ -503,7 +599,11 @@ family:[
   ["When did you most need me and I wasn't there?", "What would you have wanted me to do?"],
   ["What do you want to leave for the next generation of our family?", "What's one step toward it?"],
   ["What's a love in this family that's hard to show?", "How could we show it more?"],
-  ["What do you want to make sure you tell me while there's time?", "Tell me now."]
+  ["What do you want to make sure you tell me while there's time?", "Tell me now."],
+  ["What have you always wanted from me and never asked for?", "What would it mean to you?", "inner"],
+  ["What's the best thing I could say to you right now?", "Let me try.", "appreciate"],
+  ["What do you hope our relationship looks like when we're both older?", "What could we do this year?", "future"],
+  ["What's a memory of us you want to make sure we keep?", "Who else should we tell?", "story"]
  ]
 ],
 coworker:[
@@ -523,7 +623,11 @@ coworker:[
   ["What's your commute soundtrack?", "What's the one you always skip?"],
   ["What's a skill you picked up somewhere unexpected?", "Where did it come from?"],
   ["Early bird or night owl?", "When do you do your best work?"],
-  ["What's something you're looking forward to this month?", "What's the best part?"]
+  ["What's something you're looking forward to this month?", "What's the best part?"],
+  ["What's the best small thing someone did for you at work this year?", "Have you passed it on?", "appreciate"],
+  ["What job taught you an unexpected skill?", "Do you still use it?", "story"],
+  ["If you could design your perfect work Friday, what would be in it?", "How far off are we?", "play"],
+  ["What's a trick that saves you time that most people don't know?", "Show me.", "play"]
  ],
  [
   ["What made you choose this line of work?", "Would you choose it again?"],
@@ -541,7 +645,11 @@ coworker:[
   ["What would you love to be known for here?", "What would help?"],
   ["How do you switch off after work?", "Does it work?"],
   ["What's a small change that would make our days better?", "Should we try it?"],
-  ["What's your hidden talent at work?", "When does it come in handy?"]
+  ["What's your hidden talent at work?", "When does it come in handy?"],
+  ["What project are you most excited about right now, and why?", "What would make it even better?", "future"],
+  ["What's a moment at work that made you laugh and still does?", "Who else was there?", "story"],
+  ["What have you learned from someone on this team?", "Have you told them?", "appreciate"],
+  ["What did you want to do when you were young, and what's left of that in your work?", "Where does it still show up?", "story"]
  ],
  [
   ["What part of your job do most people not see?", "What would you want them to see?"],
@@ -559,7 +667,11 @@ coworker:[
   ["What's the best thing about working with me, and the hardest?", "What's one thing I could change?"],
   ["What motivates you more: recognition, growth, or impact?", "When did you last feel it?"],
   ["What does a good balance between work and life look like for you?", "How close are you?"],
-  ["What are you learning outside of work that makes you better at it?", "How did it start?"]
+  ["What are you learning outside of work that makes you better at it?", "How did it start?"],
+  ["What kind of work makes you lose track of time?", "How could you get more of it?", "inner"],
+  ["What's a strength of yours that gets overlooked?", "How could the team use it better?", "inner"],
+  ["Where do you want your work to take you in the next three years?", "What would help?", "future"],
+  ["When did someone at work really support you?", "What exactly did they do?", "appreciate"]
  ],
  [
   ["What part of work drains you most?", "What would make it lighter?"],
@@ -577,7 +689,11 @@ coworker:[
   ["When has work spilled into your life more than you'd like?", "What would a boundary look like?"],
   ["What's the hardest feedback you've ever received?", "Was it fair?"],
   ["What do you worry people here think of you?", "What do you hope they think?"],
-  ["What would you do at work if you weren't afraid of failing?", "What's one small step toward it?"]
+  ["What would you do at work if you weren't afraid of failing?", "What's one small step toward it?"],
+  ["What mistake are you glad you made early?", "What would you do now?", "story"],
+  ["What do you need to feel safe speaking up here?", "How could I help make that true?", "inner"],
+  ["What do you wish you'd known your first year here?", "What would you tell a new hire?", "story"],
+  ["What have you changed to protect your energy?", "What difference has it made?", "inner"]
  ],
  [
   ["What does success actually mean to you, beyond titles?", "Are you on your way?"],
@@ -595,7 +711,11 @@ coworker:[
   ["Who at work do you trust most, and why?", "What earned that trust?"],
   ["What do you hope your work adds up to?", "How does today fit in?"],
   ["What's the loneliest part of your job?", "What would make it less lonely?"],
-  ["What's one way I could make work better for you?", "Where should I start?"]
+  ["What's one way I could make work better for you?", "Where should I start?"],
+  ["What at work makes you proud that you rarely say out loud?", "Say it here.", "appreciate"],
+  ["What would you want me to understand about what you're carrying right now?", "How can I help without adding to it?", "inner"],
+  ["If you could rewrite how we work together, what's the first thing you'd change?", "What would we lose?", "future"],
+  ["When did you doubt yourself here and someone said something that stuck?", "What did they say?", "story"]
  ]
 ]
 },
@@ -605,104 +725,134 @@ MOMENTS: {
 romantic:[
  ["Show each other the last photo you took of the other. Tell the story behind it.",
   "Each name one thing the other did this week that you loved.",
-  "Plan a tiny date for this week, together, in under a minute."],
+  "Plan a tiny date for this week, together, in under a minute.",
+  "Trade a compliment about something the other did in the last 24 hours."],
  ["Take turns finishing this: 'I knew I liked you when…'",
   "Hold hands until the next question is answered.",
-  "Each thank the other for something you've never thanked them for."],
+  "Each thank the other for something you've never thanked them for.",
+  "Each pick one moment from this year you'd love to redo, and decide when."],
  ["Look at each other for thirty seconds without talking. Then say what you noticed.",
   "Take turns finishing this: 'I feel closest to you when…'",
-  "Each tell the other one thing you'd like more of this month."],
+  "Each tell the other one thing you'd like more of this month.",
+  "Each name one thing you want to try together this season. Pick one and put it in your calendars."],
  ["Take turns finishing this: 'Something I find hard to say to you is…'",
   "Each describe a moment you felt truly loved by the other. Be specific.",
-  "Sit closer. Each say one thing you're afraid of, and one thing the other makes easier."],
+  "Sit closer. Each say one thing you're afraid of, and one thing the other makes easier.",
+  "One of you tells the other about a moment they felt truly seen by them. The other just listens, then says thank you."],
  ["Take turns saying three things you love about the other. Be very specific.",
   "Take turns finishing this: 'What I want you to know right now is…'",
-  "Hold each other's gaze for a full minute. Then say the first true thing that comes up."]
+  "Hold each other's gaze for a full minute. Then say the first true thing that comes up.",
+  "Take turns finishing this: 'One thing I hope we never lose is…'"]
 ],
 situationship:[
  ["Show each other the last thing you screenshotted. Explain yourselves.",
   "Each describe whatever this is in three words. Say them at the same time.",
-  "Both rate tonight so far, 1 to 10. Explain the number."],
+  "Both rate tonight so far, 1 to 10. Explain the number.",
+  "Each say your favorite thing about the last time you hung out."],
  ["Take turns finishing this: 'The moment I thought you were cute was…'",
   "Swap phones for ten seconds and queue a song for each other.",
-  "Each name one thing you'd like to do together that you haven't yet."],
+  "Each name one thing you'd like to do together that you haven't yet.",
+  "Take turns finishing this: 'The vibe I like most with you is…'"],
  ["Take turns finishing this: 'What I like most about this is…'",
   "Each say one thing you've been playing cool about.",
-  "Each guess what the other wants from this. Then find out if you're right."],
+  "Each guess what the other wants from this. Then find out if you're right.",
+  "Each name one small thing that would help you relax about this."],
  ["Take turns finishing this: 'I get nervous about us when…'",
   "Each say one thing you'd want if you weren't worried about scaring the other off.",
-  "Each name one thing the other does that makes you feel safe."],
+  "Each name one thing the other does that makes you feel safe.",
+  "Each say what 'going well' would look like a month from now, in one sentence."],
  ["Take turns finishing this: 'What I really want from this is…'",
   "Say the thing you've both been avoiding. Whoever's braver goes first.",
-  "Each say one thing you appreciate about the other, whatever happens next."]
+  "Each say one thing you appreciate about the other, whatever happens next.",
+  "Each say one thing you're grateful for in this, whatever happens."]
 ],
 dating:[
  ["Each guess where the other grew up and their go-to drink. See who's closer.",
   "Show each other the last photo on your phone that made you laugh.",
-  "Both of you: one word for how tonight is going. Say it at the same time."],
+  "Both of you: one word for how tonight is going. Say it at the same time.",
+  "Each name the best part of the evening so far, and why."],
  ["Each guess the other's biggest pet peeve. Then find out who's right.",
   "Take turns finishing this: 'Something you'd never guess about me is…'",
-  "Each share one thing you've noticed about the other so far tonight."],
+  "Each share one thing you've noticed about the other so far tonight.",
+  "Each guess one thing the other is proud of. Then find out."],
  ["Take turns finishing this: 'I feel most like myself when…'",
   "Each name something you have in common that surprised you.",
-  "Tell each other one thing you like about the other so far. Be honest."],
+  "Tell each other one thing you like about the other so far. Be honest.",
+  "Take turns finishing this: 'Something that makes me feel comfortable is…'"],
  ["Take turns finishing this: 'Something I'm still figuring out is…'",
   "Each say one thing that would make you want a second date.",
-  "Take turns finishing this: 'It takes people a while to see that I…'"],
+  "Take turns finishing this: 'It takes people a while to see that I…'",
+  "Each say one thing you're glad you told the other tonight."],
  ["Take turns finishing this: 'Tonight I learned that you…'",
   "Each say one thing you'd want the other to remember about tonight.",
-  "Look at each other for thirty seconds. Then say what you're thinking, honestly."]
+  "Look at each other for thirty seconds. Then say what you're thinking, honestly.",
+  "Take turns finishing this: 'What I like about how you listen is…'"]
 ],
 friend:[
  ["Show each other the funniest photo in your camera roll. No context first.",
   "Each do your best impression of the other. The worst one buys the next coffee.",
-  "Both describe the other in three words. Say them at the same time."],
+  "Both describe the other in three words. Say them at the same time.",
+  "Each pick one memory from the last year in one word. The other tells the story."],
  ["Take turns telling the story of how you met. See whose version wins.",
   "Each name a time the other made you laugh until it hurt.",
-  "Pick one thing to do together this month. Put it in your calendars now."],
+  "Pick one thing to do together this month. Put it in your calendars now.",
+  "Each name the song that reminds you of the other."],
  ["Take turns finishing this: 'I'm really glad you're my friend because…'",
   "Each tell the other one thing they're great at and don't give themselves credit for.",
-  "Each name a time the other showed up when it mattered."],
+  "Each name a time the other showed up when it mattered.",
+  "Each name one thing you'd like to do together more this year. Book one now."],
  ["Take turns finishing this: 'Something I've never told you is…'",
   "Each say one way the other could lean on you more.",
-  "Take turns finishing this: 'I worry about you when…'"],
+  "Take turns finishing this: 'I worry about you when…'",
+  "Each tell the other about a hard time they helped you through, and what they did."],
  ["Take turns finishing this: 'Our friendship has taught me…'",
   "Each tell the other what you'd want them to hear on the worst day of their life.",
-  "Tell each other one thing you'll never forget about the other."]
+  "Tell each other one thing you'll never forget about the other.",
+  "Take turns finishing this: 'One thing I never want you to doubt is…'"]
 ],
 family:[
  ["Each do your best impression of a relative. The other has to guess who.",
   "Find the oldest photo of the two of you that either of you has. Tell the story.",
-  "Both name the family's best cook. Say it at the same time."],
+  "Both name the family's best cook. Say it at the same time.",
+  "Each name a family dish and who taught it to you."],
  ["Take turns telling a family story. The other has to add a detail.",
   "Each name one thing the other did as a kid that still makes you laugh.",
-  "Plan something to do together before the next family get-together."],
+  "Plan something to do together before the next family get-together.",
+  "Ask the other to tell a story you were both at, from their side."],
  ["Take turns finishing this: 'Something I got from you is…'",
   "Each tell the other one thing you admire about how they turned out.",
-  "Send a message to a relative you both love. Tell them you were thinking of them."],
+  "Send a message to a relative you both love. Tell them you were thinking of them.",
+  "Each name one thing you learned from this family that you carry with pride."],
  ["Take turns finishing this: 'Something I wish I'd said to you years ago is…'",
   "Each describe a moment you felt proud of the other.",
-  "Take turns finishing this: 'Something I need from you now is…'"],
+  "Take turns finishing this: 'Something I need from you now is…'",
+  "Each say what you hope the other understands about how you see things now."],
  ["Take turns finishing this: 'What I want you to know, always, is…'",
   "Each say one thing you're grateful to the other for. Be specific.",
-  "Hug. A real one. Then say one thing you've been meaning to say."]
+  "Hug. A real one. Then say one thing you've been meaning to say.",
+  "Take turns finishing this: 'What I want to say more often is…'"]
 ],
 coworker:[
  ["Each guess the other's go-to karaoke song. See who's right.",
   "Show each other the last photo you took that wasn't for work.",
-  "Both rate this week, 1 to 10. Explain the number."],
+  "Both rate this week, 1 to 10. Explain the number.",
+  "Each share one small win from this week."],
  ["Take turns naming something the other is good at that the team relies on.",
   "Each share one small thing that would make your workday better. See if the other can help.",
-  "Take turns finishing this: 'Before this job, I…'"],
+  "Take turns finishing this: 'Before this job, I…'",
+  "Each name one thing you'd like to learn from the other."],
  ["Take turns finishing this: 'I work best when…'",
   "Each name one thing you've learned from the other.",
-  "Tell each other one thing you appreciate about working together."],
+  "Tell each other one thing you appreciate about working together.",
+  "Take turns finishing this: 'What makes work easier for me is…'"],
  ["Take turns finishing this: 'Something I find hard at work is…'",
   "Each say one way the other could support you better.",
-  "Take turns finishing this: 'Something I'd like to get better at is…'"],
+  "Take turns finishing this: 'Something I'd like to get better at is…'",
+  "Each name one thing that would make it feel safer to speak up on this team."],
  ["Take turns finishing this: 'What I hope for you in your career is…'",
   "Each name a time the other made work better, even if they didn't know it.",
-  "Tell each other one thing you'd want them to hear on a hard day."]
+  "Tell each other one thing you'd want them to hear on a hard day.",
+  "Each thank the other for one specific thing that helped you this year."]
 ]
 }
 };

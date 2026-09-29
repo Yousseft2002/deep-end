@@ -119,8 +119,9 @@ function names(){ return [prefs.nameA, prefs.nameB]; }
 function turnText(){
   const [a, b] = names();
   if(state.current && state.current.moment) return a && b ? "A moment for " + a + " and " + b : "A moment for you both";
-  if(a && b) return state.turn === 0 ? a + " asks " + b : b + " asks " + a;
-  return state.turn === 0 ? "You ask them" : "They ask you";
+  const both = state.current && state.current.both ? " · you both answer" : "";
+  if(a && b) return (state.turn === 0 ? a + " asks " + b : b + " asks " + a) + both;
+  return (state.turn === 0 ? "You ask them" : "They ask you") + both;
 }
 function passTitle(){
   const [a, b] = names();
@@ -133,10 +134,11 @@ function relKey(){ return state.label.trim().toLowerCase(); }
 function qid(lvl, i){ return state.cat + "-" + lvl + "-" + i; }
 function mid(lvl, i){ return state.cat + "-m" + lvl + "-" + i; }
 // An entry is ["Question?", "Follow-up?"], or a bare string that borrows a general follow-up.
+// A third item names the question's mode (see MODES below); older entries are sorted by wording.
 function entry(e, lvl, i){
-  const [q, f] = Array.isArray(e) ? e : [e, ""];
+  const [q, f, tag] = Array.isArray(e) ? e : [e, ""];
   const general = FOLLOW[lvl-1] || [];
-  return { q, f: f || general[i % general.length] || "" };
+  return { q, f: f || general[i % general.length] || "", mode: modeOf(q, tag, lvl) };
 }
 function pool(lvl){
   const s = new Set(seen[relKey()] || []);
@@ -148,15 +150,41 @@ function momentPool(lvl){
     .filter(x => !s.has(x.id));
 }
 
+// ---------- modes: the kind of answer a question invites ----------
+// Sitting through five "how do you feel" questions in a row is tiring, and five memory
+// questions in a row is a quiz. Talk that stays closer to real conversation moves between
+// telling a story, looking ahead, appreciating each other, playing with an idea, and
+// saying something inward. The picker uses the mode to keep that mix going.
+const MODES = ["story", "future", "appreciate", "play", "inner"];
+const MODE_HINTS = [
+  ["play",       /\b(if you (could|had|were|woke)|if we (could|had|were|opened|won)|would you rather|imagine|superpower|desert island)\b/i],
+  ["future",     /\b(future|years|someday|one day|next year|next chapter|hope|plans?|dream)\b/i],
+  ["appreciate", /\b(admire|appreciate|grateful|proud|love about|thank|compliment|glad|brag|means? the most)\b/i],
+  ["story",      /\b(remember|first time|last time|when did|when have|growing up|as a kid|childhood|story|ever (been|done|had))\b/i]
+];
+function modeOf(q, tag, lvl){
+  if(MODES.includes(tag)) return tag;
+  const hit = MODE_HINTS.find(([, re]) => re.test(q));
+  return hit ? hit[0] : lvl >= 3 ? "inner" : "other";
+}
+
 // ---------- choosing the next card ----------
 // Closeness grows from taking turns opening up a little more each time, from following up
 // on answers, and from breaking the pattern now and then to do something together. So
 // beyond never repeating, the pick steers away from echoes of the last few cards, leans
 // toward what this pair saves and follows up on and away from what they skip, and every
 // few turns brings up a shared moment. It all resets when you pick who you're with.
+//
+// It also thinks about the mix. Closeness builds when both people open up in turn, so every
+// third question asks you both to answer it (Aron et al. 1997: escalating, reciprocal
+// disclosure). A mode that's been used just now is held back, so a sitting alternates
+// story, future, appreciation, play and inward questions. After an inward question at the
+// deep end, the next one leans warmer or lighter, so the talk doesn't stay at full weight
+// (loosely after Gottman's finding that lasting couples keep far more warmth than friction;
+// the pacing itself is a design choice, not a tested result).
 let session;
 const momentGap = () => 5 + Math.floor(Math.random() * 3);
-function freshSession(){ session = { recent:[], taste:{}, since:0, gap:momentGap(), answered:0, skips:0 }; }
+function freshSession(){ session = { recent:[], taste:{}, modes:[], modeTaste:{}, since:0, gap:momentGap(), answered:0, skips:0, asked:0 }; }
 freshSession();
 
 const STOP = new Set(("what when where which while with would could should your youre youve youd about that there " +
@@ -167,13 +195,23 @@ function words(text){
   return new Set((text.toLowerCase().replace(/['’]/g, "").match(/[a-z]+/g) || [])
     .map(w => w.replace(/s$/, "")).filter(w => w.length > 3 && !STOP.has(w)));
 }
-function lean(text, by){ words(text).forEach(w => { session.taste[w] = (session.taste[w] || 0) + by; }); }
+// card is anything with a question and a mode: a pool entry or state.current
+function lean(card, by){
+  words(card.q).forEach(w => { session.taste[w] = (session.taste[w] || 0) + by; });
+  if(card.mode && card.mode !== "other") session.modeTaste[card.mode] = (session.modeTaste[card.mode] || 0) + by;
+}
 function score(x){
   const w = words(x.q);
-  let echo = 0, taste = 0;
+  let echo = 0, taste = 0, mix = 0;
   session.recent.forEach((r, age) => w.forEach(k => { if(r.has(k)) echo += 1 / (age + 1); }));
   w.forEach(k => { taste += session.taste[k] || 0; });
-  return Math.random() - 0.45 * echo + 0.12 * Math.max(-4, Math.min(4, taste));
+  if(x.mode !== "other"){
+    session.modes.forEach((m, age) => { if(m === x.mode) mix += 1 / (age + 1); });
+    if(!session.modes.includes(x.mode)) mix -= 0.5;
+    if(state.level >= 4 && session.modes[0] === "inner" && x.mode !== "inner") mix -= 0.6;
+  }
+  const modeTaste = x.mode === "other" ? 0 : Math.max(-2, Math.min(2, session.modeTaste[x.mode] || 0));
+  return Math.random() - 0.45 * echo + 0.12 * Math.max(-4, Math.min(4, taste)) - 0.5 * mix + 0.15 * modeTaste;
 }
 function draw(){
   const qs = pool(state.level);
@@ -187,6 +225,9 @@ function draw(){
     let top = -Infinity;
     qs.forEach(x => { const s = score(x); if(s > top){ top = s; pick = x; } });
     session.since++;
+    session.asked++;
+    pick.both = session.asked % 3 === 0;
+    session.modes = [pick.mode, ...session.modes].slice(0, 3);
   }
   session.recent = [words(pick.q), ...session.recent].slice(0, 3);
   (seen[relKey()] = seen[relKey()] || []).push(pick.id);
@@ -217,7 +258,7 @@ function remember(){ store.set(K.last, { label:state.label, cat:state.cat, phras
 let swapTimer = 0;
 function newQuestion(){
   const pick = draw();
-  state.current = pick ? { q: pick.q, f: pick.f, moment: !!pick.moment, id: pick.id, level: state.level, who: state.phrase, cat: state.cat } : null;
+  state.current = pick ? { q: pick.q, f: pick.f, mode: pick.mode, both: !!pick.both, moment: !!pick.moment, id: pick.id, level: state.level, who: state.phrase, cat: state.cat } : null;
   syncSave(); remember();
   const card = document.querySelector(".card");
   clearTimeout(swapTimer);
@@ -271,7 +312,7 @@ $("dig").onclick = () => {
   haptic("select");
   // on short phones the follow-up can land below the fold of the card
   $("followQ").scrollIntoView({ block:"nearest", behavior: REDUCED ? "auto" : "smooth" });
-  if(!state.current.dug){ state.current.dug = true; lean(state.current.q, 0.5); }
+  if(!state.current.dug){ state.current.dug = true; lean(state.current, 0.5); $("left").textContent = hint(); }
 };
 // After a few answers at one depth, invite the pair a little deeper; if they keep skipping,
 // suggest another depth instead.
@@ -279,6 +320,10 @@ function readyForDeeper(){ return state.level < 5 && session.answered >= 4; }
 function hint(){
   if(session.skips >= 3) return "Not quite landing? Try another depth.";
   if(readyForDeeper()) return "Warmed up? Try going a little deeper.";
+  // People who ask follow-ups are liked more and feel more understood (Huang et al. 2017),
+  // and most players never think to; so early in a sitting, say so.
+  const c = state.current;
+  if(c && c.f && !c.dug && !c.moment && session.answered < 3) return "Tap Follow-up to keep the answer going.";
   const n = pool(state.level).length;
   return n === 0 ? "Last new one at this depth" : n + " new left at this depth";
 }
@@ -405,7 +450,7 @@ holdBtn.addEventListener("contextmenu", e => e.preventDefault());   // long-pres
 // Keyboards and screen readers can't "hold": a click that didn't come from a pointer surfaces at once.
 holdBtn.addEventListener("click", e => { if(e.detail === 0 && !surfacing) rise(); });
 $("pass").onclick = () => {
-  if(state.current && !state.current.moment){ lean(state.current.q, -1); session.skips++; }
+  if(state.current && !state.current.moment){ lean(state.current, -1); session.skips++; }
   newQuestion();
 };
 $("deeper").onclick = () => { haptic("medium"); setLevel(state.level + 1); };
@@ -420,10 +465,10 @@ function updateSavedCount(){ $("openSaved").textContent = "Saved " + saved.lengt
 $("save").onclick = () => {
   if(!state.current) return;
   const c = state.current;
-  if(isSaved()){ saved = saved.filter(s => s.q !== c.q); lean(c.q, -1); }
+  if(isSaved()){ saved = saved.filter(s => s.q !== c.q); lean(c, -1); }
   else {
     saved.unshift(Object.assign({ q:c.q, level:c.level, who:c.who }, c.moment && { moment:true }));
-    lean(c.q, 1); haptic();
+    lean(c, 1); haptic();
   }
   store.set(K.saved, saved); syncSave(); updateSavedCount();
 };

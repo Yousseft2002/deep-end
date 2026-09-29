@@ -1,8 +1,18 @@
 // Single source of truth for the release. Loaded by the page AND the service worker,
 // so bumping it is what makes installed phones notice an update.
 // Use `python tools/release.py 2.0.1 "What changed"` rather than editing by hand.
-self.DEEPEND_VERSION = "3.0.0";
+self.DEEPEND_VERSION = "3.1.0";
 self.DEEPEND_CHANGES = [
+  {
+    "v": "3.1.0",
+    "date": "2026-09-29",
+    "notes": [
+      "About 120 new questions and 30 new moments, written around what helps people open up: stories, appreciation, looking ahead, and play.",
+      "Every third question, you both answer it, so opening up goes both ways.",
+      "Smarter picks: a mix of kinds of questions, and something lighter after a heavy one.",
+      "Early on, a reminder to tap Follow-up. Asking a follow-up is what makes people feel heard."
+    ]
+  },
   {
     "v": "3.0.0",
     "date": "2026-09-25",
