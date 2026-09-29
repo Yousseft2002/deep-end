@@ -87,6 +87,26 @@ svg{width:22px;height:22px;flex:none}
   50%{transform:translate(10px,-52vh)} 88%{opacity:.3} 100%{transform:translate(-6px,-104vh);opacity:0}
 }
 
+/* A small fish swims through now and then. Each layer animates one thing, transform or opacity only:
+   .fish carries the swim across and the fade, .fish-bob the gentle wave, the tail its own wiggle. */
+.fish{
+  --o:.36;
+  position:absolute;left:0;top:var(--y);color:var(--glow);opacity:0;will-change:transform,opacity;
+  animation:fish-swim var(--dur) linear forwards;
+}
+body[data-level="5"] .fish{--o:.26}
+.fish-bob{animation:fish-wave var(--wave) ease-in-out var(--phase) infinite alternate}
+.fish svg{display:block;width:var(--w);height:calc(var(--w) / 2);fill:currentColor}
+.fish.rtl svg{transform:scaleX(-1)}
+.fish .tail{transform-origin:13px 10px;animation:fish-tail .7s ease-in-out infinite alternate}
+.fish .eye{fill:var(--water)}
+@keyframes fish-swim{
+  0%{transform:translateX(var(--x0));opacity:0} 10%,90%{opacity:var(--o)}
+  100%{transform:translateX(var(--x1));opacity:0}
+}
+@keyframes fish-wave{from{transform:translateY(calc(var(--amp) * -1))}to{transform:translateY(var(--amp))}}
+@keyframes fish-tail{from{transform:rotate(-16deg)}to{transform:rotate(16deg)}}
+
 /* ---------- shared controls ---------- */
 .icon-btn{
   width:44px;height:44px;display:grid;place-items:center;border-radius:50%;

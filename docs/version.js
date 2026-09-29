@@ -1,8 +1,15 @@
 // Single source of truth for the release. Loaded by the page AND the service worker,
 // so bumping it is what makes installed phones notice an update.
 // Use `python tools/release.py 2.0.1 "What changed"` rather than editing by hand.
-self.DEEPEND_VERSION = "3.1.0";
+self.DEEPEND_VERSION = "3.2.0";
 self.DEEPEND_CHANGES = [
+  {
+    "v": "3.2.0",
+    "date": "2026-09-29",
+    "notes": [
+      "Now and then, a small fish swims by. Turn it off in Settings."
+    ]
+  },
   {
     "v": "3.1.0",
     "date": "2026-09-29",

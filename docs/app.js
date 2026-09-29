@@ -40,7 +40,7 @@ let seen  = store.get(K.seen, {});
 let notes = store.get(K.notes, []);
 // Question transitions start off for anyone whose phone asks for reduced motion.
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
-let prefs = Object.assign({ passScreen:true, transitions:!REDUCED, moments:true, nameA:"", nameB:"", general:"" }, store.get(K.prefs, {}));
+let prefs = Object.assign({ passScreen:true, transitions:!REDUCED, moments:true, fish:true, nameA:"", nameB:"", general:"" }, store.get(K.prefs, {}));
 const savePrefs = () => store.set(K.prefs, prefs);
 
 const state = { label:"", phrase:"", cat:"friend", level:1, current:null, turn:0 };
@@ -560,6 +560,57 @@ $("fbClear").onclick = () => {
   notes = []; store.set(K.notes, notes); prefs.general = ""; savePrefs(); renderFeedback();
 };
 
+// ---------- fish ----------
+// A small fish swims through the background now and then. Decoration only: never more than one,
+// never over a sheet or the hand-off, and none at all when the phone asks for reduced motion.
+const motion = matchMedia("(prefers-reduced-motion: reduce)");
+const FISH_SVG = '<svg viewBox="0 0 40 20" aria-hidden="true">' +
+  '<path d="M18 6.2C20 1.5 26 1.5 29 5.2Z"/><path class="tail" d="M13 10L1 3Q5 10 1 17Z"/>' +
+  '<path d="M11 10C15 3 27 3 39 10C27 17 15 17 11 10Z"/><circle class="eye" cx="32" cy="8.4" r="1.1"/></svg>';
+let fishTimer = 0, fishEl = null, fishSeen = false;
+const rand = (a, b) => a + Math.random() * (b - a);
+const fishOk = () => prefs.fish && !motion.matches && document.visibilityState === "visible";
+
+function fishPlan(){
+  clearTimeout(fishTimer); fishTimer = 0;
+  if(!fishOk() || fishEl) return;
+  // First fish after 1 to 2 minutes, then one every 2 to 4. The deep end is emptier: twice as long.
+  const secs = (fishSeen ? rand(120, 240) : rand(60, 120)) * (state.level === 5 ? 2 : 1);
+  fishTimer = setTimeout(fishSwim, secs * 1000);
+}
+function fishClear(){
+  clearTimeout(fishTimer); fishTimer = 0;
+  if(fishEl){ fishEl.remove(); fishEl = null; }
+}
+function fishSwim(){
+  clearTimeout(fishTimer); fishTimer = 0;
+  if(!fishOk() || fishEl) return;
+  if(document.querySelector(".sheet-wrap:not([hidden])") || !$("passScreen").hidden){
+    fishTimer = setTimeout(fishSwim, 15000); return;   // try again shortly
+  }
+  fishSeen = true;
+  const ltr = Math.random() < 0.5, dur = rand(8, 14), wave = rand(2.4, 3.8);
+  const el = document.createElement("div");
+  el.className = "fish" + (ltr ? "" : " rtl");
+  el.innerHTML = '<div class="fish-bob">' + FISH_SVG + '</div>';
+  const set = (k, v) => el.style.setProperty(k, v);
+  set("--y", rand(14, 78).toFixed(1) + "vh");
+  set("--w", Math.round(rand(28, 40)) + "px");
+  set("--amp", rand(6, 14).toFixed(1) + "px");
+  set("--dur", dur.toFixed(1) + "s");
+  set("--wave", wave.toFixed(2) + "s");
+  set("--phase", (-rand(0, wave)).toFixed(2) + "s");
+  set("--x0", ltr ? "-60px" : "calc(100vw + 60px)");
+  set("--x1", ltr ? "calc(100vw + 60px)" : "-60px");
+  const done = () => { if(fishEl === el){ el.remove(); fishEl = null; fishPlan(); } };
+  el.addEventListener("animationend", e => { if(e.target === el) done(); });
+  setTimeout(done, dur * 1000 + 800);   // in case animationend never comes
+  fishEl = el;
+  document.querySelector(".motes").appendChild(el);
+}
+// Nothing to pause a timer for while the app is hidden: drop the fish and pick a fresh delay on return.
+document.addEventListener("visibilitychange", () => { fishClear(); fishPlan(); });
+fishPlan();
 // ---------- menu ----------
 $("optPass").checked = prefs.passScreen;
 $("optPass").onchange = () => { prefs.passScreen = $("optPass").checked; savePrefs(); };
@@ -567,6 +618,8 @@ $("optTransitions").checked = prefs.transitions;
 $("optTransitions").onchange = () => { prefs.transitions = $("optTransitions").checked; savePrefs(); };
 $("optMoments").checked = prefs.moments;
 $("optMoments").onchange = () => { prefs.moments = $("optMoments").checked; savePrefs(); };
+$("optFish").checked = prefs.fish;
+$("optFish").onchange = () => { prefs.fish = $("optFish").checked; savePrefs(); prefs.fish ? fishPlan() : fishClear(); };
 $("resetSeen").onclick = () => {
   if(!confirm("Every question becomes new again, for everyone you've played with.")) return;
   seen = {}; store.set(K.seen, seen); toast("Question history cleared");
