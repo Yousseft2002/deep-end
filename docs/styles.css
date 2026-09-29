@@ -87,25 +87,90 @@ svg{width:22px;height:22px;flex:none}
   50%{transform:translate(10px,-52vh)} 88%{opacity:.3} 100%{transform:translate(-6px,-104vh);opacity:0}
 }
 
-/* A small fish swims through now and then. Each layer animates one thing, transform or opacity only:
-   .fish carries the swim across and the fade, .fish-bob the gentle wave, the tail its own wiggle. */
+/* Sea life swims through now and then, a different creature at each depth. Every layer animates one
+   thing, transform or opacity only: .fish carries the swim across and the fade, .fish-bob the gentle
+   wave, and the small parts (tail, wings, lights) their own loops. Creatures are drawn facing right. */
+.sea{position:absolute;inset:0}
 .fish{
   --o:.36;
   position:absolute;left:0;top:var(--y);color:var(--glow);opacity:0;will-change:transform,opacity;
   animation:fish-swim var(--dur) linear forwards;
 }
-body[data-level="5"] .fish{--o:.26}
 .fish-bob{animation:fish-wave var(--wave) ease-in-out var(--phase) infinite alternate}
-.fish svg{display:block;width:var(--w);height:calc(var(--w) / 2);fill:currentColor}
+.fish svg{display:block;overflow:visible;width:var(--w);height:var(--h);fill:currentColor}
 .fish.rtl svg{transform:scaleX(-1)}
-.fish .tail{transform-origin:13px 10px;animation:fish-tail .7s ease-in-out infinite alternate}
-.fish .eye{fill:var(--water)}
+.fish .tail{animation:fish-tail var(--tw,.7s) ease-in-out var(--tp,0s) infinite alternate}
 @keyframes fish-swim{
   0%{transform:translateX(var(--x0));opacity:0} 10%,90%{opacity:var(--o)}
   100%{transform:translateX(var(--x1));opacity:0}
 }
 @keyframes fish-wave{from{transform:translateY(calc(var(--amp) * -1))}to{transform:translateY(var(--amp))}}
 @keyframes fish-tail{from{transform:rotate(-16deg)}to{transform:rotate(16deg)}}
+@keyframes fish-glow{from{opacity:.3}to{opacity:1}}
+
+/* 1 Shallows: a flying fish. Swims, leaps in an arc with its fins spread, glides, dips back in. */
+.k-flying{--o:.4;color:color-mix(in srgb,var(--glow) 50%,#EAF7FA)}
+.k-flying .fish-bob{animation:fish-leap var(--dur) linear forwards}
+.k-flying .pitch{transform-origin:28px 13px;animation:fish-pitch var(--dur) ease-in-out forwards}
+.k-flying .wings{transform-origin:34px 12.5px;animation:fish-wings var(--dur) ease-in-out forwards}
+.k-flying .far{opacity:.6}
+.k-flying .tail{transform-origin:10px 13px}
+@keyframes fish-leap{
+  0%,26%{transform:translateY(0);animation-timing-function:cubic-bezier(.2,.7,.35,1)}
+  46%{transform:translateY(calc(var(--leap) * -1));animation-timing-function:ease-in-out}
+  56%{transform:translateY(calc(var(--leap) * -.92));animation-timing-function:cubic-bezier(.6,0,.85,.4)}
+  74%,100%{transform:none}
+}
+@keyframes fish-pitch{
+  0%,26%{transform:rotate(0)} 42%{transform:rotate(-24deg)} 52%{transform:rotate(-6deg)}
+  64%{transform:rotate(10deg)} 74%{transform:rotate(26deg)} 82%,100%{transform:rotate(0)}
+}
+@keyframes fish-wings{
+  0%,27%{opacity:0;transform:scale(.15)} 34%,60%{opacity:1;transform:scale(1)} 68%,100%{opacity:0;transform:scale(.15)}
+}
+.ripple{
+  position:absolute;width:38px;height:10px;margin:-5px 0 0 -19px;border-radius:50%;opacity:0;
+  border:1.5px solid color-mix(in srgb,var(--glow) 50%,#EAF7FA);animation:fish-ripple 1s ease-out var(--rd) both;
+}
+@keyframes fish-ripple{0%{opacity:0;transform:scale(.3)} 15%{opacity:.4} 100%{opacity:0;transform:scale(1.7)}}
+
+/* 2 Wading: a loose school of small silver fish, each on its own drift, wave and tail beat. */
+.k-school{--o:.34;color:color-mix(in srgb,var(--glow) 22%,#E4EEF3)}
+.k-school .tail{transform-origin:7.5px 6px}
+.buddy{position:absolute;animation:fish-drift var(--bd) ease-in-out var(--bp) infinite alternate}
+@keyframes fish-drift{from{transform:translateX(-7px)}to{transform:translateX(7px)}}
+
+/* 3 Swimming: a manta ray, the slowest of them all. Its wings rise and fall. */
+.k-manta{--o:.3}
+.k-manta .wings{transform-origin:60px 30px;animation:fish-flap 2.8s ease-in-out infinite alternate}
+.k-manta .tail{animation:none}
+@keyframes fish-flap{from{transform:scaleY(1)}to{transform:scaleY(.7)}}
+
+/* 4 Diving: a lanternfish. The body is a whisper; the row of lights along its side is what you see. */
+.k-lantern{--o:1;color:color-mix(in srgb,var(--glow) 18%,#8EA2C6)}
+.k-lantern .body{opacity:.2}
+.k-lantern .tail{transform-origin:11px 9px}
+.k-lantern .dot{fill:var(--glow);animation:fish-glow 1.5s ease-in-out infinite alternate}
+.k-lantern .dot:nth-child(2n){animation-delay:-.5s}
+.k-lantern .dot:nth-child(3n){animation-delay:-1s}
+
+/* 5 The deep end: an anglerfish. Barely there, except for the lure. It drifts, pauses, drifts. */
+.k-angler{--o:1;color:color-mix(in srgb,var(--glow) 22%,#8FA3C8);animation:fish-hover var(--dur) ease-in-out forwards}
+.k-angler .body{opacity:.15}
+.k-angler .teeth{opacity:.2}
+.k-angler .eye{fill:var(--glow);opacity:.5}
+.k-angler .tail{transform-origin:15px 25px;animation-duration:1.6s}
+.k-angler .stalk{fill:none;stroke:currentColor;stroke-width:1.2;stroke-linecap:round;opacity:.22}
+.k-angler .lure{transform-origin:34px 9px;animation:fish-lure 3.2s ease-in-out infinite alternate}
+.k-angler .halo{animation:fish-glow 2.8s ease-in-out .3s infinite alternate}
+.k-angler .bulb{fill:color-mix(in srgb,var(--glow) 65%,#fff);animation:fish-glow 2.2s ease-in-out infinite alternate}
+@keyframes fish-lure{from{transform:rotate(-8deg)}to{transform:rotate(8deg)}}
+@keyframes fish-hover{
+  0%{transform:translateX(var(--x0));opacity:0} 8%,92%{opacity:var(--o)}
+  28%,40%{transform:translateX(calc(var(--x0) + var(--span) * .3))}
+  62%,72%{transform:translateX(calc(var(--x0) + var(--span) * .66))}
+  100%{transform:translateX(var(--x1));opacity:0}
+}
 
 /* ---------- shared controls ---------- */
 .icon-btn{

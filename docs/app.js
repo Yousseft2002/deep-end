@@ -560,27 +560,75 @@ $("fbClear").onclick = () => {
   notes = []; store.set(K.notes, notes); prefs.general = ""; savePrefs(); renderFeedback();
 };
 
-// ---------- fish ----------
-// A small fish swims through the background now and then. Decoration only: never more than one,
-// never over a sheet or the hand-off, and none at all when the phone asks for reduced motion.
+// ---------- sea life ----------
+// Now and then one creature swims through the background, chosen by the depth you're at when it
+// starts: flying fish, a small school, a manta, a lanternfish, an anglerfish. Decoration only: never
+// more than one, never over a sheet or the hand-off, and none at all when the phone asks for
+// reduced motion. Each is a small SVG facing right (flipped when it swims left), built once and cloned.
 const motion = matchMedia("(prefers-reduced-motion: reduce)");
-const FISH_SVG = '<svg viewBox="0 0 40 20" aria-hidden="true">' +
-  '<path d="M18 6.2C20 1.5 26 1.5 29 5.2Z"/><path class="tail" d="M13 10L1 3Q5 10 1 17Z"/>' +
-  '<path d="M11 10C15 3 27 3 39 10C27 17 15 17 11 10Z"/><circle class="eye" cx="32" cy="8.4" r="1.1"/></svg>';
+const SEA = {
+  1: { kind:"flying", vb:[56, 24], w:[48, 58], dur:[8, 11], y:[15, 22], amp:[0, 0], wave:[3, 4], art:
+    '<g class="pitch"><path d="M8 13C15 9.5 32 9.5 47 13C32 16.5 15 16.5 8 13Z"/>' +
+    '<path class="tail" d="M10 13L1 6L5.5 13L2 21Z"/><path d="M34 13.5L28 17L32 14.5Z"/>' +
+    '<g class="wings"><path d="M36 11.5C32 4 22 -1 6 0C17 4 26 8.5 31 12.5Z"/>' +
+    '<path class="far" d="M36 13.5C32 20 22 23.5 10 23.5C20 20 27 16.5 31 13.5Z"/></g></g>' },
+  2: { kind:"school", vb:[24, 12], w:[16, 22], dur:[9, 13], y:[24, 68], amp:[2, 5], wave:[1.8, 3], art:
+    '<path class="tail" d="M7.5 6L1 1.5Q3.4 6 1 10.5Z"/><path d="M6 6C9 1.5 17 1.5 23 6C17 10.5 9 10.5 6 6Z"/>' },
+  3: { kind:"manta", vb:[100, 60], w:[84, 108], dur:[14, 18], y:[26, 66], amp:[5, 9], wave:[4.5, 6], art:
+    '<g class="wings"><path d="M86 28C78 14 62 5 44 2C49 12 50 22 46 30Z"/>' +
+    '<path d="M86 32C78 46 62 55 44 58C49 48 50 38 46 30Z"/></g>' +
+    '<path d="M96 30C92 25 82 25 66 27L44 30L66 33C82 35 92 35 96 30Z"/>' +
+    '<path d="M94 26.5L99.5 23.5L96 29ZM94 33.5L99.5 36.5L96 31Z"/><path class="tail" d="M48 29.4L2 30L48 30.6Z"/>' },
+  4: { kind:"lantern", vb:[40, 18], w:[42, 54], dur:[10, 14], y:[26, 72], amp:[4, 9], wave:[3, 4.5], art:
+    '<g class="body"><path class="tail" d="M11 9L1 3Q4.5 9 1 15Z"/><path d="M9 9C13 2.5 27 2.5 39 9C27 15.5 13 15.5 9 9Z"/></g>' +
+    '<g class="dots"><circle cx="14" cy="11.6" r="1"/><circle cx="18" cy="12.5" r="1"/><circle cx="22" cy="12.8" r="1"/>' +
+    '<circle cx="26" cy="12.6" r="1"/><circle cx="30" cy="11.9" r="1"/><circle cx="34" cy="10.6" r="1"/><circle cx="35.5" cy="7" r=".9"/></g>' },
+  5: { kind:"angler", vb:[64, 44], w:[50, 62], dur:[12, 14], y:[30, 72], amp:[3, 6], wave:[3.5, 5], art:
+    '<defs><radialGradient id="lure-glow"><stop offset="0" style="stop-color:var(--glow);stop-opacity:.75"/>' +
+    '<stop offset="1" style="stop-color:var(--glow);stop-opacity:0"/></radialGradient></defs>' +
+    '<g class="body"><path class="tail" d="M15 25L2 15Q6 25 2 35Z"/>' +
+    '<path d="M13 25C13 11 31 7 43 13C51 17 53 29 47 35C37 41 15 39 13 25Z"/>' +
+    '<path d="M42 27C50 25 58 28 61 34C55 38 46 37 39 34Z"/></g>' +
+    '<path class="teeth" d="M46 30.5l1.4-4l1.4 4zM50 31.5l1.4-4l1.4 4zM54 32.5l1.4-4l1.4 4zM47 26l1.4 3.6l1.4-3.6zM51 26.4l1.4 3.6l1.4-3.6z"/>' +
+    '<circle class="eye" cx="41" cy="20" r="1.8"/>' +
+    '<g class="lure"><path class="stalk" d="M34 9C35 -1 45 -2 52 4"/><circle class="halo" cx="52" cy="4" r="22" fill="url(#lure-glow)"/>' +
+    '<circle class="bulb" cx="52" cy="4" r="2.5"/></g>' }
+};
+const seaArt = {};
+function seaSvg(level){
+  if(!seaArt[level]){
+    const box = document.createElement("div"), [vw, vh] = SEA[level].vb;
+    box.innerHTML = '<svg viewBox="0 0 ' + vw + ' ' + vh + '" aria-hidden="true">' + SEA[level].art + '</svg>';
+    seaArt[level] = box.firstChild;
+  }
+  return seaArt[level].cloneNode(true);
+}
+
 let fishTimer = 0, fishEl = null, fishSeen = false;
 const rand = (a, b) => a + Math.random() * (b - a);
+const setVar = (el, k, v) => el.style.setProperty(k, v);
 const fishOk = () => prefs.fish && !motion.matches && document.visibilityState === "visible";
 
 function fishPlan(){
   clearTimeout(fishTimer); fishTimer = 0;
   if(!fishOk() || fishEl) return;
-  // First fish after 1 to 2 minutes, then one every 2 to 4. The deep end is emptier: twice as long.
+  // First one after 1 to 2 minutes, then one every 2 to 4. The deep end is emptier: twice as long.
   const secs = (fishSeen ? rand(120, 240) : rand(60, 120)) * (state.level === 5 ? 2 : 1);
   fishTimer = setTimeout(fishSwim, secs * 1000);
 }
 function fishClear(){
   clearTimeout(fishTimer); fishTimer = 0;
   if(fishEl){ fishEl.remove(); fishEl = null; }
+}
+// A creature's body: a wave layer holding its SVG, sized from the width so the drawing keeps its shape.
+function seaBody(level, w, amp, wave){
+  const c = SEA[level], bob = document.createElement("div");
+  bob.className = "fish-bob";
+  setVar(bob, "--w", Math.round(w) + "px"); setVar(bob, "--h", (w * c.vb[1] / c.vb[0]).toFixed(1) + "px");
+  setVar(bob, "--amp", amp.toFixed(1) + "px"); setVar(bob, "--wave", wave.toFixed(2) + "s");
+  setVar(bob, "--phase", (-rand(0, wave)).toFixed(2) + "s");
+  bob.appendChild(seaSvg(level));
+  return bob;
 }
 function fishSwim(){
   clearTimeout(fishTimer); fishTimer = 0;
@@ -589,28 +637,54 @@ function fishSwim(){
     fishTimer = setTimeout(fishSwim, 15000); return;   // try again shortly
   }
   fishSeen = true;
-  const ltr = Math.random() < 0.5, dur = rand(8, 14), wave = rand(2.4, 3.8);
-  const el = document.createElement("div");
-  el.className = "fish" + (ltr ? "" : " rtl");
-  el.innerHTML = '<div class="fish-bob">' + FISH_SVG + '</div>';
-  const set = (k, v) => el.style.setProperty(k, v);
-  set("--y", rand(14, 78).toFixed(1) + "vh");
-  set("--w", Math.round(rand(28, 40)) + "px");
-  set("--amp", rand(6, 14).toFixed(1) + "px");
-  set("--dur", dur.toFixed(1) + "s");
-  set("--wave", wave.toFixed(2) + "s");
-  set("--phase", (-rand(0, wave)).toFixed(2) + "s");
-  set("--x0", ltr ? "-60px" : "calc(100vw + 60px)");
-  set("--x1", ltr ? "calc(100vw + 60px)" : "-60px");
-  const done = () => { if(fishEl === el){ el.remove(); fishEl = null; fishPlan(); } };
+  // The depth when it starts decides the creature; changing depth mid-swim lets it finish.
+  const level = state.level, c = SEA[level];
+  const ltr = Math.random() < 0.5, dur = rand(...c.dur), y = rand(...c.y), W = innerWidth;
+  const x0 = ltr ? -120 : W + 120, x1 = ltr ? W + 120 : -120;
+  const holder = document.createElement("div"), el = document.createElement("div");
+  holder.className = "sea";
+  el.className = "fish k-" + c.kind + (ltr ? "" : " rtl");
+  setVar(el, "--y", y.toFixed(1) + "vh"); setVar(el, "--dur", dur.toFixed(1) + "s");
+  setVar(el, "--x0", x0 + "px"); setVar(el, "--x1", x1 + "px"); setVar(el, "--span", (x1 - x0) + "px");
+  if(c.kind === "school"){
+    const n = 3 + Math.floor(Math.random() * 3);
+    for(let i = 0; i < n; i++){
+      const b = document.createElement("div"), w = rand(...c.w);
+      b.className = "buddy";
+      b.style.left = Math.round((i - (n - 1) / 2) * 26 + rand(-8, 8)) + "px";
+      b.style.top = Math.round(rand(-20, 20)) + "px";
+      setVar(b, "--bd", rand(2.4, 4).toFixed(2) + "s"); setVar(b, "--bp", (-rand(0, 4)).toFixed(2) + "s");
+      setVar(b, "--tw", rand(.45, .7).toFixed(2) + "s"); setVar(b, "--tp", (-rand(0, .7)).toFixed(2) + "s");
+      b.appendChild(seaBody(level, w, rand(...c.amp), rand(...c.wave)));
+      el.appendChild(b);
+    }
+  } else {
+    const w = rand(...c.w);
+    el.appendChild(seaBody(level, w, rand(...c.amp), rand(...c.wave)));
+    if(c.kind === "flying"){
+      // It leaves and re-enters the water at about 28% and 76% of the crossing: a ripple at each spot.
+      setVar(el, "--leap", Math.round(rand(46, 72)) + "px");
+      const wy = innerHeight * y / 100 + w * c.vb[1] / c.vb[0] * .8;
+      [.28, .76].forEach(f => {
+        const r = document.createElement("div");
+        r.className = "ripple";
+        r.style.left = Math.round(x0 + (x1 - x0) * f + w / 2) + "px"; r.style.top = Math.round(wy) + "px";
+        setVar(r, "--rd", (dur * f).toFixed(2) + "s");
+        holder.appendChild(r);
+      });
+    }
+  }
+  holder.appendChild(el);
+  const done = () => { if(fishEl === holder){ holder.remove(); fishEl = null; fishPlan(); } };
   el.addEventListener("animationend", e => { if(e.target === el) done(); });
   setTimeout(done, dur * 1000 + 800);   // in case animationend never comes
-  fishEl = el;
-  document.querySelector(".motes").appendChild(el);
+  fishEl = holder;
+  document.querySelector(".motes").appendChild(holder);
 }
-// Nothing to pause a timer for while the app is hidden: drop the fish and pick a fresh delay on return.
+// Nothing to pause a timer for while the app is hidden: drop the creature and pick a fresh delay on return.
 document.addEventListener("visibilitychange", () => { fishClear(); fishPlan(); });
 fishPlan();
+
 // ---------- menu ----------
 $("optPass").checked = prefs.passScreen;
 $("optPass").onchange = () => { prefs.passScreen = $("optPass").checked; savePrefs(); };

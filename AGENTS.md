@@ -48,7 +48,7 @@ The owner is play-testing it with friends and will submit it to the stores. Keep
    Respect `prefers-reduced-motion`.
 10. **Settings live in `prefs`** (saved to localStorage) with a toggle in the menu's Settings block.
     Current ones: `transitions` (question transitions), `passScreen` (underwater hand-off),
-    `moments` (shared moments every few turns), `fish` (a small fish swims by now and then), `nameA`/`nameB`.
+    `moments` (shared moments every few turns), `fish` (sea life swims by now and then, a different creature at each depth), `nameA`/`nameB`.
 
 ## Style
 
