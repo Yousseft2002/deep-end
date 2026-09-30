@@ -341,7 +341,7 @@ function setLevel(lvl, fetch = true){
   g.setAttribute("aria-valuetext", LEVELS[lvl-1]);
   $("deeper").disabled = lvl === 5;
   $("deeper").querySelector("span").textContent = lvl === 5 ? "Deepest" : "Deeper";
-  if(fetch && changed) newQuestion();
+  if(fetch && changed){ newQuestion(); fishEnter(); }
 }
 function paintDepth(l){
   document.body.dataset.level = l;
@@ -630,11 +630,17 @@ function seaBody(level, w, amp, wave){
   bob.appendChild(seaSvg(level));
   return bob;
 }
-function fishSwim(){
+// Moving to a new depth brings that depth's creature straight away, replacing any still swimming.
+function fishEnter(){
+  if(!fishOk()) return;
+  fishClear(); fishSwim(true);
+}
+function fishSwim(now){
   clearTimeout(fishTimer); fishTimer = 0;
   if(!fishOk() || fishEl) return;
   if(document.querySelector(".sheet-wrap:not([hidden])") || !$("passScreen").hidden){
-    fishTimer = setTimeout(fishSwim, 15000); return;   // try again shortly
+    if(now) fishPlan(); else fishTimer = setTimeout(fishSwim, 15000);   // try again shortly
+    return;
   }
   fishSeen = true;
   // The depth when it starts decides the creature; changing depth mid-swim lets it finish.
