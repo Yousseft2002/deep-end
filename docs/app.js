@@ -4,7 +4,8 @@
 const VERSION = self.DEEPEND_VERSION || "dev";
 const CHANGES = self.DEEPEND_CHANGES || [];
 const { LEVELS, GROUPS, Q, FOLLOW = [], MOMENTS = {} } = self.DEEPEND_BANK;
-const WATER = ["#082229","#08192B","#071226","#050B1B","#03050E"];
+const WATER = ["#146468","#004C5F","#03324F","#0D1A37","#060919"];
+const SKY = "#071A28";   // the sunset behind the home title, so the status bar matches it there
 const NOTE_REASONS = ["Great question","Awkward","Confusing","Wrong depth","Too similar to another"];
 const $ = id => document.getElementById(id);
 
@@ -40,7 +41,11 @@ let seen  = store.get(K.seen, {});
 let notes = store.get(K.notes, []);
 // Question transitions start off for anyone whose phone asks for reduced motion.
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
-let prefs = Object.assign({ passScreen:true, transitions:!REDUCED, moments:true, fish:true, nameA:"", nameB:"", general:"" }, store.get(K.prefs, {}));
+// Moving water starts off on phones with 2 GB of memory or less (Chrome reports it; others don't, and get it on).
+const LOW_MEMORY = (navigator.deviceMemory || 8) <= 2;
+let prefs = Object.assign({ passScreen:true, transitions:!REDUCED, moments:true, fish:true, water:!REDUCED && !LOW_MEMORY, nameA:"", nameB:"", general:"" }, store.get(K.prefs, {}));
+const paintWater = () => document.documentElement.classList.toggle("still", !prefs.water);
+paintWater();
 const savePrefs = () => store.set(K.prefs, prefs);
 
 const state = { label:"", phrase:"", cat:"friend", level:1, current:null, turn:0 };
@@ -56,14 +61,33 @@ function toast(text, action, onAction){
   if(!action) toastTimer = setTimeout(() => { $("toast").hidden = true; }, 3200);
 }
 
+// ---------- tester feedback context ----------
+// feedback-widget.js attaches this to every report. Screen and settings only: never names,
+// notes, saved questions or the relationship text a player typed (state.cat is one of our own ids).
+function reportContext(){
+  if(!self.Feedback) return;
+  const sheet = [...document.querySelectorAll(".sheet-wrap")].find(w => !w.hidden);
+  const playing = !$("play").hidden;
+  Feedback.setContext({
+    screen: !$("passScreen").hidden ? "handoff" : sheet ? sheet.id.replace("Sheet", "") + "-sheet" : playing ? "play" : "home",
+    relationship: playing ? state.cat : null,
+    depth: playing ? state.level : null,
+    offline: navigator.onLine === false
+  });
+}
+window.addEventListener("online", reportContext);
+window.addEventListener("offline", reportContext);
+window.addEventListener("load", reportContext);
+
 // ---------- sheets ----------
 let lastFocus = null;
 function openSheet(id){
   lastFocus = document.activeElement;
   $(id).hidden = false;
   const f = $(id).querySelector("[data-close].x"); if(f) f.focus();
+  reportContext();
 }
-function closeSheet(id){ $(id).hidden = true; if(lastFocus && lastFocus.focus) lastFocus.focus(); }
+function closeSheet(id){ $(id).hidden = true; if(lastFocus && lastFocus.focus) lastFocus.focus(); reportContext(); }
 document.querySelectorAll(".sheet-wrap").forEach(w =>
   w.querySelectorAll("[data-close]").forEach(el => el.addEventListener("click", () => closeSheet(w.id))));
 document.addEventListener("keydown", e => {
@@ -96,6 +120,10 @@ $("nameA").value = prefs.nameA; $("nameB").value = prefs.nameB;
 $("versionLink").textContent = "Version " + VERSION + (NATIVE ? " · what's new, feedback" : " · what's new, feedback, install");
 $("versionLink").onclick = openMenu;
 $("menuHome").onclick = openMenu;
+document.querySelectorAll("[data-tester-fb-open]").forEach(b => b.addEventListener("click", () => {
+  const sheet = b.closest(".sheet-wrap"); if(sheet) closeSheet(sheet.id);
+  if(self.Feedback) Feedback.open();
+}));
 
 function renderResume(){
   const last = store.get(K.last, null);
@@ -110,6 +138,9 @@ $("resume").onclick = () => {
 function showHome(){
   $("play").hidden = true; $("home").hidden = false;
   setLevel(1, false); renderResume();
+  // a creature from the deep would swim behind the sunset here, so let it go and plan the next one
+  fishClear(); fishPlan();
+  reportContext();
 }
 $("goHome").onclick = showHome;
 $("changeWho").onclick = showHome;
@@ -247,6 +278,7 @@ function start(label, cat, phrase, level){
   $("changeWho").textContent = "With " + phrase;
   $("home").hidden = true; $("play").hidden = false;
   setLevel(level || 1, false);
+  reportContext();
   newQuestion();
   updateSavedCount();
 }
@@ -334,6 +366,7 @@ function setLevel(lvl, fetch = true){
   const changed = lvl !== state.level;
   state.level = lvl;
   if(changed){ session.answered = 0; session.skips = 0; }
+  reportContext();
   paintDepth(lvl);
   $("knob").style.top = ((lvl-1)/4*100) + "%";
   const g = $("gauge");
@@ -345,7 +378,7 @@ function setLevel(lvl, fetch = true){
 }
 function paintDepth(l){
   document.body.dataset.level = l;
-  document.querySelector('meta[name="theme-color"]').content = WATER[l-1];
+  document.querySelector('meta[name="theme-color"]').content = $("home").hidden ? WATER[l-1] : SKY;
 }
 
 const rail = $("rail"), gauge = $("gauge");
@@ -403,6 +436,7 @@ function dive(){
   surfacing = false; setHold(0);
   surf.classList.remove("out", "holding");
   surf.hidden = false;
+  reportContext();
   holdBtn.focus();
 }
 function setHold(p){
@@ -440,7 +474,7 @@ function rise(){
   clearTimeout(swapTimer); document.querySelector(".card").classList.remove("leaving");
   paintQuestion(state.current, false); replayEnter();
   surf.classList.add("out");
-  setTimeout(() => { surf.hidden = true; surf.classList.remove("out", "holding"); setHold(0); $("next").focus(); }, 500);
+  setTimeout(() => { surf.hidden = true; surf.classList.remove("out", "holding"); setHold(0); reportContext(); $("next").focus(); }, 500);
 }
 holdBtn.addEventListener("pointerdown", press);
 holdBtn.addEventListener("pointerup", letGo);
@@ -485,6 +519,7 @@ function renderSaved(){
     const li = document.createElement("li");
     const p = document.createElement("p"); p.textContent = s.q;
     const sm = document.createElement("small"); sm.textContent = (s.moment ? "A moment · " : "") + LEVELS[s.level-1] + ", with " + s.who;
+    sm.dataset.level = s.level;
     p.appendChild(sm);
     const sh = document.createElement("button");
     sh.className = "x"; sh.textContent = "Share"; sh.setAttribute("aria-label", "Share: " + s.q);
@@ -562,43 +597,96 @@ $("fbClear").onclick = () => {
 
 // ---------- sea life ----------
 // Now and then one creature swims through the background, chosen by the depth you're at when it
-// starts: flying fish, a small school, a manta, a lanternfish, an anglerfish. Decoration only: never
-// more than one, never over a sheet or the hand-off, and none at all when the phone asks for
-// reduced motion. Each is a small SVG facing right (flipped when it swims left), built once and cloned.
+// starts: a flying fish, a sea turtle, a manta ray, a jellyfish, an anglerfish. Decoration only: never
+// more than one, never over a sheet or the hand-off, and none at all when the phone asks for reduced
+// motion. Each is a small SVG facing right (flipped when it swims left), built once and cloned.
+// vb is the drawing's viewBox [x, y, width, height]; the parts that move have classes styles.css animates.
 const motion = matchMedia("(prefers-reduced-motion: reduce)");
 const SEA = {
-  1: { kind:"flying", vb:[56, 24], w:[48, 58], dur:[8, 11], y:[15, 22], amp:[0, 0], wave:[3, 4], art:
-    '<g class="pitch"><path d="M8 13C15 9.5 32 9.5 47 13C32 16.5 15 16.5 8 13Z"/>' +
-    '<path class="tail" d="M10 13L1 6L5.5 13L2 21Z"/><path d="M34 13.5L28 17L32 14.5Z"/>' +
-    '<g class="wings"><path d="M36 11.5C32 4 22 -1 6 0C17 4 26 8.5 31 12.5Z"/>' +
-    '<path class="far" d="M36 13.5C32 20 22 23.5 10 23.5C20 20 27 16.5 31 13.5Z"/></g></g>' },
-  2: { kind:"school", vb:[24, 12], w:[16, 22], dur:[9, 13], y:[24, 68], amp:[2, 5], wave:[1.8, 3], art:
-    '<path class="tail" d="M7.5 6L1 1.5Q3.4 6 1 10.5Z"/><path d="M6 6C9 1.5 17 1.5 23 6C17 10.5 9 10.5 6 6Z"/>' },
-  3: { kind:"manta", vb:[100, 60], w:[84, 108], dur:[14, 18], y:[26, 66], amp:[5, 9], wave:[4.5, 6], art:
-    '<g class="wings"><path d="M86 28C78 14 62 5 44 2C49 12 50 22 46 30Z"/>' +
-    '<path d="M86 32C78 46 62 55 44 58C49 48 50 38 46 30Z"/></g>' +
-    '<path d="M96 30C92 25 82 25 66 27L44 30L66 33C82 35 92 35 96 30Z"/>' +
-    '<path d="M94 26.5L99.5 23.5L96 29ZM94 33.5L99.5 36.5L96 31Z"/><path class="tail" d="M48 29.4L2 30L48 30.6Z"/>' },
-  4: { kind:"lantern", vb:[40, 18], w:[42, 54], dur:[10, 14], y:[26, 72], amp:[4, 9], wave:[3, 4.5], art:
-    '<g class="body"><path class="tail" d="M11 9L1 3Q4.5 9 1 15Z"/><path d="M9 9C13 2.5 27 2.5 39 9C27 15.5 13 15.5 9 9Z"/></g>' +
-    '<g class="dots"><circle cx="14" cy="11.6" r="1"/><circle cx="18" cy="12.5" r="1"/><circle cx="22" cy="12.8" r="1"/>' +
-    '<circle cx="26" cy="12.6" r="1"/><circle cx="30" cy="11.9" r="1"/><circle cx="34" cy="10.6" r="1"/><circle cx="35.5" cy="7" r=".9"/></g>' },
-  5: { kind:"angler", vb:[64, 44], w:[50, 62], dur:[12, 14], y:[30, 72], amp:[3, 6], wave:[3.5, 5], art:
-    '<defs><radialGradient id="lure-glow"><stop offset="0" style="stop-color:var(--glow);stop-opacity:.75"/>' +
-    '<stop offset="1" style="stop-color:var(--glow);stop-opacity:0"/></radialGradient></defs>' +
-    '<g class="body"><path class="tail" d="M15 25L2 15Q6 25 2 35Z"/>' +
-    '<path d="M13 25C13 11 31 7 43 13C51 17 53 29 47 35C37 41 15 39 13 25Z"/>' +
-    '<path d="M42 27C50 25 58 28 61 34C55 38 46 37 39 34Z"/></g>' +
-    '<path class="teeth" d="M46 30.5l1.4-4l1.4 4zM50 31.5l1.4-4l1.4 4zM54 32.5l1.4-4l1.4 4zM47 26l1.4 3.6l1.4-3.6zM51 26.4l1.4 3.6l1.4-3.6z"/>' +
-    '<circle class="eye" cx="41" cy="20" r="1.8"/>' +
-    '<g class="lure"><path class="stalk" d="M34 9C35 -1 45 -2 52 4"/><circle class="halo" cx="52" cy="4" r="22" fill="url(#lure-glow)"/>' +
-    '<circle class="bulb" cx="52" cy="4" r="2.5"/></g>' }
+  1: { kind:"flying", vb:[-100, -70, 176, 126], w:[58, 70], dur:[8, 11], y:[15, 22], amp:[0, 0], wave:[3, 4], wl:.62, art:
+    '<g class="pitch"><rect x="-100" y="-70" width="176" height="126" fill="none"/><g class="wings far">' +
+    '<path d="M38 6C24 30 2 46 -36 54C-22 40 -4 24 8 8Z" fill="#D9F5F3" opacity=".35"/>' +
+    '<path d="M-22 7C-30 20 -40 26 -52 28C-46 20 -36 12 -28 7Z" fill="#D9F5F3" opacity=".35"/></g>' +
+    '<path class="tail" d="M-56 -3L-88 -18L-74 2L-98 22L-56 5Z" fill="#19517B"/>' +
+    '<path d="M74 1C62 -11 22 -15 -20 -10C-38 -8 -50 -5 -58 -3L-58 5C-50 7 -38 9 -20 10C22 12 62 10 74 1Z" fill="#19517B"/>' +
+    '<path d="M73 2.5C58 3.5 28 3 -20 2C-38 2 -50 3 -58 3.5L-58 5C-50 7 -38 9 -20 10C22 12 62 10 73 2.5Z" fill="#C0E6EB"/>' +
+    '<path d="M60 -1C30 -3 0 -3 -50 -1" fill="none" stroke="#C0E6EB" stroke-width="1.4" opacity=".45"/>' +
+    '<g class="wings"><path d="M40 -3C20 -40 -10 -62 -50 -68C-32 -50 -10 -28 6 -5Z" fill="#D9F5F3" opacity=".62"/>' +
+    '<path d="M36 -5C17 -34 -8 -54 -44 -64M34 -5C15 -28 -6 -42 -34 -52M31 -5C15 -21 -1 -31 -21 -38M28 -5C17 -14 7 -20 -7 -23" fill="none" stroke="#fff" stroke-width="1.1" opacity=".5"/>' +
+    '<path d="M-20 -8C-28 -24 -40 -32 -54 -34C-46 -24 -36 -14 -28 -8Z" fill="#D9F5F3" opacity=".5"/></g>' +
+    '<circle cx="58" cy="-1" r="5" fill="#0A1A2A"/><circle cx="59.6" cy="-2.6" r="1.6" fill="#fff"/></g>' },
+  2: { kind:"turtle", vb:[-92, -118, 184, 236], w:[62, 78], dur:[15, 19], y:[30, 62], amp:[3, 6], wave:[4, 5.5], art:
+    '<path d="M-46 -26C-62 -40 -78 -46 -90 -42C-80 -32 -64 -22 -52 -16ZM-46 26C-62 40 -78 46 -90 42C-80 32 -64 22 -52 16ZM-58 -5L-77 0L-58 5Z" fill="#6DAF92"/>' +
+    '<g class="fin-l"><path d="M34 -34C50 -62 40 -94 -8 -116C4 -88 10 -62 8 -40Z" fill="#6DAF92"/>' +
+    '<g fill="#A0D1BA" opacity=".7"><circle cx="30" cy="-62" r="3.2"/><circle cx="22" cy="-80" r="2.6"/>' +
+    '<circle cx="12" cy="-96" r="2.2"/><circle cx="36" cy="-48" r="2.4"/></g></g><g class="fin-r">' +
+    '<path d="M34 34C50 62 40 94 -8 116C4 88 10 62 8 40Z" fill="#6DAF92"/><g fill="#A0D1BA" opacity=".7">' +
+    '<circle cx="30" cy="62" r="3.2"/><circle cx="22" cy="80" r="2.6"/><circle cx="12" cy="96" r="2.2"/>' +
+    '<circle cx="36" cy="48" r="2.4"/></g></g><ellipse cx="72" cy="0" rx="17" ry="12.5" fill="#6DAF92"/>' +
+    '<path d="M78 -5L85 -2L85 2L78 5L72 0Z" fill="#A0D1BA" opacity=".55"/>' +
+    '<circle cx="80" cy="-7.5" r="2.2" fill="#0A1A2A"/><circle cx="80" cy="7.5" r="2.2" fill="#0A1A2A"/>' +
+    '<ellipse cx="0" cy="0" rx="62" ry="48" fill="#327860"/>' +
+    '<path d="M54 0L62 0M52.16 10.61L59.89 12.42M46.77 20.5L53.69 24M38.18 28.99L43.84 33.94M27 35.51L31 41.57M13.98 39.6L16.05 46.36M0 41L0 48M-13.98 39.6L-16.05 46.36M-27 35.51L-31 41.57M-38.18 28.99L-43.84 33.94M-46.77 20.5L-53.69 24M-52.16 10.61L-59.89 12.42M-54 0L-62 0M-52.16 -10.61L-59.89 -12.42M-46.77 -20.5L-53.69 -24M-38.18 -28.99L-43.84 -33.94M-27 -35.51L-31 -41.57M-13.98 -39.6L-16.05 -46.36M0 -41L0 -48M13.98 -39.6L16.05 -46.36M27 -35.51L31 -41.57M38.18 -28.99L43.84 -33.94M46.77 -20.5L53.69 -24M52.16 -10.61L59.89 -12.42" fill="none" stroke="#215243" stroke-width="1.6"/>' +
+    '<ellipse cx="0" cy="0" rx="54" ry="41" fill="#215243"/><g fill="#327860">' +
+    '<polygon points="-26,-12.04 -14.82,-6.02 -14.82,6.02 -26,12.04 -37.18,6.02 -37.18,-6.02"/>' +
+    '<polygon points="0,-12.04 11.18,-6.02 11.18,6.02 0,12.04 -11.18,6.02 -11.18,-6.02"/>' +
+    '<polygon points="26,-12.04 37.18,-6.02 37.18,6.02 26,12.04 14.82,6.02 14.82,-6.02"/>' +
+    '<polygon points="-13,8.96 -1.82,14.98 -1.82,27.02 -13,33.04 -24.18,27.02 -24.18,14.98"/>' +
+    '<polygon points="13,8.96 24.18,14.98 24.18,27.02 13,33.04 1.82,27.02 1.82,14.98"/>' +
+    '<polygon points="-13,-33.04 -1.82,-27.02 -1.82,-14.98 -13,-8.96 -24.18,-14.98 -24.18,-27.02"/>' +
+    '<polygon points="13,-33.04 24.18,-27.02 24.18,-14.98 13,-8.96 1.82,-14.98 1.82,-27.02"/></g>' },
+  3: { kind:"manta", vb:[-136, -140, 202, 280], w:[70, 88], dur:[16, 20], y:[26, 60], amp:[5, 9], wave:[4.5, 6], art:
+    '<path d="M-54 -2.2 L-134 0 L-54 2.2 Z" fill="#021829"/><g class="flap">' +
+    '<path d="M40 -16 L40 16 C42 42 30 90 -12 138 C-12 104 -18 72 -34 48 C-46 32 -56 16 -58 0 C-56 -16 -46 -32 -34 -48 C-18 -72 -12 -104 -12 -138 C30 -90 42 -42 40 -16 Z" fill="#021829"/>' +
+    '<path d="M38 -17 C46 -24 57 -25 63 -19 C58 -13 49 -10 39 -9 ZM38 17 C46 24 57 25 63 19 C58 13 49 10 39 9 Z" fill="#021829"/>' +
+    '<ellipse cx="-6" cy="0" rx="44" ry="20" fill="#0A2A44"/>' +
+    '<path d="M26 -14 C24 -36 12 -60 -8 -80 C2 -56 8 -32 10 -12 ZM26 14 C24 36 12 60 -8 80 C2 56 8 32 10 12 Z" fill="#5E8CAC" opacity=".55"/>' +
+    '<path d="M40 -16 C42 -42 30 -90 -12 -138 M40 16 C42 42 30 90 -12 138" fill="none" stroke="#7FB2D1" stroke-width="2" opacity=".55" stroke-linecap="round"/>' +
+    '</g>' },
+  4: { kind:"jelly", vb:[-98, -98, 196, 240], w:[84, 104], dur:[20, 26], y:[28, 62], amp:[6, 10], wave:[3.5, 5], art:
+    '<g class="halo"><ellipse cx="0" cy="-12" rx="96" ry="84" fill="#AE97FF" opacity=".05"/>' +
+    '<ellipse cx="0" cy="-16" rx="72" ry="62" fill="#AE97FF" opacity=".07"/></g><g class="tents">' +
+    '<path d="M-44 14C-50 35 -38 58.8 -48 84C-40 103.6 -46 119 -46 137.2M-28 14C-32 35 -20 58.8 -30 84C-22 103.6 -26 119 -26 137.2M28 14C34 35 22 58.8 30 84C24 103.6 28 119 26 137.2M44 14C50 35 40 58.8 48 84C42 103.6 46 119 46 137.2M-12 14C-18 35 -6 58.8 -14 84C-10 103.6 -8 119 -14 137.2M14 14C10 35 18 58.8 12 84C16 103.6 20 119 16 137.2" fill="none" stroke="#CBC0FF" stroke-width="1.4" opacity=".5" stroke-linecap="round"/>' +
+    '<path d="M-9 14C-18 28 -2 43.4 -12 64.4C-18 78.4 -8 89.6 -14 103.6M9 14C17 30.8 2 47.6 12 68.6C18 82.6 8 92.4 14 106.4" fill="none" stroke="#AE97FF" stroke-width="6" opacity=".55" stroke-linecap="round"/>' +
+    '</g><g class="bell">' +
+    '<path d="M-50 10C-50 -30 -28 -52 0 -52C28 -52 50 -30 50 10Q41.67 19 33.33 10Q25 19 16.67 10Q8.33 19 0 10Q-8.33 19 -16.67 10Q-25 19 -33.33 10Q-41.67 19 -50 10Z" fill="#AE97FF" opacity=".6"/>' +
+    '<path d="M-34 6C-34 -22 -18 -38 0 -38C18 -38 34 -22 34 6Z" fill="#CBC0FF" opacity=".4"/>' +
+    '<path d="M0 -50C-14 -36 -22 -14 -25 10M0 -50C14 -36 22 -14 25 10M0 -50L0 10" fill="none" stroke="#E4F9F7" stroke-width="1.2" opacity=".3"/>' +
+    '<g class="lights" fill="#54F5D7"><circle cx="-50" cy="10" r="6" opacity=".22"/>' +
+    '<circle cx="-50" cy="10" r="2.3"/><circle cx="-33.33" cy="10" r="6" opacity=".22"/>' +
+    '<circle cx="-33.33" cy="10" r="2.3"/><circle cx="-16.67" cy="10" r="6" opacity=".22"/>' +
+    '<circle cx="-16.67" cy="10" r="2.3"/><circle cx="0" cy="10" r="6" opacity=".22"/>' +
+    '<circle cx="0" cy="10" r="2.3"/><circle cx="16.67" cy="10" r="6" opacity=".22"/>' +
+    '<circle cx="16.67" cy="10" r="2.3"/><circle cx="33.33" cy="10" r="6" opacity=".22"/>' +
+    '<circle cx="33.33" cy="10" r="2.3"/><circle cx="50" cy="10" r="6" opacity=".22"/>' +
+    '<circle cx="50" cy="10" r="2.3"/></g></g>' },
+  5: { kind:"angler", vb:[-122, -152, 286, 216], w:[118, 140], dur:[13, 16], y:[34, 66], amp:[3, 6], wave:[3.5, 5], art:
+    '<path class="tail" d="M-66 -6 C-84 -30 -104 -42 -120 -38 C-113 -14 -113 14 -120 38 C-104 42 -84 30 -66 6 Z" fill="#1C2A49"/>' +
+    '<path d="M-104 -32 L-88 -4 M-106 0 L-86 0 M-104 32 L-88 4" fill="none" stroke="#263454" stroke-width="1.5"/>' +
+    '<path d="M-24 -60 C-36 -72 -52 -70 -62 -54 C-50 -52 -38 -50 -28 -48 Z" fill="#1C2A49"/>' +
+    '<path d="M60 -12 C56 -48 22 -66 -14 -64 C-52 -62 -76 -32 -76 0 C-76 34 -50 60 -12 62 C26 64 56 50 70 30 C68 16 64 2 60 -12 Z" fill="#151F3E"/>' +
+    '<path d="M60 -12 C56 -48 22 -66 -14 -64 C10 -54 34 -38 46 -9 Z" fill="#FFD447" opacity=".07"/>' +
+    '<path d="M60 -12 C56 -48 22 -66 -14 -64" fill="none" stroke="#FFD447" stroke-width="3" opacity=".25" stroke-linecap="round"/>' +
+    '<path d="M62 -8 C44 -4 22 -1 6 1 C22 10 46 22 69 27 C67 14 65 3 62 -8 Z" fill="#02040C"/>' +
+    '<path d="M60 -7.68 L57 1.8 L54 -6.71 ZM51 -6.23 L48 5.25 L45 -5.27 ZM42 -4.79 L39 4.7 L36 -3.82 ZM33 -3.34 L30 5.14 L27 -2.38 ZM24 -1.89 L21 4.59 L18 -0.93 ZM65 25.35 L62 14.11 L59 22.87 ZM56 21.63 L53 8.4 L50 19.16 ZM47 17.92 L44 7.68 L41 15.44 ZM38 14.21 L35 4.97 L32 11.73 ZM29 10.49 L26 3.25 L23 8.02 Z" fill="#E4F9F7"/>' +
+    '<path d="M-18 14 C-34 14 -50 26 -48 44 C-36 42 -22 32 -18 14 Z" fill="#1C2A49"/><g fill="#263454">' +
+    '<circle cx="-30" cy="-30" r="3"/><circle cx="-44" cy="-14" r="2.4"/><circle cx="-20" cy="-44" r="2.2"/>' +
+    '<circle cx="-52" cy="10" r="2.6"/><circle cx="-36" cy="34" r="2.2"/><circle cx="0" cy="40" r="2.4"/>' +
+    '<circle cx="14" cy="-48" r="2"/></g><circle cx="24" cy="-30" r="8" fill="#263454"/>' +
+    '<circle cx="25" cy="-31" r="5.4" fill="#DDF1F2"/><circle cx="27.4" cy="-32.6" r="2.8" fill="#05091C"/>' +
+    '<circle cx="24" cy="-33.4" r="1.1" fill="#fff"/><g class="lure"><g class="halo" fill="#FFD447">' +
+    '<circle cx="96" cy="-84" r="66" opacity="0.05"/><circle cx="96" cy="-84" r="42" opacity="0.09"/>' +
+    '<circle cx="96" cy="-84" r="24" opacity="0.16"/><circle cx="96" cy="-84" r="13" opacity="0.3"/></g>' +
+    '<path d="M12 -63 C20 -112 70 -124 94 -92" fill="none" stroke="#263454" stroke-width="3" stroke-linecap="round"/>' +
+    '<path d="M98 -78 L101 -70 M94 -78 L93 -71" fill="none" stroke="#FFD447" stroke-width="1.4" opacity=".7" stroke-linecap="round"/>' +
+    '<circle class="bulb" cx="96" cy="-84" r="7.5" fill="#FFD447"/>' +
+    '<circle cx="97.8" cy="-86" r="2.8" fill="#FFF8D6"/></g>' }
 };
 const seaArt = {};
 function seaSvg(level){
   if(!seaArt[level]){
-    const box = document.createElement("div"), [vw, vh] = SEA[level].vb;
-    box.innerHTML = '<svg viewBox="0 0 ' + vw + ' ' + vh + '" aria-hidden="true">' + SEA[level].art + '</svg>';
+    const box = document.createElement("div");
+    box.innerHTML = '<svg viewBox="' + SEA[level].vb.join(" ") + '" aria-hidden="true">' + SEA[level].art + '</svg>';
     seaArt[level] = box.firstChild;
   }
   return seaArt[level].cloneNode(true);
@@ -624,7 +712,7 @@ function fishClear(){
 function seaBody(level, w, amp, wave){
   const c = SEA[level], bob = document.createElement("div");
   bob.className = "fish-bob";
-  setVar(bob, "--w", Math.round(w) + "px"); setVar(bob, "--h", (w * c.vb[1] / c.vb[0]).toFixed(1) + "px");
+  setVar(bob, "--w", Math.round(w) + "px"); setVar(bob, "--h", (w * c.vb[3] / c.vb[2]).toFixed(1) + "px");
   setVar(bob, "--amp", amp.toFixed(1) + "px"); setVar(bob, "--wave", wave.toFixed(2) + "s");
   setVar(bob, "--phase", (-rand(0, wave)).toFixed(2) + "s");
   bob.appendChild(seaSvg(level));
@@ -644,41 +732,30 @@ function fishSwim(now){
   }
   fishSeen = true;
   // The depth when it starts decides the creature; changing depth mid-swim lets it finish.
+  // On the home screen it keeps below the sunset, which would otherwise hide it.
   const level = state.level, c = SEA[level];
-  const ltr = Math.random() < 0.5, dur = rand(...c.dur), y = rand(...c.y), W = innerWidth;
-  const x0 = ltr ? -120 : W + 120, x1 = ltr ? W + 120 : -120;
+  const ltr = Math.random() < 0.5, dur = rand(...c.dur), W = innerWidth;
+  const y = $("home").hidden ? rand(...c.y) : rand(48, 78);
+  const w = rand(...c.w), pad = Math.round(w) + 24;   // start and finish fully off screen
+  const x0 = ltr ? -pad : W + 24, x1 = ltr ? W + 24 : -pad;
   const holder = document.createElement("div"), el = document.createElement("div");
   holder.className = "sea";
   el.className = "fish k-" + c.kind + (ltr ? "" : " rtl");
   setVar(el, "--y", y.toFixed(1) + "vh"); setVar(el, "--dur", dur.toFixed(1) + "s");
   setVar(el, "--x0", x0 + "px"); setVar(el, "--x1", x1 + "px"); setVar(el, "--span", (x1 - x0) + "px");
-  if(c.kind === "school"){
-    const n = 3 + Math.floor(Math.random() * 3);
-    for(let i = 0; i < n; i++){
-      const b = document.createElement("div"), w = rand(...c.w);
-      b.className = "buddy";
-      b.style.left = Math.round((i - (n - 1) / 2) * 26 + rand(-8, 8)) + "px";
-      b.style.top = Math.round(rand(-20, 20)) + "px";
-      setVar(b, "--bd", rand(2.4, 4).toFixed(2) + "s"); setVar(b, "--bp", (-rand(0, 4)).toFixed(2) + "s");
-      setVar(b, "--tw", rand(.45, .7).toFixed(2) + "s"); setVar(b, "--tp", (-rand(0, .7)).toFixed(2) + "s");
-      b.appendChild(seaBody(level, w, rand(...c.amp), rand(...c.wave)));
-      el.appendChild(b);
-    }
-  } else {
-    const w = rand(...c.w);
-    el.appendChild(seaBody(level, w, rand(...c.amp), rand(...c.wave)));
-    if(c.kind === "flying"){
-      // It leaves and re-enters the water at about 28% and 76% of the crossing: a ripple at each spot.
-      setVar(el, "--leap", Math.round(rand(46, 72)) + "px");
-      const wy = innerHeight * y / 100 + w * c.vb[1] / c.vb[0] * .8;
-      [.28, .76].forEach(f => {
-        const r = document.createElement("div");
-        r.className = "ripple";
-        r.style.left = Math.round(x0 + (x1 - x0) * f + w / 2) + "px"; r.style.top = Math.round(wy) + "px";
-        setVar(r, "--rd", (dur * f).toFixed(2) + "s");
-        holder.appendChild(r);
-      });
-    }
+  el.appendChild(seaBody(level, w, rand(...c.amp), rand(...c.wave)));
+  if(c.kind === "flying"){
+    // It leaves and re-enters the water at about 28% and 76% of the crossing: a ripple at each spot,
+    // level with its belly (wl, a fraction of the drawing's height).
+    setVar(el, "--leap", Math.round(rand(46, 72)) + "px");
+    const wy = innerHeight * y / 100 + w * c.vb[3] / c.vb[2] * c.wl;
+    [.28, .76].forEach(f => {
+      const r = document.createElement("div");
+      r.className = "ripple";
+      r.style.left = Math.round(x0 + (x1 - x0) * f + w / 2) + "px"; r.style.top = Math.round(wy) + "px";
+      setVar(r, "--rd", (dur * f).toFixed(2) + "s");
+      holder.appendChild(r);
+    });
   }
   holder.appendChild(el);
   const done = () => { if(fishEl === holder){ holder.remove(); fishEl = null; fishPlan(); } };
@@ -700,6 +777,8 @@ $("optMoments").checked = prefs.moments;
 $("optMoments").onchange = () => { prefs.moments = $("optMoments").checked; savePrefs(); };
 $("optFish").checked = prefs.fish;
 $("optFish").onchange = () => { prefs.fish = $("optFish").checked; savePrefs(); prefs.fish ? fishPlan() : fishClear(); };
+$("optWater").checked = prefs.water;
+$("optWater").onchange = () => { prefs.water = $("optWater").checked; savePrefs(); paintWater(); };
 $("resetSeen").onclick = () => {
   if(!confirm("Every question becomes new again, for everyone you've played with.")) return;
   seen = {}; store.set(K.seen, seen); toast("Question history cleared");

@@ -46,7 +46,7 @@ If it's rejected anyway, the usual fix is one more native feature. The natural o
 
 - [ ] **Name:** "Deep End" may already be taken. Have a backup such as *Deep End: Questions for Two*. Subtitle up to 30 characters, e.g. *Conversations that go deeper*.
 - [ ] **Category:** Lifestyle (primary), Games → Card or Family (secondary).
-- [ ] **Privacy "nutrition label":** *Data Not Collected*. The app has no analytics or server, and sharing is user-initiated.
+- [ ] **Privacy "nutrition label":** *Data Not Collected*, **only while the in-app feedback button is off** (the widget stays hidden until `docs/index.html` has a real endpoint and key). Once it is on, the app sends optional feedback text and device info to your server: declare it (e.g. "Other User Content" / "Diagnostics", not linked to tracking) and re-read the privacy policy.
 - [ ] **Age rating questionnaire:** answer honestly. Some questions cover romance, relationships and past hurts, but nothing sexual, violent or drug-related. Expect a teen-level rating.
 - [ ] **Screenshots:** at least one 6.9" iPhone shot (1320 × 2868; 1290 × 2796 is also accepted). Apple scales it for smaller phones. A screenshot taken on an iPhone Pro Max is already the right size. Good ones: home, the slider at Shallows, the slider at The deep end, the pass-the-phone screen.
 - [ ] **iPad:** the build is iPhone-only and portrait by default. If Apple asks, choose iPhone only, or you'll owe iPad screenshots.
@@ -59,7 +59,7 @@ If it's rejected anyway, the usual fix is one more native feature. The natural o
       least 12 testers who stay opted in for 14 days in a row** before the app can go public. Testers must accept
       the invite and install it with their Google account. **Your playtest friends on Android are these testers.**
       Start this early; the clock is the slow part.
-- [ ] **Data safety form:** no data collected, no data shared.
+- [ ] **Data safety form:** no data collected, no data shared **only while the feedback button is off**. With it on, declare optional user-provided feedback (and device info) as collected, not shared.
 - [ ] **Content rating (IARC questionnaire):** answer as for Apple.
 - [ ] **Target audience:** 13+ (not directed at children, which matches the privacy policy).
 - [ ] **Graphics:** 512 × 512 icon (`docs/icons/icon-512.png`), a 1024 × 500 feature graphic (still to make), and 2–8 phone screenshots.

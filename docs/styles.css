@@ -13,16 +13,22 @@
   src:url(fonts/young-serif-latin-ext.woff2) format("woff2");
   unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
 
-/* The light in the water. Registered as a colour so it fades between depths with the water. */
-@property --glow{syntax:"<color>";inherits:true;initial-value:#6FD6D0}
+/* The light in the water, and how much of it falls from above (--sun) or rises from below (--rise).
+   Registered so they fade between depths with the water. */
+@property --glow{syntax:"<color>";inherits:true;initial-value:#A9EEE4}
+@property --sun{syntax:"<percentage>";inherits:true;initial-value:0%}
+@property --rise{syntax:"<percentage>";inherits:true;initial-value:6%}
 
 :root{
-  /* Always dark: a night swim. The water darkens as you go deeper, and the light in it
-     warms from moonlit aqua in the shallows to an ember glow at the deep end. */
-  --d1:#082229; --d2:#08192B; --d3:#071226; --d4:#050B1B; --d5:#03050E;
-  --g1:#6FD6D0; --g2:#62C0E6; --g3:#8E9EF5; --g4:#BC88EE; --g5:#F47C93;
+  /* A dive down the water column: sunlit lagoon in the shallows, then open blue, the last of the
+     light, the twilight zone, and midnight at the deep end. The light changes source on the way
+     down: sunshine at the surface, living light in the deep (a jellyfish's violet, then the gold of
+     an anglerfish's lure). Every water keeps text at 4.5:1 or better. */
+  --d1:#146468; --d2:#004C5F; --d3:#03324F; --d4:#0D1A37; --d5:#060919;
+  --g1:#A9EEE4; --g2:#8EDBE6; --g3:#93C3EA; --g4:#B9A6FF; --g5:#FFC75A;
   --ink:#EEF6F7;
-  --muted:color-mix(in srgb,var(--ink) 62%,transparent);
+  /* 86% keeps 4.5:1 on the brightest water, even where a light ray crosses it */
+  --muted:color-mix(in srgb,var(--ink) 86%,transparent);
   --aqua:#6FD6D0;
   --buoy:#FFD447; --buoy-ink:#241B00;
   --ring:#FF5A4E;
@@ -31,7 +37,8 @@
   --sheet:#0A1322; --sheet-line:color-mix(in srgb,var(--ink) 9%,transparent);
   --ui:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
   --serif:"Young Serif",Georgia,"Times New Roman",serif;
-  --water:var(--d1); --glow:var(--g1);
+  --water:var(--d1); --glow:var(--g1); --sun:0%; --rise:6%;
+  --wv:1; --fl:.85; --cu:.5;   /* how much surface, flow and current shows (see .ocean) */
   --safe-t:env(safe-area-inset-top,0px);
   --safe-b:env(safe-area-inset-bottom,0px);
   color-scheme:dark;
@@ -42,21 +49,25 @@ html{background:var(--water)}
 body{
   margin:0;font-family:var(--ui);font-size:17px;line-height:1.45;
   background:var(--water);color:var(--ink);
-  transition:background-color .6s ease,--glow .6s ease;
+  transition:background-color .6s ease,--glow .6s ease,--sun .6s ease,--rise .6s ease;
   -webkit-tap-highlight-color:transparent;overflow:hidden;overscroll-behavior:none;
 }
-body[data-level="1"]{--water:var(--d1);--glow:var(--g1)} body[data-level="2"]{--water:var(--d2);--glow:var(--g2)}
-body[data-level="3"]{--water:var(--d3);--glow:var(--g3)} body[data-level="4"]{--water:var(--d4);--glow:var(--g4)}
-body[data-level="5"]{--water:var(--d5);--glow:var(--g5)}
+/* Sunlight from above fades as you go down and living light from below takes over. The shallows get
+   no wash on top: that water is bright already, and the rays in .scene carry the sun. */
+body[data-level="1"]{--water:var(--d1);--glow:var(--g1);--sun:0%;--rise:6%;--wv:1;--fl:.85;--cu:.5}
+body[data-level="2"]{--water:var(--d2);--glow:var(--g2);--sun:5%;--rise:8%;--wv:.55;--fl:1;--cu:.65}
+body[data-level="3"]{--water:var(--d3);--glow:var(--g3);--sun:8%;--rise:10%;--wv:.25;--fl:1;--cu:.8}
+body[data-level="4"]{--water:var(--d4);--glow:var(--g4);--sun:6%;--rise:13%;--wv:0;--fl:.8;--cu:.95}
+body[data-level="5"]{--water:var(--d5);--glow:var(--g5);--sun:0%;--rise:16%;--wv:0;--fl:.6;--cu:1}
 html:has(body[data-level="2"]){--water:var(--d2)} html:has(body[data-level="3"]){--water:var(--d3)}
 html:has(body[data-level="4"]){--water:var(--d4)} html:has(body[data-level="5"]){--water:var(--d5)}
 
-/* Light falling from above and a faint glow from below, both the colour of the depth */
+/* Light falling from above and a glow rising from below, both the colour of the depth */
 body::before{
   content:"";position:fixed;inset:0;pointer-events:none;
   background:
-    radial-gradient(95% 42% at 50% -6%,color-mix(in srgb,var(--glow) 21%,transparent),transparent 72%),
-    radial-gradient(75% 38% at 90% 106%,color-mix(in srgb,var(--glow) 13%,transparent),transparent 70%);
+    radial-gradient(95% 42% at 50% -6%,color-mix(in srgb,var(--glow) var(--sun),transparent),transparent 72%),
+    radial-gradient(75% 38% at 90% 106%,color-mix(in srgb,var(--glow) var(--rise),transparent),transparent 70%);
 }
 /* Fine grain so the dark reads as water at night, not a flat screen */
 body::after{
@@ -87,19 +98,69 @@ svg{width:22px;height:22px;flex:none}
   50%{transform:translate(10px,-52vh)} 88%{opacity:.3} 100%{transform:translate(-6px,-104vh);opacity:0}
 }
 
-/* Sea life swims through now and then, a different creature at each depth. Every layer animates one
-   thing, transform or opacity only: .fish carries the swim across and the fade, .fish-bob the gentle
-   wave, and the small parts (tail, wings, lights) their own loops. Creatures are drawn facing right. */
+/* Scenery for each depth: light rays, the surface seen from below, distant life, darker water lower
+   down. All five are drawn once in index.html and cross-fade with the water as the depth changes.
+   Decoration only, and kept faint (rays at 6% or less) so text keeps its contrast. */
+.scene{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.scene svg{position:absolute;inset:0;width:100%;height:100%;opacity:0;visibility:hidden;
+  transition:opacity .6s ease,visibility 0s .6s}   /* once faded out, it stops being painted at all */
+body[data-level="1"] .sc-1,body[data-level="2"] .sc-2,body[data-level="3"] .sc-3,
+body[data-level="4"] .sc-4,body[data-level="5"] .sc-5{opacity:1;visibility:visible;transition:opacity .6s ease,visibility 0s}
+
+/* The water moving. Three bands, each a few thin looping strips (see index.html): waves at the surface,
+   a flow of streaks through the middle, dark currents along the bottom. They only animate transform,
+   which the GPU compositor does without repainting, and each strip is a thin layer, so the whole thing
+   stays light on memory. How much of each shows depends on the depth: the surface fades out as you go
+   down, the currents grow. Hidden bands stop painting and pause. Each strip's box (and its SVG viewBox) is
+   trimmed to the rows that hold ink: the GPU keeps a texture for the whole box, so empty rows cost memory. */
+.ocean{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.ocean .strip{position:absolute;left:0;width:150%;animation:drift-l var(--t,40s) linear infinite;transition:opacity .6s ease}
+.ocean .strip svg,.swell svg{display:block;width:100%;height:100%}
+@keyframes drift-l{from{transform:translateX(0)}to{transform:translateX(-33.3333%)}}
+@keyframes drift-r{from{transform:translateX(-33.3333%)}to{transform:translateX(0)}}
+/* Each strip carries its band's opacity itself. Set on a band holding several layers, opacity would make the
+   compositor draw the band into an extra offscreen texture every frame first. */
+.waves .strip{opacity:var(--wv)} .flow .strip{opacity:var(--fl)} .currents .strip{opacity:var(--cu)}
+.waves,.flow,.currents{position:absolute;left:0;right:0;transition:visibility 0s}
+.waves{top:0;height:34px}
+.waves .w1{top:0;height:23px;--t:23s}
+.waves .bob{position:absolute;left:0;right:0;top:4px;height:27px;animation:bob-sea 4.6s ease-in-out infinite alternate}
+.waves .w2{top:0;height:27px;--t:15s;animation-name:drift-r}
+@keyframes bob-sea{from{transform:translateY(-2px)}to{transform:translateY(3px)}}
+.flow{inset:0}
+.flow .f1{top:calc(30% + 8px);height:13px;--t:46s}
+.flow .f2{top:calc(47% + 6px);height:12px;--t:62s;animation-name:drift-r}
+.flow .f3{top:calc(63% + 8px);height:8px;--t:38s}
+.currents{bottom:0;height:300px}
+.currents .c1{bottom:169px;height:44px;--t:84s}
+.currents .c2{bottom:108px;height:38px;--t:112s;animation-name:drift-r}
+.currents .c3{bottom:157px;height:7px;--t:28s}
+/* No surface to see at the bottom of the ocean: fade it out, then stop painting and moving it */
+body[data-level="4"] .waves,body[data-level="5"] .waves{visibility:hidden;transition:visibility 0s .6s}
+body[data-level="4"] .waves *,body[data-level="5"] .waves *{animation-play-state:paused}
+/* The sunset covers the top of the home screen, so its surface waves would only waste work */
+body:has(#home:not([hidden])) .waves{display:none}
+/* Under the hand-off or a sheet there's nothing to see: hold the water still (saves the GPU) */
+body:has(#passScreen:not([hidden])) :is(.ocean *,.swell *,.glint svg),
+body:has(.sheet-wrap:not([hidden])) :is(.ocean *,.swell *,.glint svg){animation-play-state:paused}
+/* Moving water off in Settings: everything stays where it is */
+.still :is(.ocean *,.swell *,.glint svg){animation:none}
+
+/* Sea life swims through now and then, a different creature at each depth, drawn in the same flat,
+   geometric style as the scenery. Every layer animates one thing, transform or opacity only: .fish
+   carries the swim across and the fade, .fish-bob the gentle wave, and the small parts (fins, bell,
+   lure) their own loops. Creatures are drawn facing right. Moving parts pivot on their own box
+   (transform-box: fill-box), so a drawing can change without retuning pixel origins. */
 .sea{position:absolute;inset:0}
 .fish{
-  --o:.36;
-  position:absolute;left:0;top:var(--y);color:var(--glow);opacity:0;will-change:transform,opacity;
+  --o:.55;
+  position:absolute;left:0;top:var(--y);opacity:0;will-change:transform,opacity;
   animation:fish-swim var(--dur) linear forwards;
 }
 .fish-bob{animation:fish-wave var(--wave) ease-in-out var(--phase) infinite alternate}
-.fish svg{display:block;overflow:visible;width:var(--w);height:var(--h);fill:currentColor}
+.fish svg{display:block;overflow:visible;width:var(--w);height:var(--h)}
 .fish.rtl svg{transform:scaleX(-1)}
-.fish .tail{animation:fish-tail var(--tw,.7s) ease-in-out var(--tp,0s) infinite alternate}
+.fish .tail{transform-box:fill-box;transform-origin:100% 50%;animation:fish-tail var(--tw,.7s) ease-in-out var(--tp,0s) infinite alternate}
 @keyframes fish-swim{
   0%{transform:translateX(var(--x0));opacity:0} 10%,90%{opacity:var(--o)}
   100%{transform:translateX(var(--x1));opacity:0}
@@ -108,13 +169,14 @@ svg{width:22px;height:22px;flex:none}
 @keyframes fish-tail{from{transform:rotate(-16deg)}to{transform:rotate(16deg)}}
 @keyframes fish-glow{from{opacity:.3}to{opacity:1}}
 
-/* 1 Shallows: a flying fish. Swims, leaps in an arc with its fins spread, glides, dips back in. */
-.k-flying{--o:.4;color:color-mix(in srgb,var(--glow) 50%,#EAF7FA)}
+/* 1 Shallows: a flying fish. Swims with its fins folded, leaps in an arc with them spread, glides,
+   dips back in. */
+.k-flying{--o:.6}
 .k-flying .fish-bob{animation:fish-leap var(--dur) linear forwards}
-.k-flying .pitch{transform-origin:28px 13px;animation:fish-pitch var(--dur) ease-in-out forwards}
-.k-flying .wings{transform-origin:34px 12.5px;animation:fish-wings var(--dur) ease-in-out forwards}
-.k-flying .far{opacity:.6}
-.k-flying .tail{transform-origin:10px 13px}
+.k-flying .pitch{transform-box:fill-box;transform-origin:50% 56%;animation:fish-pitch var(--dur) ease-in-out forwards}
+.k-flying .wings{transform-box:fill-box;transform-origin:98% 98%;animation:fish-wings var(--dur) ease-in-out forwards}
+.k-flying .wings.far{transform-origin:100% 0}
+.k-flying .tail{transform-origin:100% 48%}
 @keyframes fish-leap{
   0%,26%{transform:translateY(0);animation-timing-function:cubic-bezier(.2,.7,.35,1)}
   46%{transform:translateY(calc(var(--leap) * -1));animation-timing-function:ease-in-out}
@@ -134,36 +196,34 @@ svg{width:22px;height:22px;flex:none}
 }
 @keyframes fish-ripple{0%{opacity:0;transform:scale(.3)} 15%{opacity:.4} 100%{opacity:0;transform:scale(1.7)}}
 
-/* 2 Wading: a loose school of small silver fish, each on its own drift, wave and tail beat. */
-.k-school{--o:.34;color:color-mix(in srgb,var(--glow) 22%,#E4EEF3)}
-.k-school .tail{transform-origin:7.5px 6px}
-.buddy{position:absolute;animation:fish-drift var(--bd) ease-in-out var(--bp) infinite alternate}
-@keyframes fish-drift{from{transform:translateX(-7px)}to{transform:translateX(7px)}}
+/* 2 Wading: a green sea turtle, rowing with its front flippers. */
+.k-turtle{--o:.5}
+.k-turtle .fin-l,.k-turtle .fin-r{transform-box:fill-box;transform-origin:77% 98%;animation:turtle-row 2.6s ease-in-out infinite alternate}
+.k-turtle .fin-r{transform-origin:77% 2%;animation-name:turtle-row-r}
+@keyframes turtle-row{from{transform:rotate(-14deg)}to{transform:rotate(8deg)}}
+@keyframes turtle-row-r{from{transform:rotate(14deg)}to{transform:rotate(-8deg)}}
 
-/* 3 Swimming: a manta ray, the slowest of them all. Its wings rise and fall. */
-.k-manta{--o:.3}
-.k-manta .wings{transform-origin:60px 30px;animation:fish-flap 2.8s ease-in-out infinite alternate}
-.k-manta .tail{animation:none}
-@keyframes fish-flap{from{transform:scaleY(1)}to{transform:scaleY(.7)}}
+/* 3 Swimming: a manta ray, the slowest of them all. Seen from above, its wings rise and fall. */
+.k-manta{--o:.7}
+.k-manta .flap{transform-box:fill-box;transform-origin:50% 50%;animation:manta-flap 3s ease-in-out infinite alternate}
+@keyframes manta-flap{from{transform:scaleY(1)}to{transform:scaleY(.82)}}
 
-/* 4 Diving: a lanternfish. The body is a whisper; the row of lights along its side is what you see. */
-.k-lantern{--o:1;color:color-mix(in srgb,var(--glow) 18%,#8EA2C6)}
-.k-lantern .body{opacity:.2}
-.k-lantern .tail{transform-origin:11px 9px}
-.k-lantern .dot{fill:var(--glow);animation:fish-glow 1.5s ease-in-out infinite alternate}
-.k-lantern .dot:nth-child(2n){animation-delay:-.5s}
-.k-lantern .dot:nth-child(3n){animation-delay:-1s}
+/* 4 Diving: a jellyfish drifting through, its bell pulsing and its rim lit. */
+.k-jelly{--o:.85}
+.k-jelly .bell,.k-jelly .tents{transform-box:fill-box;transform-origin:50% 0}
+.k-jelly .bell{animation:jelly-pulse 2.4s ease-in-out infinite alternate}
+.k-jelly .tents{animation:jelly-sway 3.4s ease-in-out infinite alternate}
+.k-jelly .lights{animation:fish-glow 1.8s ease-in-out infinite alternate}
+.k-jelly .halo{animation:fish-glow 3s ease-in-out infinite alternate}
+@keyframes jelly-pulse{from{transform:scale(1,1)}to{transform:scale(1.06,.9)}}
+@keyframes jelly-sway{from{transform:skewX(-5deg)}to{transform:skewX(5deg)}}
 
-/* 5 The deep end: an anglerfish. Barely there, except for the lure. It drifts, pauses, drifts. */
-.k-angler{--o:1;color:color-mix(in srgb,var(--glow) 22%,#8FA3C8);animation:fish-hover var(--dur) ease-in-out forwards}
-.k-angler .body{opacity:.15}
-.k-angler .teeth{opacity:.2}
-.k-angler .eye{fill:var(--glow);opacity:.5}
-.k-angler .tail{transform-origin:15px 25px;animation-duration:1.6s}
-.k-angler .stalk{fill:none;stroke:currentColor;stroke-width:1.2;stroke-linecap:round;opacity:.22}
-.k-angler .lure{transform-origin:34px 9px;animation:fish-lure 3.2s ease-in-out infinite alternate}
+/* 5 The deep end: an anglerfish. All but invisible, except for the lure. It drifts, pauses, drifts. */
+.k-angler{--o:1;animation:fish-hover var(--dur) ease-in-out forwards}
+.k-angler .tail{animation-duration:1.6s}
+.k-angler .lure{transform-box:fill-box;transform-origin:0 66%;animation:fish-lure 3.2s ease-in-out infinite alternate}
 .k-angler .halo{animation:fish-glow 2.8s ease-in-out .3s infinite alternate}
-.k-angler .bulb{fill:color-mix(in srgb,var(--glow) 65%,#fff);animation:fish-glow 2.2s ease-in-out infinite alternate}
+.k-angler .bulb{animation:fish-glow 2.2s ease-in-out infinite alternate}
 @keyframes fish-lure{from{transform:rotate(-8deg)}to{transform:rotate(8deg)}}
 @keyframes fish-hover{
   0%{transform:translateX(var(--x0));opacity:0} 8%,92%{opacity:var(--o)}
@@ -210,8 +270,26 @@ svg{width:22px;height:22px;flex:none}
 .home{overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:calc(var(--safe-t) + 18px)}
 .home-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
 .kicker{margin:0;font-size:.76rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--glow)}
+/* A sunset over the water behind the title. The sky ends exactly at the title's waterline (57%),
+   so "Deep" sits in the sky and "End" in the sea, whatever size the title is. */
+.horizon{position:relative;margin:0 0 18px}
+.sky,.glint{position:absolute;left:-18px;right:-18px;z-index:-1;pointer-events:none}
+.sky{top:calc(-120px - var(--safe-t));bottom:43%}
+.glint{top:57%;bottom:0}
+.sky svg,.glint svg{display:block;width:100%;height:100%}
+/* The sea's moving edge at the horizon (filled with the water colour so its crests rise into the sky),
+   and the sun's reflection shimmering on it. Transform and opacity only, like .ocean. */
+.swell{position:absolute;left:-18px;right:-18px;top:calc(57% - 3px);height:10px;overflow:hidden;z-index:-1;pointer-events:none}
+.swell .strip{position:absolute;left:0;top:0;width:150%;height:100%;animation:drift-l 13s linear infinite}
+.swell .tint{fill:var(--water)}   /* the sea below the crest, the same colour as the water */
+.glint svg{animation:glint 3.4s ease-in-out infinite alternate}
+@keyframes glint{from{opacity:.62;transform:translateX(-3px)}to{opacity:1;transform:translateX(3px)}}
+/* On tablets and desktops the column is narrower than the screen: soften the sky's sides into the water */
+@media (min-width:600px){
+  .sky,.glint{-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+}
 .title{
-  font-weight:800;font-size:clamp(4.2rem,23vw,6.8rem);line-height:.86;letter-spacing:-.055em;margin:0 0 18px;
+  font-weight:800;font-size:clamp(4.2rem,23vw,6.8rem);line-height:.86;letter-spacing:-.055em;margin:0;
   /* the waterline cuts through the word */
   background:linear-gradient(to bottom,var(--ink) 0 57%,color-mix(in srgb,var(--glow) 80%,#fff) 57% 100%);
   -webkit-background-clip:text;background-clip:text;color:transparent;
@@ -220,7 +298,8 @@ svg{width:22px;height:22px;flex:none}
 .lede{margin:0 0 30px;max-width:28ch;font-size:1.08rem;color:var(--muted)}
 .resume{
   display:flex;align-items:center;gap:12px;text-align:left;width:100%;
-  background:linear-gradient(120deg,color-mix(in srgb,var(--glow) 18%,transparent),var(--glass));
+  /* darker than the water around it, so its small glow-coloured label stays readable in the sunlit shallows */
+  background:linear-gradient(120deg,color-mix(in srgb,var(--glow) 12%,transparent),transparent),rgba(2,12,22,.24);
   border:1px solid color-mix(in srgb,var(--glow) 42%,transparent);
   border-radius:20px;padding:14px 16px 14px 18px;margin:0 0 30px;
 }
@@ -325,7 +404,10 @@ svg{width:22px;height:22px;flex:none}
   from{box-shadow:0 0 0 0 color-mix(in srgb,var(--glow) 55%,transparent)}
   to{box-shadow:0 0 0 14px color-mix(in srgb,var(--glow) 0%,transparent)}
 }
-.next{width:100%;padding:17px;font-size:1.1rem;border-radius:20px;min-height:58px}
+.next{width:100%;padding:17px;font-size:1.1rem;border-radius:20px;min-height:58px;transition:box-shadow .6s ease}
+/* Down where the only light is living light, the button glows like the anglerfish's lure */
+body[data-level="4"] .next{box-shadow:0 12px 32px -12px color-mix(in srgb,var(--buoy) 75%,transparent),0 0 28px color-mix(in srgb,var(--buoy) 22%,transparent),inset 0 1px 0 rgba(255,255,255,.55)}
+body[data-level="5"] .next{box-shadow:0 0 0 6px color-mix(in srgb,var(--buoy) 10%,transparent),0 0 44px color-mix(in srgb,var(--buoy) 35%,transparent),inset 0 1px 0 rgba(255,255,255,.55)}
 
 /* ---------- hand-off: the next question waits underwater ---------- */
 .surface{
@@ -405,6 +487,13 @@ svg{width:22px;height:22px;flex:none}
 .list li{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-top:1px solid var(--sheet-line)}
 .list li p{margin:0;flex:1;font-family:var(--serif);font-size:1.1rem;line-height:1.3}
 .list li small{display:block;font-family:var(--ui);font-size:.85rem;color:var(--muted);margin-top:4px}
+/* A dot in the slider's colour for the depth the question came from */
+.list li small[data-level]::before{
+  content:"";display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:1px;
+  background:var(--dot);box-shadow:0 0 0 1.5px color-mix(in srgb,var(--ink) 55%,transparent);
+}
+.list small[data-level="1"]{--dot:#6FD6D0} .list small[data-level="2"]{--dot:#2F9FB0} .list small[data-level="3"]{--dot:#1F5E8C}
+.list small[data-level="4"]{--dot:#16306A} .list small[data-level="5"]{--dot:#0A1236}
 .li-btns{display:flex;flex-direction:column;align-items:flex-end}
 a.ghost{color:inherit;text-decoration:none;display:inline-flex;align-items:center}
 .native .web-only{display:none}

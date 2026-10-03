@@ -12,8 +12,8 @@ The owner is play-testing it with friends and will submit it to the stores. Keep
 | Path | Role |
 |---|---|
 | `docs/questions.js` | **The content.** Relationship groups; per category, five depth lists of `[question, follow-up]` pairs, plus `MOMENTS` (short things to do together) and general `FOLLOW`-ups. |
-| `docs/index.html` | All markup: home, play screen, underwater hand-off overlay, sheets (saved, note, menu), toast. |
-| `docs/styles.css` | All styles. Color tokens on `:root`; `body[data-level]` sets `--water` and `--glow` per depth. |
+| `docs/index.html` | All markup: home (with the sunset behind the title), play screen, scenery for each depth (`.scene`), moving water (`.ocean`), underwater hand-off overlay, sheets (saved, note, menu), toast. |
+| `docs/styles.css` | All styles. Color tokens on `:root`; `body[data-level]` sets `--water`, `--glow`, `--sun` and `--rise` per depth. |
 | `docs/app.js` | All behaviour, one IIFE, vanilla JS. |
 | `docs/version.js` | `DEEPEND_VERSION` + `DEEPEND_CHANGES`. Read by the page AND the service worker. |
 | `docs/sw.js` | Offline cache per release + update flow. |
@@ -48,15 +48,31 @@ The owner is play-testing it with friends and will submit it to the stores. Keep
    Respect `prefers-reduced-motion`.
 10. **Settings live in `prefs`** (saved to localStorage) with a toggle in the menu's Settings block.
     Current ones: `transitions` (question transitions), `passScreen` (underwater hand-off),
-    `moments` (shared moments every few turns), `fish` (sea life swims by now and then, a different creature at each depth), `nameA`/`nameB`.
+    `moments` (shared moments every few turns), `fish` (sea life swims by now and then, a different creature at each depth),
+    `water` (moving water; starts off with reduced motion or on phones that report 2 GB of memory or less), `nameA`/`nameB`.
 
 ## Style
 
 - Match the surrounding code: small functions, `$()` for `getElementById`, 2-space indent, comments that say *why*.
-- Visual language: a night swim. Always-dark water that darkens with depth, lit by `--glow`, which warms from
-  aqua (Shallows) to ember rose (The deep end) and colours accents, kickers and icons. Frosted-glass controls
-  (`--glass`, `--line`), yellow `--buoy` for primary actions, Bricolage Grotesque for UI, Young Serif for the
-  questions and headings. Water, depth and surfacing are the metaphors.
+- Visual language: a dive down the water column. Five waters (`--d1` to `--d5`) run from a sunlit lagoon in the
+  Shallows to midnight at The deep end, and the light changes source on the way down: sunshine at the surface,
+  then living light (a jellyfish's violet, an anglerfish's gold lure). `--glow` carries that light into accents,
+  kickers and icons; `--sun` (light from above) fades with depth while `--rise` (light from below) grows.
+  Each depth has faint scenery in `.scene` (rays, the surface from below, distant life, darker water lower down)
+  and its own creature in `SEA` (flying fish, sea turtle, manta ray, jellyfish, anglerfish), all drawn flat and
+  geometric. The home title sits on a sunset: "Deep" in the sky, "End" in the sea, with a swell rolling along
+  the waterline. Frosted-glass controls (`--glass`, `--line`), yellow `--buoy` for primary actions (at the deep
+  end it glows like the lure), Bricolage Grotesque for UI, Young Serif for the questions and headings. Water,
+  depth and surfacing are the metaphors.
+- Moving water (`.ocean`): waves at the surface, a flow of streaks through the middle, currents along the bottom.
+  How much of each shows depends on the depth (`--wv`, `--fl`, `--cu` per level). It runs all the time, so keep it
+  cheap: animate only `transform` and `opacity`; each strip is one thin looping SVG (three identical 200-unit tiles,
+  slid by a third) whose box is trimmed to the rows that hold ink; put opacity on the strips, never on a band
+  holding several (that makes the compositor draw the band into an extra offscreen texture first); hide what can't
+  be seen (`visibility:hidden` stops painting) and pause it under the hand-off and sheets. Settings > Moving water
+  holds it all still (`.still` on `<html>`).
+- Contrast: text keeps 4.5:1 on every water. The Shallows water is the brightest, so scenery there stays faint
+  (rays at 6% or less, no `--sun` wash) and secondary text uses `--muted` (ink at 86%). Check new colours against `--d1`.
 - Picking the next card (`draw()` in `app.js`): never repeats per relationship; scores what's left to avoid
   echoing the last few cards and to lean toward what the pair saves or follows up on and away from what they
   skip; a moment every 5 to 7 cards; a "go deeper" nudge after 4 answers at one depth. All per sitting.

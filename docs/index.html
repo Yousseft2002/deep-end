@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Deep End</title>
 <meta name="description" content="Questions for two. Pick who you're with, then slide to choose how deep you go.">
-<meta name="theme-color" content="#082229">
+<meta name="theme-color" content="#071A28">
 <meta name="color-scheme" content="dark">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -20,6 +20,26 @@
 <script src="version.js"></script>
 <script src="questions.js"></script>
 <script src="app.js" defer></script>
+<script src="feedback-widget.js" defer></script>
+<script>
+  // Tester feedback. REPLACE_ the endpoint and key with the real feedback-service values.
+  // While they contain REPLACE_ the widget stays off and its menu and note-sheet buttons stay hidden.
+  window.addEventListener("DOMContentLoaded", function () {
+    var cfg = {
+      endpoint: "https://REPLACE_feedback.example.com",
+      appKey: "REPLACE_WITH_DEEP_END_APP_KEY",
+      appVersion: self.DEEPEND_VERSION || "dev",
+      hideLauncher: true,   // opened from the menu, so it never sits over the depth slider
+      theme: {
+        surface: "var(--sheet)", field: "var(--water)", text: "var(--ink)", muted: "var(--muted)",
+        line: "var(--line)", accent: "var(--buoy)", onAccent: "var(--buoy-ink)", error: "var(--ring)"
+      }
+    };
+    if (/REPLACE_/.test(cfg.endpoint + cfg.appKey) || !self.Feedback) return;
+    Feedback.init(cfg);
+    document.querySelectorAll("[data-tester-fb]").forEach(function (el) { el.hidden = false; });
+  });
+</script>
 </head>
 <body data-level="1">
 
@@ -35,6 +55,26 @@
   <symbol id="i-go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 </svg>
 
+<!-- Scenery for each depth: light rays, the surface seen from below, distant life, darker water lower
+     down. Decoration only; just the current depth shows (see .scene in styles.css). -->
+<div class="scene" aria-hidden="true">
+  <svg class="sc-1" viewBox="0 0 390 844" preserveAspectRatio="xMidYMin slice"><path d="M0 566C32.2 557 64.4 557 97.5 566C129.7 575 161.9 575 195 566C227.2 557 259.4 557 292.5 566C324.7 575 356.9 575 390 566V844H0Z" fill="#0A585E"/><g fill="#A9EEE4"><polygon points="178,0 206,0 90,640" opacity="0.06"/><polygon points="240,0 262,0 180,560" opacity="0.05"/><polygon points="300,0 336,0 236,700" opacity="0.045"/><polygon points="120,0 136,0 40,480" opacity="0.04"/></g><g fill="none" stroke="#E4F9F7" stroke-width="1.2"><circle cx="326" cy="566" r="5" opacity="0.4"/><circle cx="334" cy="546" r="3.5" opacity="0.35"/><circle cx="321" cy="529" r="2.5" opacity="0.3"/><circle cx="330" cy="514" r="1.8" opacity="0.25"/><circle cx="58" cy="600" r="4" opacity="0.3"/><circle cx="66" cy="580" r="2.6" opacity="0.26"/><circle cx="60" cy="564" r="1.8" opacity="0.22"/></g></svg>
+  <svg class="sc-2" viewBox="0 0 390 844" preserveAspectRatio="xMidYMin slice"><path d="M0 596C32.2 604 64.4 604 97.5 596C129.7 588 161.9 588 195 596C227.2 604 259.4 604 292.5 596C324.7 588 356.9 588 390 596V844H0Z" fill="#004054"/><g fill="#A9EEE4"><polygon points="200,0 224,0 110,600" opacity="0.05"/><polygon points="262,0 280,0 196,520" opacity="0.04"/><polygon points="318,0 348,0 262,660" opacity="0.035"/></g><g fill="#77BCBF" opacity=".55"><g transform="translate(300 140) scale(-1.15 1.15)"><path d="M7 0C4 -3.4 -3 -3.4 -5 0C-3 3.4 4 3.4 7 0ZM-4 0L-9 -3.4L-8 0L-9 3.4Z"/></g><g transform="translate(318 132) scale(-1.15 1.15)"><path d="M7 0C4 -3.4 -3 -3.4 -5 0C-3 3.4 4 3.4 7 0ZM-4 0L-9 -3.4L-8 0L-9 3.4Z"/></g><g transform="translate(336 142) scale(-1.15 1.15)"><path d="M7 0C4 -3.4 -3 -3.4 -5 0C-3 3.4 4 3.4 7 0ZM-4 0L-9 -3.4L-8 0L-9 3.4Z"/></g><g transform="translate(312 152) scale(-1.15 1.15)"><path d="M7 0C4 -3.4 -3 -3.4 -5 0C-3 3.4 4 3.4 7 0ZM-4 0L-9 -3.4L-8 0L-9 3.4Z"/></g><g transform="translate(330 158) scale(-1.15 1.15)"><path d="M7 0C4 -3.4 -3 -3.4 -5 0C-3 3.4 4 3.4 7 0ZM-4 0L-9 -3.4L-8 0L-9 3.4Z"/></g><g transform="translate(348 150) scale(-1.15 1.15)"><path d="M7 0C4 -3.4 -3 -3.4 -5 0C-3 3.4 4 3.4 7 0ZM-4 0L-9 -3.4L-8 0L-9 3.4Z"/></g><g transform="translate(294 160) scale(-1.15 1.15)"><path d="M7 0C4 -3.4 -3 -3.4 -5 0C-3 3.4 4 3.4 7 0ZM-4 0L-9 -3.4L-8 0L-9 3.4Z"/></g><g transform="translate(352 132) scale(-1.15 1.15)"><path d="M7 0C4 -3.4 -3 -3.4 -5 0C-3 3.4 4 3.4 7 0ZM-4 0L-9 -3.4L-8 0L-9 3.4Z"/></g><g transform="translate(322 118) scale(-1.15 1.15)"><path d="M7 0C4 -3.4 -3 -3.4 -5 0C-3 3.4 4 3.4 7 0ZM-4 0L-9 -3.4L-8 0L-9 3.4Z"/></g></g></svg>
+  <svg class="sc-3" viewBox="0 0 390 844" preserveAspectRatio="xMidYMin slice"><path d="M0 600C32.2 593 64.4 593 97.5 600C129.7 607 161.9 607 195 600C227.2 593 259.4 593 292.5 600C324.7 607 356.9 607 390 600V844H0Z" fill="#002743"/><g fill="#A9EEE4"><polygon points="230,0 248,0 170,420" opacity="0.035"/><polygon points="292,0 306,0 250,380" opacity="0.03"/></g><g fill="#7FB2D1"><circle cx="226" cy="182" r="1.3" opacity="0.22"/><circle cx="242" cy="186" r="0.9" opacity="0.23"/><circle cx="279" cy="213" r="0.8" opacity="0.2"/><circle cx="117" cy="215" r="1.1" opacity="0.16"/><circle cx="385" cy="235" r="1.1" opacity="0.24"/><circle cx="137" cy="110" r="1.1" opacity="0.16"/><circle cx="147" cy="140" r="0.8" opacity="0.22"/><circle cx="222" cy="219" r="1.1" opacity="0.25"/><circle cx="240" cy="195" r="1.0" opacity="0.19"/><circle cx="389" cy="239" r="1.2" opacity="0.26"/><circle cx="185" cy="138" r="0.9" opacity="0.16"/><circle cx="320" cy="161" r="1.2" opacity="0.21"/><circle cx="377" cy="220" r="0.8" opacity="0.18"/><circle cx="363" cy="170" r="1.3" opacity="0.21"/></g><g transform="translate(166 150) rotate(-16) scale(.24)" fill="#021829" opacity=".6"><path d="M-2.2 54L0 134L2.2 54Z"/><path d="M-16 -40L16 -40C42 -42 90 -30 138 12C104 12 72 18 48 34C32 46 16 56 0 58C-16 56 -32 46 -48 34C-72 18 -104 12 -138 12C-90 -30 -42 -42 -16 -40Z"/><path d="M-17 -38C-24 -46 -25 -57 -19 -63C-13 -58 -10 -49 -9 -39ZM17 -38C24 -46 25 -57 19 -63C13 -58 10 -49 9 -39Z"/><path d="M-14 -26C-36 -24 -60 -12 -80 8C-56 -2 -32 -8 -12 -10ZM14 -26C36 -24 60 -12 80 8C56 -2 32 -8 12 -10Z" fill="#5E8CAC" opacity=".55"/></g></svg>
+  <svg class="sc-4" viewBox="0 0 390 844" preserveAspectRatio="xMidYMin slice"><path d="M0 604C32.2 611 64.4 611 97.5 604C129.7 597 161.9 597 195 604C227.2 611 259.4 611 292.5 604C324.7 597 356.9 597 390 604V844H0Z" fill="#07112B"/><g transform="translate(152 150)"><path d="M18 0C14 -6 4 -8 -6 -6C-12 -5 -16 -3 -18 -2L-18 2C-16 3 -12 5 -6 6C4 8 14 6 18 0ZM-17 -1L-27 -8L-24 0L-27 8L-17 1Z" fill="#1D2D4C"/><circle cx="12.5" cy="-1" r="2.6" fill="#E4F9F7" opacity=".85"/><g fill="#54F5D7"><circle cx="8" cy="4.2" r="1.3"/><circle cx="3" cy="5" r="1.3"/><circle cx="-2" cy="5" r="1.3"/><circle cx="-7" cy="4.4" r="1.3"/><circle cx="-12" cy="3.4" r="1.3"/></g></g><g transform="translate(182 172) scale(.8)"><path d="M18 0C14 -6 4 -8 -6 -6C-12 -5 -16 -3 -18 -2L-18 2C-16 3 -12 5 -6 6C4 8 14 6 18 0ZM-17 -1L-27 -8L-24 0L-27 8L-17 1Z" fill="#1D2D4C"/><circle cx="12.5" cy="-1" r="2.6" fill="#E4F9F7" opacity=".85"/><g fill="#54F5D7"><circle cx="8" cy="4.2" r="1.3"/><circle cx="3" cy="5" r="1.3"/><circle cx="-2" cy="5" r="1.3"/><circle cx="-7" cy="4.4" r="1.3"/><circle cx="-12" cy="3.4" r="1.3"/></g></g><g transform="translate(132 182) scale(.7)"><path d="M18 0C14 -6 4 -8 -6 -6C-12 -5 -16 -3 -18 -2L-18 2C-16 3 -12 5 -6 6C4 8 14 6 18 0ZM-17 -1L-27 -8L-24 0L-27 8L-17 1Z" fill="#1D2D4C"/><circle cx="12.5" cy="-1" r="2.6" fill="#E4F9F7" opacity=".85"/><g fill="#54F5D7"><circle cx="8" cy="4.2" r="1.3"/><circle cx="3" cy="5" r="1.3"/><circle cx="-2" cy="5" r="1.3"/><circle cx="-7" cy="4.4" r="1.3"/><circle cx="-12" cy="3.4" r="1.3"/></g></g><circle cx="120" cy="560" r="1.8" fill="#54F5D7" opacity=".7"/><circle cx="138" cy="574" r="1.2" fill="#54F5D7" opacity=".5"/><circle cx="104" cy="586" r="1.4" fill="#AE97FF" opacity=".6"/></svg>
+  <svg class="sc-5" viewBox="0 0 390 844" preserveAspectRatio="xMidYMin slice"><path d="M0 612C32.2 606 64.4 606 97.5 612C129.7 618 161.9 618 195 612C227.2 606 259.4 606 292.5 612C324.7 618 356.9 618 390 612V844H0Z" fill="#02030F"/><circle cx="122" cy="170" r="1.6" fill="#54F5D7" opacity=".55"/><circle cx="134" cy="176" r="1" fill="#54F5D7" opacity=".4"/><circle cx="312" cy="540" r="1.3" fill="#54F5D7" opacity=".45"/></svg>
+</div>
+
+<!-- The water moving: waves at the surface, a flow through the middle, currents along the bottom.
+     Each strip is a thin SVG one and a half screens wide, made of three identical tiles and slid sideways
+     by exactly one tile, so it loops seamlessly. Transform-only animation runs on the GPU compositor:
+     no repaints, and only a few thin layers in memory. Decoration only. -->
+<div class="ocean" aria-hidden="true">
+  <div class="waves"><div class="strip w1"><svg viewBox="0 0 600 23" preserveAspectRatio="none"><path d="M0 0H600V16Q550 26 500 16T400 16T300 16T200 16T100 16T0 16Z" fill="#E4F9F7" opacity="0.07"/><path d="M600 16Q550 26 500 16T400 16T300 16T200 16T100 16T0 16" fill="none" stroke="#E4F9F7" stroke-width="1.5" opacity="0.25" vector-effect="non-scaling-stroke"/></svg></div><div class="bob"><div class="strip w2"><svg viewBox="0 0 600 27" preserveAspectRatio="none"><path d="M0 0H600V20Q550 30 500 20T400 20T300 20T200 20T100 20T0 20Z" fill="#E4F9F7" opacity="0.06"/><path d="M600 20Q550 30 500 20T400 20T300 20T200 20T100 20T0 20" fill="none" stroke="#E4F9F7" stroke-width="2" opacity="0.38" vector-effect="non-scaling-stroke"/></svg></div></div></div>
+  <div class="flow"><div class="strip f1"><svg viewBox="0 8 600 13" preserveAspectRatio="none"><path d="M8 15Q48 5 88 13M118 19Q142 13 166 18M208 15Q248 5 288 13M318 19Q342 13 366 18M408 15Q448 5 488 13M518 19Q542 13 566 18" fill="none" stroke="#E4F9F7" stroke-width="1.4" stroke-linecap="round" opacity="0.11" vector-effect="non-scaling-stroke"/></svg></div><div class="strip f2"><svg viewBox="0 6 600 12" preserveAspectRatio="none"><path d="M30 12Q70 4 110 11M140 16Q160 12 182 15M230 12Q270 4 310 11M340 16Q360 12 382 15M430 12Q470 4 510 11M540 16Q560 12 582 15" fill="none" stroke="#E4F9F7" stroke-width="1.4" stroke-linecap="round" opacity="0.09" vector-effect="non-scaling-stroke"/></svg></div><div class="strip f3"><svg viewBox="0 8 600 8" preserveAspectRatio="none"><path d="M4 10Q40 18 76 11M104 14Q138 6 172 12M204 10Q240 18 276 11M304 14Q338 6 372 12M404 10Q440 18 476 11M504 14Q538 6 572 12" fill="none" stroke="#E4F9F7" stroke-width="1.4" stroke-linecap="round" opacity="0.1" vector-effect="non-scaling-stroke"/></svg></div></div>
+  <div class="currents"><div class="strip c1"><svg viewBox="0 7 600 44" preserveAspectRatio="none"><path d="M0 14Q50 2 100 14T200 14T300 14T400 14T500 14T600 14L600 44Q550 32 500 44T400 44T300 44T200 44T100 44T0 44Z" fill="#000" opacity="0.16"/><path d="M0 14Q50 2 100 14T200 14T300 14T400 14T500 14T600 14" fill="none" stroke="#E4F9F7" stroke-width="1.2" opacity="0.08" vector-effect="non-scaling-stroke"/></svg></div><div class="strip c2"><svg viewBox="0 10 600 38" preserveAspectRatio="none"><path d="M0 16Q50 6 100 16T200 16T300 16T400 16T500 16T600 16L600 42Q550 32 500 42T400 42T300 42T200 42T100 42T0 42Z" fill="#000" opacity="0.12"/><path d="M0 16Q50 6 100 16T200 16T300 16T400 16T500 16T600 16" fill="none" stroke="#E4F9F7" stroke-width="1.2" opacity="0.06" vector-effect="non-scaling-stroke"/></svg></div><div class="strip c3"><svg viewBox="0 6 600 7" preserveAspectRatio="none"><path d="M0 12Q60 8 120 12M150 8Q170 6 192 8M200 12Q260 8 320 12M350 8Q370 6 392 8M400 12Q460 8 520 12M550 8Q570 6 592 8" fill="none" stroke="#E4F9F7" stroke-width="1.2" stroke-linecap="round" opacity="0.08" vector-effect="non-scaling-stroke"/></svg></div></div>
+</div>
+
 <!-- Specks of light drifting up through the water. Decoration only. -->
 <div class="motes" aria-hidden="true">
   <i style="--x:8%;--s:3px;--t:26s;--d:-4s"></i><i style="--x:21%;--s:2px;--t:32s;--d:-19s"></i>
@@ -49,7 +89,13 @@
     <p class="kicker">Questions for two</p>
     <button class="icon-btn" id="menuHome" aria-label="Menu: install, feedback, settings"><svg><use href="#i-menu"/></svg></button>
   </header>
-  <h1 class="title">Deep<br>End</h1>
+  <div class="horizon">
+    <!-- A sunset behind the title: the sky ends at the title's waterline, the sun sits on it -->
+    <div class="sky" aria-hidden="true"><svg viewBox="0 0 390 260" preserveAspectRatio="xMaxYMax slice"><rect width="390" height="260" fill="#071A28"/><path d="M0 134C32.2 129 64.4 129 97.5 134C129.7 139 161.9 139 195 134C227.2 129 259.4 129 292.5 134C324.7 139 356.9 139 390 134V260H0Z" fill="#0B2738"/><path d="M0 184C32.2 189 64.4 189 97.5 184C129.7 179 161.9 179 195 184C227.2 189 259.4 189 292.5 184C324.7 179 356.9 179 390 184V260H0Z" fill="#113546"/><path d="M0 226C32.2 222 64.4 222 97.5 226C129.7 230 161.9 230 195 226C227.2 222 259.4 222 292.5 226C324.7 230 356.9 230 390 226V260H0Z" fill="#1A4552"/><g fill="#FFD447"><circle cx="318" cy="260" r="150" opacity="0.03"/><circle cx="318" cy="260" r="109" opacity="0.045"/><circle cx="318" cy="260" r="75" opacity="0.07"/><circle cx="318" cy="260" r="51" opacity="0.12"/><circle cx="318" cy="260" r="34"/></g><g transform="translate(262 150) rotate(-10) scale(0.3)"><path d="M38 6 C24 30 2 46 -36 54 C-22 40 -4 24 8 8 Z" fill="#D9F5F3" opacity="0.3"/><path d="M-22 7 C-30 20 -40 26 -52 28 C-46 20 -36 12 -28 7 Z" fill="#D9F5F3" opacity="0.3"/><path d="M-56 -3 L-88 -18 L-74 2 L-98 22 L-56 5 Z" fill="#19517B"/><path d="M74 1 C62 -11 22 -15 -20 -10 C-38 -8 -50 -5 -58 -3 L-58 5 C-50 7 -38 9 -20 10 C22 12 62 10 74 1 Z" fill="#19517B"/><path d="M73 2.5 C58 3.5 28 3 -20 2 C-38 2 -50 3 -58 3.5 L-58 5 C-50 7 -38 9 -20 10 C22 12 62 10 73 2.5 Z" fill="#C0E6EB"/><path d="M60 -1 C30 -3 0 -3 -50 -1" fill="none" stroke="#C0E6EB" stroke-width="1.4" opacity="0.45"/><path d="M40 -3 C20 -40 -10 -62 -50 -68 C-32 -50 -10 -28 6 -5 Z" fill="#D9F5F3" opacity="0.62"/><g fill="none" stroke="#FFFFFF" stroke-width="1.1" opacity="0.5"><path d="M36 -5 C17 -34 -8 -54 -44 -64"/><path d="M34 -5 C15 -28 -6 -42 -34 -52"/><path d="M31 -5 C15 -21 -1 -31 -21 -38"/><path d="M28 -5 C17 -14 7 -20 -7 -23"/></g><path d="M-20 -8 C-28 -24 -40 -32 -54 -34 C-46 -24 -36 -14 -28 -8 Z" fill="#D9F5F3" opacity="0.5"/><path d="M45 -6 C41 -2 41 3 45 6" fill="none" stroke="#0A1A2A" stroke-width="1.2" opacity="0.35"/><circle cx="58" cy="-1" r="5" fill="#0A1A2A"/><circle cx="59.6" cy="-2.6" r="1.6" fill="#FFFFFF"/></g><g transform="translate(352 190) rotate(-14) scale(0.26)"><path d="M38 6 C24 30 2 46 -36 54 C-22 40 -4 24 8 8 Z" fill="#D9F5F3" opacity="0.3"/><path d="M-22 7 C-30 20 -40 26 -52 28 C-46 20 -36 12 -28 7 Z" fill="#D9F5F3" opacity="0.3"/><path d="M-56 -3 L-88 -18 L-74 2 L-98 22 L-56 5 Z" fill="#19517B"/><path d="M74 1 C62 -11 22 -15 -20 -10 C-38 -8 -50 -5 -58 -3 L-58 5 C-50 7 -38 9 -20 10 C22 12 62 10 74 1 Z" fill="#19517B"/><path d="M73 2.5 C58 3.5 28 3 -20 2 C-38 2 -50 3 -58 3.5 L-58 5 C-50 7 -38 9 -20 10 C22 12 62 10 73 2.5 Z" fill="#C0E6EB"/><path d="M60 -1 C30 -3 0 -3 -50 -1" fill="none" stroke="#C0E6EB" stroke-width="1.4" opacity="0.45"/><path d="M40 -3 C20 -40 -10 -62 -50 -68 C-32 -50 -10 -28 6 -5 Z" fill="#D9F5F3" opacity="0.62"/><g fill="none" stroke="#FFFFFF" stroke-width="1.1" opacity="0.5"><path d="M36 -5 C17 -34 -8 -54 -44 -64"/><path d="M34 -5 C15 -28 -6 -42 -34 -52"/><path d="M31 -5 C15 -21 -1 -31 -21 -38"/><path d="M28 -5 C17 -14 7 -20 -7 -23"/></g><path d="M-20 -8 C-28 -24 -40 -32 -54 -34 C-46 -24 -36 -14 -28 -8 Z" fill="#D9F5F3" opacity="0.5"/><path d="M45 -6 C41 -2 41 3 45 6" fill="none" stroke="#0A1A2A" stroke-width="1.2" opacity="0.35"/><circle cx="58" cy="-1" r="5" fill="#0A1A2A"/><circle cx="59.6" cy="-2.6" r="1.6" fill="#FFFFFF"/></g><g transform="translate(286 222) rotate(-12) scale(0.46)"><path d="M38 6 C24 30 2 46 -36 54 C-22 40 -4 24 8 8 Z" fill="#D9F5F3" opacity="0.3"/><path d="M-22 7 C-30 20 -40 26 -52 28 C-46 20 -36 12 -28 7 Z" fill="#D9F5F3" opacity="0.3"/><path d="M-56 -3 L-88 -18 L-74 2 L-98 22 L-56 5 Z" fill="#19517B"/><path d="M74 1 C62 -11 22 -15 -20 -10 C-38 -8 -50 -5 -58 -3 L-58 5 C-50 7 -38 9 -20 10 C22 12 62 10 74 1 Z" fill="#19517B"/><path d="M73 2.5 C58 3.5 28 3 -20 2 C-38 2 -50 3 -58 3.5 L-58 5 C-50 7 -38 9 -20 10 C22 12 62 10 73 2.5 Z" fill="#C0E6EB"/><path d="M60 -1 C30 -3 0 -3 -50 -1" fill="none" stroke="#C0E6EB" stroke-width="1.4" opacity="0.45"/><path d="M40 -3 C20 -40 -10 -62 -50 -68 C-32 -50 -10 -28 6 -5 Z" fill="#D9F5F3" opacity="0.62"/><g fill="none" stroke="#FFFFFF" stroke-width="1.1" opacity="0.5"><path d="M36 -5 C17 -34 -8 -54 -44 -64"/><path d="M34 -5 C15 -28 -6 -42 -34 -52"/><path d="M31 -5 C15 -21 -1 -31 -21 -38"/><path d="M28 -5 C17 -14 7 -20 -7 -23"/></g><path d="M-20 -8 C-28 -24 -40 -32 -54 -34 C-46 -24 -36 -14 -28 -8 Z" fill="#D9F5F3" opacity="0.5"/><path d="M45 -6 C41 -2 41 3 45 6" fill="none" stroke="#0A1A2A" stroke-width="1.2" opacity="0.35"/><circle cx="58" cy="-1" r="5" fill="#0A1A2A"/><circle cx="59.6" cy="-2.6" r="1.6" fill="#FFFFFF"/></g><g fill="#E4F9F7"><circle cx="246" cy="250" r="2.2" opacity=".55"/><circle cx="244" cy="241" r="1.7" opacity=".45"/><circle cx="243" cy="233" r="1.2" opacity=".35"/></g></svg></div>
+    <div class="swell" aria-hidden="true"><div class="strip s1"><svg viewBox="0 4 600 10" preserveAspectRatio="none"><path class="tint" d="M0 7Q50 3.8 100 7T200 7T300 7T400 7T500 7T600 7V14H0Z"/><path d="M0 7Q50 3.8 100 7T200 7T300 7T400 7T500 7T600 7" fill="none" stroke="#E4F9F7" stroke-width="1.5" opacity=".45" vector-effect="non-scaling-stroke"/></svg></div></div>
+    <div class="glint" aria-hidden="true"><svg viewBox="0 0 390 66" preserveAspectRatio="xMaxYMin slice"><g stroke="#FFD447" stroke-width="3" stroke-linecap="round"><path d="M286 6H350" opacity="0.6"/><path d="M292 17H344" opacity="0.48"/><path d="M298 28H338" opacity="0.38"/><path d="M304 39H332" opacity="0.28"/><path d="M309 50H327" opacity="0.2"/><path d="M313 61H323" opacity="0.14"/></g></svg></div>
+    <h1 class="title">Deep<br>End</h1>
+  </div>
   <p class="lede">Pick who you're with, then slide to choose how deep you go.</p>
 
   <button class="resume" id="resume" hidden>
@@ -170,6 +216,7 @@
     </label>
     <button class="btn-buoy wide" id="noteSubmit">Save note</button>
     <p class="hint">Notes stay on this phone until you send them from the menu.</p>
+    <button class="ghost small" data-tester-fb data-tester-fb-open hidden>Something else wrong? Report a problem</button>
   </div>
 </div>
 
@@ -196,12 +243,19 @@
         </div>
       </section>
 
+      <section class="block" data-tester-fb hidden>
+        <h3>Tell the maker</h3>
+        <p>Something broke, felt confusing, or you have an idea? This sends a short report with the screen and depth you were on. It never includes your names, notes or anything you typed.</p>
+        <button class="ghost small" data-tester-fb-open>Report a problem or idea</button>
+      </section>
+
       <section class="block">
         <h3>Settings</h3>
         <label class="toggle"><span>Question transitions</span><input type="checkbox" id="optTransitions"></label>
         <label class="toggle"><span>Underwater hand-off between turns</span><input type="checkbox" id="optPass"></label>
         <label class="toggle"><span>Shared moments every few turns</span><input type="checkbox" id="optMoments"></label>
         <label class="toggle"><span>Sea life swims by now and then</span><input type="checkbox" id="optFish"></label>
+        <label class="toggle"><span>Moving water</span><input type="checkbox" id="optWater"></label>
         <button class="ghost small" id="resetSeen">Forget which questions we've seen</button>
       </section>
 
@@ -212,7 +266,7 @@
 
       <section class="block">
         <h3>About</h3>
-        <p>Nothing you type or save in Deep End leaves your phone unless you choose to share it.</p>
+        <p>Nothing you type or save in Deep End leaves your phone unless you choose to share it. The one exception is the optional "Report a problem or idea" button, which sends only what you write there.</p>
         <div class="row">
           <a class="ghost small" href="privacy.html">Privacy policy</a>
           <a class="ghost small" href="support.html">Help &amp; contact</a>

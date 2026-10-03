@@ -1,8 +1,31 @@
 // Single source of truth for the release. Loaded by the page AND the service worker,
 // so bumping it is what makes installed phones notice an update.
 // Use `python tools/release.py 2.0.1 "What changed"` rather than editing by hand.
-self.DEEPEND_VERSION = "3.3.1";
+self.DEEPEND_VERSION = "3.5.0";
 self.DEEPEND_CHANGES = [
+  {
+    "v": "3.5.0",
+    "date": "2026-10-03",
+    "notes": [
+      "The water moves now: waves at the surface, a gentle flow through the middle and currents along the bottom. You can turn it off in Settings."
+    ]
+  },
+  {
+    "v": "3.4.0",
+    "date": "2026-10-03",
+    "notes": [
+      "A new look. The water is sunlit in the shallows and darkens on the way down, and at the deep end the only light is an anglerfish's lure.",
+      "New sea life at every depth: a flying fish, a sea turtle, a manta ray, a jellyfish and an anglerfish.",
+      "A sunset on the start screen."
+    ]
+  },
+  {
+    "v": "3.3.2",
+    "date": "2026-09-30",
+    "notes": [
+      "Groundwork for sending feedback from the menu during playtests."
+    ]
+  },
   {
     "v": "3.3.1",
     "date": "2026-09-30",

@@ -10,3 +10,7 @@ Thumbs.db
 *.p8
 *.p12
 *.mobileprovision
+# A local Python install that lives in this folder on the owner's PC. Not part of the app.
+Python/
+# Previews and downloads saved from Claude. Not part of the app.
+Claude outputs/
