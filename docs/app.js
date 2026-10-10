@@ -43,7 +43,7 @@ let notes = store.get(K.notes, []);
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 // Moving water starts off on phones with 2 GB of memory or less (Chrome reports it; others don't, and get it on).
 const LOW_MEMORY = (navigator.deviceMemory || 8) <= 2;
-let prefs = Object.assign({ passScreen:true, transitions:!REDUCED, moments:true, fish:true, water:!REDUCED && !LOW_MEMORY, nameA:"", nameB:"", general:"" }, store.get(K.prefs, {}));
+let prefs = Object.assign({ passScreen:true, transitions:!REDUCED, moments:true, fish:true, water:!REDUCED && !LOW_MEMORY, talk:false, nameA:"", nameB:"", general:"" }, store.get(K.prefs, {}));
 const paintWater = () => document.documentElement.classList.toggle("still", !prefs.water);
 paintWater();
 const savePrefs = () => store.set(K.prefs, prefs);
@@ -158,6 +158,7 @@ function names(){ return [prefs.nameA, prefs.nameB]; }
 function turnText(){
   const [a, b] = names();
   if(state.current && state.current.moment) return a && b ? "A moment for " + a + " and " + b : "A moment for you both";
+  if(prefs.talk) return "Conversation · no turns, anyone answers";
   if(isFirstDate()){
     const first = state.turn === 0 ? a : b;
     return "Both answer · " + (first || (state.turn === 0 ? "you" : "they")) + " first";
@@ -343,12 +344,69 @@ function paintQuestion(pick, animate){
 }
 // Follow-ups keep an answer going; asking one is what makes the other person feel heard.
 function paintFollow(pick){
-  $("dig").hidden = !(pick && pick.f);
+  talkQueue = pick && !pick.moment ? talkPrompts(pick) : [];
+  talkAt = 0;
+  $("dig").hidden = !(pick && (pick.f || (prefs.talk && talkQueue.length)));
   $("dig").setAttribute("aria-expanded", "false");
+  $("digLabel").textContent = prefs.talk ? "Keep it going" : "Follow-up";
+  $("followK").textContent = "Then ask";
   $("followQ").hidden = true;
   $("followText").textContent = pick ? pick.f : "";
 }
+
+// ---------- conversation mode ----------
+// No turns and no hand-off: one question stays up as a topic and the talk wanders from it.
+// When it slows, Keep it going offers the next nudge (the question's own follow-up first,
+// then this depth's general ones, then open prompts), so the pair asks for a new topic
+// only when they're done with this one.
+const TALK_ON = [
+  "Has that changed for you over the years?",
+  "What would the other one of you say about that?",
+  "What's the part of that you don't usually tell people?",
+  "Where does that show up in your life right now?",
+  "Is there a story that goes with that?",
+  "What would you add to what was just said?"
+];
+let talkQueue = [], talkAt = 0;
+function talkPrompts(pick){
+  const general = FOLLOW[state.level-1] || [];
+  const open = TALK_ON.slice().sort(() => Math.random() - 0.5).slice(0, 3);
+  return [...new Set([pick.f, ...general, ...open].filter(Boolean))];
+}
+function talkNext(){
+  if(!talkQueue.length) return;
+  const i = talkAt % talkQueue.length;
+  talkAt++;
+  $("followK").textContent = "Keep going · " + (i + 1) + " of " + talkQueue.length;
+  $("followText").textContent = talkQueue[i];
+  $("followQ").hidden = false;
+  const f = $("followQ"); f.style.animation = "none"; void f.offsetWidth; f.style.animation = "";
+}
+function paintTalk(){
+  $("talkMode").setAttribute("aria-pressed", prefs.talk);
+  $("optTalk").checked = prefs.talk;
+  $("next").textContent = prefs.talk ? "New topic" : "Next question";
+  if($("play").hidden || !state.current) return;
+  $("turn").textContent = turnText();
+  paintFollow(state.current);
+  $("left").textContent = hint();
+}
+function setTalk(on){
+  prefs.talk = on; savePrefs(); paintTalk();
+  haptic("select");
+}
+$("talkMode").onclick = () => setTalk(!prefs.talk);
+
 $("dig").onclick = () => {
+  if(prefs.talk){
+    if(!state.current) return;
+    $("dig").setAttribute("aria-expanded", "true");
+    talkNext();
+    haptic("select");
+    $("followQ").scrollIntoView({ block:"nearest", behavior: REDUCED ? "auto" : "smooth" });
+    if(!state.current.dug){ state.current.dug = true; lean(state.current, 0.5); $("left").textContent = hint(); }
+    return;
+  }
   const open = $("dig").getAttribute("aria-expanded") !== "true";
   $("dig").setAttribute("aria-expanded", open);
   $("followQ").hidden = !open;
@@ -372,6 +430,7 @@ function hint(){
   // People who ask follow-ups are liked more and feel more understood (Huang et al. 2017),
   // and most players never think to; so early in a sitting, say so.
   const c = state.current;
+  if(prefs.talk && c && !c.moment && !c.dug) return "No turns. Let it wander, and tap Keep it going when it slows.";
   if(c && c.f && !c.dug && !c.moment && session.answered < 3) return "Tap Follow-up to keep the answer going.";
   const n = pool(state.level).length;
   return n === 0 ? "Last new one at this depth" : n + " new left at this depth";
@@ -436,10 +495,11 @@ gauge.addEventListener("keydown", e => {
 // from the other person, so it skips the hand-off.
 $("next").onclick = () => {
   haptic();
-  if(state.current && !state.current.moment){ state.turn = 1 - state.turn; session.answered++; }
+  if(state.current && !state.current.moment){ if(!prefs.talk) state.turn = 1 - state.turn; session.answered++; }
   session.skips = 0;
   newQuestion();
-  if(prefs.passScreen && state.current && !state.current.moment) dive();
+  // In conversation mode nobody holds the phone alone, so there's nothing to hide.
+  if(prefs.passScreen && !prefs.talk && state.current && !state.current.moment) dive();
 };
 
 // ---------- hand-off: hold the ring to bring the question up ----------
@@ -794,6 +854,8 @@ $("optMoments").checked = prefs.moments;
 $("optMoments").onchange = () => { prefs.moments = $("optMoments").checked; savePrefs(); };
 $("optFish").checked = prefs.fish;
 $("optFish").onchange = () => { prefs.fish = $("optFish").checked; savePrefs(); prefs.fish ? fishPlan() : fishClear(); };
+$("optTalk").onchange = () => setTalk($("optTalk").checked);
+paintTalk();
 $("optWater").checked = prefs.water;
 $("optWater").onchange = () => { prefs.water = $("optWater").checked; savePrefs(); paintWater(); };
 $("resetSeen").onclick = () => {
@@ -863,6 +925,18 @@ if(!NATIVE && "serviceWorker" in navigator && location.protocol !== "file:"){
     } catch(e){}
   });
 }
+
+// ---------- Android back button ----------
+// Back should step out one layer (a sheet, then the play screen) like any Android app,
+// not drop the pair out of the game mid-question. Only at home does it leave.
+const AppPlugin = plugin("App");
+if(AppPlugin) AppPlugin.addListener("backButton", () => {
+  const open = [...document.querySelectorAll(".sheet-wrap")].find(w => !w.hidden);
+  if(open) closeSheet(open.id);
+  else if(!$("passScreen").hidden) return;   // the next question is hidden on purpose; hold the ring
+  else if(!$("play").hidden) showHome();
+  else AppPlugin.exitApp();
+});
 
 const lastVer = store.get(K.ver, null);
 if(lastVer && lastVer !== VERSION){

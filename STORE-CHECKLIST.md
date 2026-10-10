@@ -30,6 +30,7 @@ What's already in place against that:
 - **Fully offline.** The store build carries every file inside the app. It is not a web page loaded from a server.
 - **Native haptics** on the depth slider, turn changes and saves (`@capacitor/haptics`).
 - **Native share sheet** for sharing saved questions and sending feedback (`@capacitor/share`).
+- **Android back button** closes sheets and returns to the start screen instead of quitting mid-game (`@capacitor/app`).
 - A focused, app-like interface with no browser chrome and no external links in normal play.
 
 Paste this into **App Review Information → Notes**:

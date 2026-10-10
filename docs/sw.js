@@ -7,7 +7,7 @@ const CACHE = "deepend-" + self.DEEPEND_VERSION;
 const DEV = ["localhost", "127.0.0.1"].includes(location.hostname);
 const SHELL = [
   "./", "index.html", "styles.css", "app.js", "questions.js", "version.js",
-  "feedback-widget.js", "manifest.webmanifest", "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png",
+  "feedback-widget.js", "feedback-config.js", "manifest.webmanifest", "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png",
   "icons/apple-touch-icon.png", "privacy.html", "support.html",
   "fonts/bricolage-latin.woff2", "fonts/bricolage-latin-ext.woff2",
   "fonts/young-serif-latin.woff2", "fonts/young-serif-latin-ext.woff2"

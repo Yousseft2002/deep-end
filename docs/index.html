@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<!-- Everything comes from the app itself: no CDNs, no remote fonts, no tracking (see privacy.html).
+     If the feedback widget gets a real server, add its origin to connect-src. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Deep End</title>
 <meta name="description" content="Questions for two. Pick who you're with, then slide to choose how deep you go.">
@@ -21,25 +24,7 @@
 <script src="questions.js"></script>
 <script src="app.js" defer></script>
 <script src="feedback-widget.js" defer></script>
-<script>
-  // Tester feedback. REPLACE_ the endpoint and key with the real feedback-service values.
-  // While they contain REPLACE_ the widget stays off and its menu and note-sheet buttons stay hidden.
-  window.addEventListener("DOMContentLoaded", function () {
-    var cfg = {
-      endpoint: "https://REPLACE_feedback.example.com",
-      appKey: "REPLACE_WITH_DEEP_END_APP_KEY",
-      appVersion: self.DEEPEND_VERSION || "dev",
-      hideLauncher: true,   // opened from the menu, so it never sits over the depth slider
-      theme: {
-        surface: "var(--sheet)", field: "var(--water)", text: "var(--ink)", muted: "var(--muted)",
-        line: "var(--line)", accent: "var(--buoy)", onAccent: "var(--buoy-ink)", error: "var(--ring)"
-      }
-    };
-    if (/REPLACE_/.test(cfg.endpoint + cfg.appKey) || !self.Feedback) return;
-    Feedback.init(cfg);
-    document.querySelectorAll("[data-tester-fb]").forEach(function (el) { el.hidden = false; });
-  });
-</script>
+<script src="feedback-config.js" defer></script>
 </head>
 <body data-level="1">
 
@@ -139,6 +124,7 @@
   <div class="topbar">
     <button class="icon-btn" id="goHome" aria-label="Back to start"><svg><use href="#i-back"/></svg></button>
     <button class="pill" id="changeWho">With your partner</button>
+    <button class="pill" id="talkMode" aria-pressed="false" aria-label="Conversation mode: no turns, just talk">Talk</button>
     <button class="pill" id="openSaved">Saved 0</button>
   </div>
 
@@ -158,8 +144,8 @@
       <p class="level-name"><span id="levelName">Shallows</span> <span class="level-n" id="levelN">1 of 5</span></p>
       <h2 class="question" id="question"></h2>
       <div class="follow">
-        <button class="dig" id="dig" type="button" aria-expanded="false" aria-controls="followQ"><svg><use href="#i-follow"/></svg>Follow-up</button>
-        <p class="follow-q" id="followQ" hidden><span class="follow-k">Then ask</span><span id="followText"></span></p>
+        <button class="dig" id="dig" type="button" aria-expanded="false" aria-controls="followQ"><svg><use href="#i-follow"/></svg><span id="digLabel">Follow-up</span></button>
+        <p class="follow-q" id="followQ" hidden><span class="follow-k" id="followK">Then ask</span><span id="followText"></span></p>
       </div>
       <p class="left" id="left"></p>
       <button class="btn-buoy reset" id="reset" hidden>Start over at this depth</button>
@@ -259,6 +245,7 @@
 
       <section class="block">
         <h3>Settings</h3>
+        <label class="toggle"><span>Conversation mode: no turns, just talk</span><input type="checkbox" id="optTalk"></label>
         <label class="toggle"><span>Question transitions</span><input type="checkbox" id="optTransitions"></label>
         <label class="toggle"><span>Underwater hand-off between turns</span><input type="checkbox" id="optPass"></label>
         <label class="toggle"><span>Shared moments every few turns</span><input type="checkbox" id="optMoments"></label>

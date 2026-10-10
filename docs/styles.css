@@ -327,6 +327,8 @@ body:has(.sheet-wrap:not([hidden])) :is(.ocean *,.swell *,.glint svg){animation-
 /* ---------- play ---------- */
 .topbar{display:flex;align-items:center;gap:8px}
 .topbar #changeWho{flex:1;min-width:0;text-align:left}
+.topbar #talkMode{flex:none;padding:8px 14px}
+.topbar #talkMode[aria-pressed="true"]{background:var(--ink);color:var(--water);border-color:var(--ink)}
 .stage{flex:1;display:grid;grid-template-columns:58px 1fr;gap:16px;min-height:0;margin:14px 0}
 
 .gauge{position:relative;touch-action:none;user-select:none;-webkit-user-select:none;border-radius:999px;cursor:grab}
