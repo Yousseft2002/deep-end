@@ -109,6 +109,14 @@ GROUPS.forEach(g => {
   });
   wrap.append(h, chips); $("groups").appendChild(wrap);
 });
+// First Date: its own questions, light to closer, and you both answer every one. Every first
+// date is someone new, so it starts with all of its questions fresh; Keep going doesn't.
+const FIRST_DATE = ["First date", "firstdate", "your date"];
+const isFirstDate = () => state.cat === FIRST_DATE[1];
+$("firstDate").onclick = () => {
+  delete seen[FIRST_DATE[0].toLowerCase()]; store.set(K.seen, seen);
+  start(...FIRST_DATE, 1);
+};
 $("customForm").onsubmit = e => {
   e.preventDefault();
   const v = $("customInput").value.trim();
@@ -128,7 +136,7 @@ document.querySelectorAll("[data-tester-fb-open]").forEach(b => b.addEventListen
 function renderResume(){
   const last = store.get(K.last, null);
   $("resume").hidden = !last;
-  if(last) $("resumeText").textContent = "With " + last.phrase + " · " + LEVELS[last.level-1];
+  if(last) $("resumeText").textContent = (last.cat === FIRST_DATE[1] ? "First date" : "With " + last.phrase) + " · " + LEVELS[last.level-1];
 }
 $("resume").onclick = () => {
   const l = store.get(K.last, null);
@@ -150,6 +158,10 @@ function names(){ return [prefs.nameA, prefs.nameB]; }
 function turnText(){
   const [a, b] = names();
   if(state.current && state.current.moment) return a && b ? "A moment for " + a + " and " + b : "A moment for you both";
+  if(isFirstDate()){
+    const first = state.turn === 0 ? a : b;
+    return "Both answer · " + (first || (state.turn === 0 ? "you" : "they")) + " first";
+  }
   const both = state.current && state.current.both ? " · you both answer" : "";
   if(a && b) return (state.turn === 0 ? a + " asks " + b : b + " asks " + a) + both;
   return (state.turn === 0 ? "You ask them" : "They ask you") + both;
@@ -257,7 +269,7 @@ function draw(){
     qs.forEach(x => { const s = score(x); if(s > top){ top = s; pick = x; } });
     session.since++;
     session.asked++;
-    pick.both = session.asked % 3 === 0;
+    pick.both = isFirstDate() || session.asked % 3 === 0;
     session.modes = [pick.mode, ...session.modes].slice(0, 3);
   }
   session.recent = [words(pick.q), ...session.recent].slice(0, 3);
@@ -275,7 +287,7 @@ $("reset").onclick = () => {
 function start(label, cat, phrase, level){
   Object.assign(state, { label, cat, phrase, turn:0 });
   freshSession();
-  $("changeWho").textContent = "With " + phrase;
+  $("changeWho").textContent = cat === FIRST_DATE[1] ? "First date" : "With " + phrase;
   $("home").hidden = true; $("play").hidden = false;
   setLevel(level || 1, false);
   reportContext();
@@ -352,6 +364,11 @@ function readyForDeeper(){ return state.level < 5 && session.answered >= 4; }
 function hint(){
   if(session.skips >= 3) return "Not quite landing? Try another depth.";
   if(readyForDeeper()) return "Warmed up? Try going a little deeper.";
+  // On a first date, the deeper waters are a choice, never a step you have to take.
+  if(isFirstDate() && session.answered === 0 && !session.skips){
+    if(state.level >= 4) return "More personal from here, and all optional. Skip anything, anytime.";
+    if(state.level === 1) return "Easy ones first. Skip anything that doesn't land.";
+  }
   // People who ask follow-ups are liked more and feel more understood (Huang et al. 2017),
   // and most players never think to; so early in a sitting, say so.
   const c = state.current;
