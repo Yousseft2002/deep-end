@@ -43,7 +43,7 @@ let notes = store.get(K.notes, []);
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 // Moving water starts off on phones with 2 GB of memory or less (Chrome reports it; others don't, and get it on).
 const LOW_MEMORY = (navigator.deviceMemory || 8) <= 2;
-let prefs = Object.assign({ passScreen:true, transitions:!REDUCED, moments:true, fish:true, water:!REDUCED && !LOW_MEMORY, nameA:"", nameB:"", general:"" }, store.get(K.prefs, {}));
+let prefs = Object.assign({ passScreen:true, transitions:!REDUCED, moments:true, fish:true, water:!REDUCED && !LOW_MEMORY, talk:false, nameA:"", nameB:"", general:"" }, store.get(K.prefs, {}));
 const paintWater = () => document.documentElement.classList.toggle("still", !prefs.water);
 paintWater();
 const savePrefs = () => store.set(K.prefs, prefs);
@@ -109,6 +109,22 @@ GROUPS.forEach(g => {
   });
   wrap.append(h, chips); $("groups").appendChild(wrap);
 });
+// First Date: its own questions, light to closer, and you both answer every one. Every first
+// date is someone new, so it starts with all of its questions fresh; Keep going doesn't.
+const FIRST_DATE = ["First date", "firstdate", "your date"];
+const isFirstDate = () => state.cat === FIRST_DATE[1];
+$("firstDate").onclick = () => {
+  delete seen[FIRST_DATE[0].toLowerCase()]; store.set(K.seen, seen);
+  start(...FIRST_DATE, 1);
+};
+// Around the Table: a group gathering, from children to grandparents. Anyone can answer, so
+// there are no turns, no hand-off, no names and no moments for two. This only reads state.cat;
+// it never touches prefs, so Talk, the hand-off and names are as they were when you leave.
+const GATHERING = ["Group gathering", "gathering", "the table"];
+const isGathering = () => state.cat === GATHERING[1];
+const noTurns = () => prefs.talk || isGathering();        // nobody takes a turn or hands the phone over
+const talkNudges = () => prefs.talk && !isGathering();    // Keep it going speaks to two people, so not at a table
+$("gathering").onclick = () => start(...GATHERING, 1);
 $("customForm").onsubmit = e => {
   e.preventDefault();
   const v = $("customInput").value.trim();
@@ -128,7 +144,7 @@ document.querySelectorAll("[data-tester-fb-open]").forEach(b => b.addEventListen
 function renderResume(){
   const last = store.get(K.last, null);
   $("resume").hidden = !last;
-  if(last) $("resumeText").textContent = "With " + last.phrase + " · " + LEVELS[last.level-1];
+  if(last) $("resumeText").textContent = (last.cat === FIRST_DATE[1] ? "First date" : last.cat === GATHERING[1] ? "Around the Table" : "With " + last.phrase) + " · " + LEVELS[last.level-1];
 }
 $("resume").onclick = () => {
   const l = store.get(K.last, null);
@@ -149,7 +165,13 @@ $("changeWho").onclick = showHome;
 function names(){ return [prefs.nameA, prefs.nameB]; }
 function turnText(){
   const [a, b] = names();
+  if(isGathering()) return "Anyone can answer";
   if(state.current && state.current.moment) return a && b ? "A moment for " + a + " and " + b : "A moment for you both";
+  if(prefs.talk) return "Conversation · no turns, anyone answers";
+  if(isFirstDate()){
+    const first = state.turn === 0 ? a : b;
+    return "Both answer · " + (first || (state.turn === 0 ? "you" : "they")) + " first";
+  }
   const both = state.current && state.current.both ? " · you both answer" : "";
   if(a && b) return (state.turn === 0 ? a + " asks " + b : b + " asks " + a) + both;
   return (state.turn === 0 ? "You ask them" : "They ask you") + both;
@@ -247,7 +269,7 @@ function score(x){
 function draw(){
   const qs = pool(state.level);
   if(!qs.length) return null;
-  const ms = prefs.moments && session.answered >= 2 && session.since >= session.gap ? momentPool(state.level) : [];
+  const ms = prefs.moments && !isGathering() && session.answered >= 2 && session.since >= session.gap ? momentPool(state.level) : [];
   let pick;
   if(ms.length){
     pick = ms[Math.floor(Math.random() * ms.length)];
@@ -257,7 +279,7 @@ function draw(){
     qs.forEach(x => { const s = score(x); if(s > top){ top = s; pick = x; } });
     session.since++;
     session.asked++;
-    pick.both = session.asked % 3 === 0;
+    pick.both = !isGathering() && (isFirstDate() || session.asked % 3 === 0);
     session.modes = [pick.mode, ...session.modes].slice(0, 3);
   }
   session.recent = [words(pick.q), ...session.recent].slice(0, 3);
@@ -275,7 +297,8 @@ $("reset").onclick = () => {
 function start(label, cat, phrase, level){
   Object.assign(state, { label, cat, phrase, turn:0 });
   freshSession();
-  $("changeWho").textContent = "With " + phrase;
+  $("changeWho").textContent = cat === FIRST_DATE[1] ? "First date" : cat === GATHERING[1] ? "Around the Table" : "With " + phrase;
+  paintTalk();
   $("home").hidden = true; $("play").hidden = false;
   setLevel(level || 1, false);
   reportContext();
@@ -319,7 +342,8 @@ function paintQuestion(pick, animate){
   paintFollow(pick);
   $("deeper").classList.toggle("nudge", !exhausted && readyForDeeper());
   if(exhausted){
-    el.textContent = "You've asked every question at this depth with " + state.phrase + ".";
+    el.textContent = isGathering() ? "The table has answered every question at this depth."
+      : "You've asked every question at this depth with " + state.phrase + ".";
     $("turn").textContent = "Nothing new here";
     $("left").textContent = "Slide to another depth, or start this one over.";
   } else {
@@ -331,12 +355,71 @@ function paintQuestion(pick, animate){
 }
 // Follow-ups keep an answer going; asking one is what makes the other person feel heard.
 function paintFollow(pick){
-  $("dig").hidden = !(pick && pick.f);
+  talkQueue = pick && !pick.moment ? talkPrompts(pick) : [];
+  talkAt = 0;
+  $("dig").hidden = !(pick && (pick.f || (talkNudges() && talkQueue.length)));
   $("dig").setAttribute("aria-expanded", "false");
+  $("digLabel").textContent = talkNudges() ? "Keep it going" : "Follow-up";
+  $("followK").textContent = "Then ask";
   $("followQ").hidden = true;
   $("followText").textContent = pick ? pick.f : "";
 }
+
+// ---------- conversation mode ----------
+// No turns and no hand-off: one question stays up as a topic and the talk wanders from it.
+// When it slows, Keep it going offers the next nudge (the question's own follow-up first,
+// then this depth's general ones, then open prompts), so the pair asks for a new topic
+// only when they're done with this one.
+const TALK_ON = [
+  "Has that changed for you over the years?",
+  "What would the other one of you say about that?",
+  "What's the part of that you don't usually tell people?",
+  "Where does that show up in your life right now?",
+  "Is there a story that goes with that?",
+  "What would you add to what was just said?"
+];
+let talkQueue = [], talkAt = 0;
+function talkPrompts(pick){
+  const general = FOLLOW[state.level-1] || [];
+  const open = TALK_ON.slice().sort(() => Math.random() - 0.5).slice(0, 3);
+  return [...new Set([pick.f, ...general, ...open].filter(Boolean))];
+}
+function talkNext(){
+  if(!talkQueue.length) return;
+  const i = talkAt % talkQueue.length;
+  talkAt++;
+  $("followK").textContent = "Keep going · " + (i + 1) + " of " + talkQueue.length;
+  $("followText").textContent = talkQueue[i];
+  $("followQ").hidden = false;
+  const f = $("followQ"); f.style.animation = "none"; void f.offsetWidth; f.style.animation = "";
+}
+function paintTalk(){
+  $("talkMode").setAttribute("aria-pressed", prefs.talk);
+  $("optTalk").checked = prefs.talk;
+  // At the table there are no turns to drop, so Talk has nothing to do there
+  $("talkMode").hidden = isGathering();
+  $("next").textContent = talkNudges() ? "New topic" : "Next question";
+  if($("play").hidden || !state.current) return;
+  $("turn").textContent = turnText();
+  paintFollow(state.current);
+  $("left").textContent = hint();
+}
+function setTalk(on){
+  prefs.talk = on; savePrefs(); paintTalk();
+  haptic("select");
+}
+$("talkMode").onclick = () => setTalk(!prefs.talk);
+
 $("dig").onclick = () => {
+  if(talkNudges()){
+    if(!state.current) return;
+    $("dig").setAttribute("aria-expanded", "true");
+    talkNext();
+    haptic("select");
+    $("followQ").scrollIntoView({ block:"nearest", behavior: REDUCED ? "auto" : "smooth" });
+    if(!state.current.dug){ state.current.dug = true; lean(state.current, 0.5); $("left").textContent = hint(); }
+    return;
+  }
   const open = $("dig").getAttribute("aria-expanded") !== "true";
   $("dig").setAttribute("aria-expanded", open);
   $("followQ").hidden = !open;
@@ -348,13 +431,20 @@ $("dig").onclick = () => {
 };
 // After a few answers at one depth, invite the pair a little deeper; if they keep skipping,
 // suggest another depth instead.
-function readyForDeeper(){ return state.level < 5 && session.answered >= 4; }
+// At a mixed-age table the host picks the depth; the game never nudges the group deeper.
+function readyForDeeper(){ return !isGathering() && state.level < 5 && session.answered >= 4; }
 function hint(){
   if(session.skips >= 3) return "Not quite landing? Try another depth.";
   if(readyForDeeper()) return "Warmed up? Try going a little deeper.";
+  // On a first date, the deeper waters are a choice, never a step you have to take.
+  if(isFirstDate() && session.answered === 0 && !session.skips){
+    if(state.level >= 4) return "More personal from here, and all optional. Skip anything, anytime.";
+    if(state.level === 1) return "Easy ones first. Skip anything that doesn't land.";
+  }
   // People who ask follow-ups are liked more and feel more understood (Huang et al. 2017),
   // and most players never think to; so early in a sitting, say so.
   const c = state.current;
+  if(talkNudges() && c && !c.moment && !c.dug) return "No turns. Let it wander, and tap Keep it going when it slows.";
   if(c && c.f && !c.dug && !c.moment && session.answered < 3) return "Tap Follow-up to keep the answer going.";
   const n = pool(state.level).length;
   return n === 0 ? "Last new one at this depth" : n + " new left at this depth";
@@ -419,10 +509,11 @@ gauge.addEventListener("keydown", e => {
 // from the other person, so it skips the hand-off.
 $("next").onclick = () => {
   haptic();
-  if(state.current && !state.current.moment){ state.turn = 1 - state.turn; session.answered++; }
+  if(state.current && !state.current.moment){ if(!noTurns()) state.turn = 1 - state.turn; session.answered++; }
   session.skips = 0;
   newQuestion();
-  if(prefs.passScreen && state.current && !state.current.moment) dive();
+  // In conversation mode or at the table nobody holds the phone alone, so there's nothing to hide.
+  if(prefs.passScreen && !noTurns() && state.current && !state.current.moment) dive();
 };
 
 // ---------- hand-off: hold the ring to bring the question up ----------
@@ -777,6 +868,8 @@ $("optMoments").checked = prefs.moments;
 $("optMoments").onchange = () => { prefs.moments = $("optMoments").checked; savePrefs(); };
 $("optFish").checked = prefs.fish;
 $("optFish").onchange = () => { prefs.fish = $("optFish").checked; savePrefs(); prefs.fish ? fishPlan() : fishClear(); };
+$("optTalk").onchange = () => setTalk($("optTalk").checked);
+paintTalk();
 $("optWater").checked = prefs.water;
 $("optWater").onchange = () => { prefs.water = $("optWater").checked; savePrefs(); paintWater(); };
 $("resetSeen").onclick = () => {
@@ -846,6 +939,18 @@ if(!NATIVE && "serviceWorker" in navigator && location.protocol !== "file:"){
     } catch(e){}
   });
 }
+
+// ---------- Android back button ----------
+// Back should step out one layer (a sheet, then the play screen) like any Android app,
+// not drop the pair out of the game mid-question. Only at home does it leave.
+const AppPlugin = plugin("App");
+if(AppPlugin) AppPlugin.addListener("backButton", () => {
+  const open = [...document.querySelectorAll(".sheet-wrap")].find(w => !w.hidden);
+  if(open) closeSheet(open.id);
+  else if(!$("passScreen").hidden) return;   // the next question is hidden on purpose; hold the ring
+  else if(!$("play").hidden) showHome();
+  else AppPlugin.exitApp();
+});
 
 const lastVer = store.get(K.ver, null);
 if(lastVer && lastVer !== VERSION){
