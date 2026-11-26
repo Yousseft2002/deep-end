@@ -117,6 +117,14 @@ $("firstDate").onclick = () => {
   delete seen[FIRST_DATE[0].toLowerCase()]; store.set(K.seen, seen);
   start(...FIRST_DATE, 1);
 };
+// Around the Table: a group gathering, from children to grandparents. Anyone can answer, so
+// there are no turns, no hand-off, no names and no moments for two. This only reads state.cat;
+// it never touches prefs, so Talk, the hand-off and names are as they were when you leave.
+const GATHERING = ["Group gathering", "gathering", "the table"];
+const isGathering = () => state.cat === GATHERING[1];
+const noTurns = () => prefs.talk || isGathering();        // nobody takes a turn or hands the phone over
+const talkNudges = () => prefs.talk && !isGathering();    // Keep it going speaks to two people, so not at a table
+$("gathering").onclick = () => start(...GATHERING, 1);
 $("customForm").onsubmit = e => {
   e.preventDefault();
   const v = $("customInput").value.trim();
@@ -136,7 +144,7 @@ document.querySelectorAll("[data-tester-fb-open]").forEach(b => b.addEventListen
 function renderResume(){
   const last = store.get(K.last, null);
   $("resume").hidden = !last;
-  if(last) $("resumeText").textContent = (last.cat === FIRST_DATE[1] ? "First date" : "With " + last.phrase) + " · " + LEVELS[last.level-1];
+  if(last) $("resumeText").textContent = (last.cat === FIRST_DATE[1] ? "First date" : last.cat === GATHERING[1] ? "Around the Table" : "With " + last.phrase) + " · " + LEVELS[last.level-1];
 }
 $("resume").onclick = () => {
   const l = store.get(K.last, null);
@@ -157,6 +165,7 @@ $("changeWho").onclick = showHome;
 function names(){ return [prefs.nameA, prefs.nameB]; }
 function turnText(){
   const [a, b] = names();
+  if(isGathering()) return "Anyone can answer";
   if(state.current && state.current.moment) return a && b ? "A moment for " + a + " and " + b : "A moment for you both";
   if(prefs.talk) return "Conversation · no turns, anyone answers";
   if(isFirstDate()){
@@ -260,7 +269,7 @@ function score(x){
 function draw(){
   const qs = pool(state.level);
   if(!qs.length) return null;
-  const ms = prefs.moments && session.answered >= 2 && session.since >= session.gap ? momentPool(state.level) : [];
+  const ms = prefs.moments && !isGathering() && session.answered >= 2 && session.since >= session.gap ? momentPool(state.level) : [];
   let pick;
   if(ms.length){
     pick = ms[Math.floor(Math.random() * ms.length)];
@@ -270,7 +279,7 @@ function draw(){
     qs.forEach(x => { const s = score(x); if(s > top){ top = s; pick = x; } });
     session.since++;
     session.asked++;
-    pick.both = isFirstDate() || session.asked % 3 === 0;
+    pick.both = !isGathering() && (isFirstDate() || session.asked % 3 === 0);
     session.modes = [pick.mode, ...session.modes].slice(0, 3);
   }
   session.recent = [words(pick.q), ...session.recent].slice(0, 3);
@@ -288,7 +297,8 @@ $("reset").onclick = () => {
 function start(label, cat, phrase, level){
   Object.assign(state, { label, cat, phrase, turn:0 });
   freshSession();
-  $("changeWho").textContent = cat === FIRST_DATE[1] ? "First date" : "With " + phrase;
+  $("changeWho").textContent = cat === FIRST_DATE[1] ? "First date" : cat === GATHERING[1] ? "Around the Table" : "With " + phrase;
+  paintTalk();
   $("home").hidden = true; $("play").hidden = false;
   setLevel(level || 1, false);
   reportContext();
@@ -332,7 +342,8 @@ function paintQuestion(pick, animate){
   paintFollow(pick);
   $("deeper").classList.toggle("nudge", !exhausted && readyForDeeper());
   if(exhausted){
-    el.textContent = "You've asked every question at this depth with " + state.phrase + ".";
+    el.textContent = isGathering() ? "The table has answered every question at this depth."
+      : "You've asked every question at this depth with " + state.phrase + ".";
     $("turn").textContent = "Nothing new here";
     $("left").textContent = "Slide to another depth, or start this one over.";
   } else {
@@ -346,9 +357,9 @@ function paintQuestion(pick, animate){
 function paintFollow(pick){
   talkQueue = pick && !pick.moment ? talkPrompts(pick) : [];
   talkAt = 0;
-  $("dig").hidden = !(pick && (pick.f || (prefs.talk && talkQueue.length)));
+  $("dig").hidden = !(pick && (pick.f || (talkNudges() && talkQueue.length)));
   $("dig").setAttribute("aria-expanded", "false");
-  $("digLabel").textContent = prefs.talk ? "Keep it going" : "Follow-up";
+  $("digLabel").textContent = talkNudges() ? "Keep it going" : "Follow-up";
   $("followK").textContent = "Then ask";
   $("followQ").hidden = true;
   $("followText").textContent = pick ? pick.f : "";
@@ -385,7 +396,9 @@ function talkNext(){
 function paintTalk(){
   $("talkMode").setAttribute("aria-pressed", prefs.talk);
   $("optTalk").checked = prefs.talk;
-  $("next").textContent = prefs.talk ? "New topic" : "Next question";
+  // At the table there are no turns to drop, so Talk has nothing to do there
+  $("talkMode").hidden = isGathering();
+  $("next").textContent = talkNudges() ? "New topic" : "Next question";
   if($("play").hidden || !state.current) return;
   $("turn").textContent = turnText();
   paintFollow(state.current);
@@ -398,7 +411,7 @@ function setTalk(on){
 $("talkMode").onclick = () => setTalk(!prefs.talk);
 
 $("dig").onclick = () => {
-  if(prefs.talk){
+  if(talkNudges()){
     if(!state.current) return;
     $("dig").setAttribute("aria-expanded", "true");
     talkNext();
@@ -418,7 +431,8 @@ $("dig").onclick = () => {
 };
 // After a few answers at one depth, invite the pair a little deeper; if they keep skipping,
 // suggest another depth instead.
-function readyForDeeper(){ return state.level < 5 && session.answered >= 4; }
+// At a mixed-age table the host picks the depth; the game never nudges the group deeper.
+function readyForDeeper(){ return !isGathering() && state.level < 5 && session.answered >= 4; }
 function hint(){
   if(session.skips >= 3) return "Not quite landing? Try another depth.";
   if(readyForDeeper()) return "Warmed up? Try going a little deeper.";
@@ -430,7 +444,7 @@ function hint(){
   // People who ask follow-ups are liked more and feel more understood (Huang et al. 2017),
   // and most players never think to; so early in a sitting, say so.
   const c = state.current;
-  if(prefs.talk && c && !c.moment && !c.dug) return "No turns. Let it wander, and tap Keep it going when it slows.";
+  if(talkNudges() && c && !c.moment && !c.dug) return "No turns. Let it wander, and tap Keep it going when it slows.";
   if(c && c.f && !c.dug && !c.moment && session.answered < 3) return "Tap Follow-up to keep the answer going.";
   const n = pool(state.level).length;
   return n === 0 ? "Last new one at this depth" : n + " new left at this depth";
@@ -495,11 +509,11 @@ gauge.addEventListener("keydown", e => {
 // from the other person, so it skips the hand-off.
 $("next").onclick = () => {
   haptic();
-  if(state.current && !state.current.moment){ if(!prefs.talk) state.turn = 1 - state.turn; session.answered++; }
+  if(state.current && !state.current.moment){ if(!noTurns()) state.turn = 1 - state.turn; session.answered++; }
   session.skips = 0;
   newQuestion();
-  // In conversation mode nobody holds the phone alone, so there's nothing to hide.
-  if(prefs.passScreen && !prefs.talk && state.current && !state.current.moment) dive();
+  // In conversation mode or at the table nobody holds the phone alone, so there's nothing to hide.
+  if(prefs.passScreen && !noTurns() && state.current && !state.current.moment) dive();
 };
 
 // ---------- hand-off: hold the ring to bring the question up ----------

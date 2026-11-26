@@ -307,6 +307,12 @@ body:has(.sheet-wrap:not([hidden])) :is(.ocean *,.swell *,.glint svg){animation-
 .resume svg{color:var(--glow)}
 .resume-k{font-size:.74rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--glow)}
 .resume-v{font-weight:600}
+/* Around the Table: same card, lit by the buoy's yellow so a host spots it straight away */
+.resume.gather{border-color:color-mix(in srgb,var(--buoy) 70%,transparent);
+  background:linear-gradient(120deg,color-mix(in srgb,var(--buoy) 16%,transparent),transparent),rgba(2,12,22,.3)}
+.resume.gather .resume-k,.resume.gather svg{color:var(--buoy)}
+.resume-t{font-family:var(--serif);font-size:1.35rem;line-height:1.15}
+.resume.gather .resume-v{font-weight:500;color:var(--muted)}
 .pick-q{font-family:var(--serif);font-weight:400;font-size:1.55rem;line-height:1.2;margin:0 0 16px}
 .group{margin:0 0 18px}
 .group-h{font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 9px}

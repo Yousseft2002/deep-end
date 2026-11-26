@@ -809,6 +809,95 @@ firstdate:[
   ["What's something you're still figuring out about what you want?", "What would help you figure it out?", "inner"],
   ["How can someone make you feel special without spending a thing?", "Has anyone done it?", "appreciate"]
  ]
+],
+// Around the Table: a group gathering where anyone at the table answers, from children to
+// grandparents. Each entry's third item is its mode (story, future, appreciate, play, inner).
+gathering:[
+ [
+  ["If everyone here opened a restaurant together, what job would you have?", "What would be our signature dish?", "play"],
+  ["Which food could you happily eat every Friday for the rest of your life?", "Who makes it best?", "play"],
+  ["What is the funniest Darija or Arabic expression you know?", "When is the perfect time to use it?", "play"],
+  ["If you could take this whole table anywhere in Morocco or North Africa tomorrow, where would we go?", "What would we do first?", "future"],
+  ["What game did you love playing when you were younger, or love playing now?", "Could you teach us how to play?", "story"],
+  ["What is one food you disliked at first but ended up loving?", "What changed your mind?", "story"],
+  ["If you had to invent a new flavor of mint tea, what would it be?", "Who here would actually try it?", "play"],
+  ["What small thing can improve your mood almost instantly?", "When did it last work?", "appreciate"],
+  ["Which fictional character would make the funniest dinner guest?", "What would you ask them?", "play"],
+  ["What is a silly habit that makes you laugh, even when nobody else notices?", "How did it start?", "story"],
+  ["If we held a talent show tonight, what would your act be?", "What would you name your act?", "play"],
+  ["What smell makes you think of a happy place?", "What does that place look like?", "story"],
+  ["What is the best snack for a long road trip?", "What snack should never be allowed in the car?", "play"],
+  ["What is something fun you wish people your age did more often?", "Could our group try it together?", "future"],
+  ["What harmless opinion about food are you willing to defend forever?", "Can anyone at the table change your mind?", "play"]
+ ],
+ [
+  ["What did a normal weekend look like when you were younger?", "What part would you bring back today?", "story"],
+  ["What tradition from your home or community would you love to teach someone new?", "How did you learn it?", "story"],
+  ["What is a funny memory from an Eid gathering or another celebration?", "What made it unforgettable?", "story"],
+  ["Which place in Morocco, North Africa, or elsewhere holds a special memory for you?", "What do you remember seeing or hearing there?", "story"],
+  ["What is a small adventure you still talk about?", "Who made it more fun?", "story"],
+  ["What is something people did for fun before everyone had smartphones, or something you like doing without one now?", "Should we try it together?", "story"],
+  ["What is one skill you learned from an older or younger person?", "What made them a good teacher?", "appreciate"],
+  ["What is the story of a nickname you have or once had?", "Does anybody still use it?", "story"],
+  ["What is something that made you laugh much harder than it should have?", "What was happening at the time?", "story"],
+  ["What did you imagine your life would look like when you were little, or what do you imagine now?", "Which part sounds most exciting?", "future"],
+  ["What is a dish you associate with someone you care about?", "What makes their version special?", "appreciate"],
+  ["What is a phrase or piece of advice you remember hearing while growing up?", "Do you ever find yourself saying it now?", "story"],
+  ["What is something you used to think was difficult that now feels easy?", "How did you get better at it?", "story"],
+  ["What is one good memory you have with an old friend?", "What would you tell that friend about it today?", "appreciate"],
+  ["If we made a time capsule tonight, what would you put inside?", "What should someone opening it in twenty years know about us?", "play"]
+ ],
+ [
+  ["What is one ordinary blessing you have been appreciating lately?", "What helped you notice it?", "appreciate"],
+  ["Who has shown you kindness in a way you still remember?", "How could we pass that kindness on?", "appreciate"],
+  ["What part of your culture makes you feel most connected to other people?", "How could we share it with the next generation?", "appreciate"],
+  ["What is one thing you learned this year that surprised you?", "How has it changed what you do?", "story"],
+  ["What is something younger and older generations could learn from each other?", "What would you personally like to learn?", "future"],
+  ["What makes a friendship last when life gets busy?", "What is one small way to stay in touch?", "inner"],
+  ["What does feeling at home mean to you?", "Can you find that feeling in more than one place?", "inner"],
+  ["What is an act of generosity you have seen that cost little or nothing?", "What made it meaningful?", "appreciate"],
+  ["What is something about yourself that you are glad has changed?", "What helped you grow?", "inner"],
+  ["What is a good habit you would like to build together with friends or family?", "What is an easy first step?", "future"],
+  ["What helps you remember to say Alhamdulillah during an ordinary day?", "What is one moment today you are grateful for?", "appreciate"],
+  ["What does being a good neighbor look like to you?", "What could we do for someone nearby?", "inner"],
+  ["What is a tradition you would keep even if you moved far away?", "Why is it worth keeping?", "appreciate"],
+  ["What is a small achievement you are proud of, even if nobody noticed?", "What did it take to get there?", "appreciate"],
+  ["What is one thing about someone at this table that you admire?", "What could you learn from that quality?", "appreciate"]
+ ],
+ [
+  ["What makes someone a person you can truly count on?", "How can we become that person for others?", "inner"],
+  ["What is a life lesson that took you a while to understand?", "How would you explain it to someone younger?", "story"],
+  ["What does patience, or sabr, look like in everyday life to you?", "What helps you practice it?", "inner"],
+  ["What is something you hope never gets lost between generations?", "How can we keep it alive?", "future"],
+  ["When has someone helped you see things from a different perspective?", "What did you learn from listening?", "story"],
+  ["What does success mean to you beyond money, grades, or job titles?", "What is one sign you are moving toward it?", "inner"],
+  ["How can people make a newcomer feel like they belong?", "What is one thing we could do at our next gathering?", "future"],
+  ["What helps you stay hopeful when a plan does not work out?", "What kind of encouragement is most helpful?", "inner"],
+  ["What is a quality you would like people to associate with you?", "How could you show it more often?", "future"],
+  ["What does respecting elders and listening to younger people look like in practice?", "How can both happen at the same time?", "inner"],
+  ["What is something you learned about friendship as you got older?", "What advice would you share with a younger friend?", "story"],
+  ["What is one way faith or your personal values help you make everyday choices?", "What is a small example?", "inner"],
+  ["What is a way to disagree with someone while still showing them respect?", "What helps you listen well?", "inner"],
+  ["What kind of support helps people feel comfortable asking for help?", "What could friends do more often?", "future"],
+  ["What would make our community a little stronger over the next year?", "What could we start doing together?", "future"]
+ ],
+ [
+  ["If future generations heard one story about our community, what would you want it to be?", "Why would that story matter to them?", "future"],
+  ["What is a value you hope people learn from the way you live, not just from your words?", "What action could show it?", "inner"],
+  ["What is a kindness you received that you would love to pass forward?", "Who might benefit from it?", "appreciate"],
+  ["What kind of person do you hope to become over the next few years?", "What is one small step you can take now?", "future"],
+  ["What does a meaningful life look like to you?", "Which part of that life can you live today?", "inner"],
+  ["What is something you hope Allah grants our community in the coming year?", "What can we do to help bring about that good?", "future"],
+  ["What do you hope your friends remember about the way you treated them?", "What does that look like on an ordinary day?", "inner"],
+  ["What is one lesson from your heritage that could help someone anywhere in the world?", "How would you explain it to them?", "inner"],
+  ["What does being there for someone mean when you cannot solve their problem?", "What could you say or do instead?", "inner"],
+  ["What would you like to make more time for while life keeps getting busier?", "What would make that easier?", "future"],
+  ["What kind of example can each generation set for the next?", "Who has already set a good example for you?", "appreciate"],
+  ["What is a way our group can turn gratitude into action?", "What is one realistic thing we can do this month?", "future"],
+  ["What makes you feel genuinely seen or appreciated by other people?", "How can we offer that to someone else?", "inner"],
+  ["What is one hope you have for the younger people in our community, or for yourself as you grow up?", "How can others help make it possible?", "future"],
+  ["What is one good thing about being together tonight that you want us to remember?", "How can we make more moments like this?", "appreciate"]
+ ]
 ]
 },
 
