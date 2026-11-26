@@ -1,8 +1,15 @@
 // Single source of truth for the release. Loaded by the page AND the service worker,
 // so bumping it is what makes installed phones notice an update.
 // Use `python tools/release.py 2.0.1 "What changed"` rather than editing by hand.
-self.DEEPEND_VERSION = "3.7.1";
+self.DEEPEND_VERSION = "3.7.2";
 self.DEEPEND_CHANGES = [
+  {
+    "v": "3.7.2",
+    "date": "2026-11-26",
+    "notes": [
+      "Around the Table now has 200 questions, including 125 new prompts for stories, playful ideas, and conversation across generations."
+    ]
+  },
   {
     "v": "3.7.1",
     "date": "2026-11-26",
