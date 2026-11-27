@@ -295,7 +295,7 @@ test("expired recovery is not offered and teen recovery is unavailable", async (
   const { p, context } = await page();
   try {
     await p.goto(base + "/inner-depth.html");
-    await p.evaluate(() => localStorage.setItem("deepend-inner-depth-recovery-v1", JSON.stringify({expires:Date.now()-1})));
+    await p.evaluate(() => localStorage.setItem("deepend-inner-depth-recovery-v1", JSON.stringify({version:1,id:"expired",expires:Date.now()-1,index:7,screen:"question",notes:Array(8).fill("expired note"),prior:"",observed:"",preferences:"",extra:"",unsure:""})));
     await p.reload();
     assert.equal(await p.isVisible("#recovery-offer"),false);
     assert.equal(await p.evaluate(() => localStorage.getItem("deepend-inner-depth-recovery-v1")),null);
@@ -312,8 +312,41 @@ test("missing speech start event recovers without losing notes", async () => {
     await p.goto(base + "/inner-depth.html");
     await p.check("#consent"); await p.click("#start"); await p.check('input[name="age-band"][value="adult"]'); await p.click("#begin");
     await p.fill("#notes","keep me"); await p.click("#dictate"); await p.click("#dictation-agree");
-    await p.waitForFunction(() => document.getElementById("dictation-status").textContent.includes("timed out"), {timeout:12000});
+    await p.waitForFunction(() => document.getElementById("dictation-status").textContent.includes("timed out"), null, {timeout:12000});
     assert.equal(await p.inputValue("#notes"),"keep me");
     assert.equal(await p.getAttribute("#dictate","aria-pressed"),"false");
+  } finally { await context.close(); }
+});
+
+test("stop watchdog returns to typing when speech never ends; no save without consent", async () => {
+  const { p, context } = await page();
+  try {
+    await p.addInitScript(() => {
+      window.SpeechRecognition = class { start() { this.onstart?.(); } stop() {} abort() {} };
+    });
+    await p.goto(base + "/inner-depth.html");
+    await p.check("#consent"); await p.click("#start");
+    await p.check('input[name="age-band"][value="adult"]'); await p.click("#begin");
+    await p.fill("#notes","keep this");
+    await p.click("#dictate"); await p.click("#dictation-agree"); await p.click("#dictate");
+    await p.waitForFunction(() => document.getElementById("dictation-status").textContent.includes("timed out"), null, {timeout:7000});
+    assert.equal(await p.inputValue("#notes"),"keep this");
+    assert.equal(await p.evaluate(() => localStorage.getItem("deepend-inner-depth-recovery-v1")),null);
+    await p.reload();
+    assert.equal(await p.isVisible("#recovery-offer"),false);
+  } finally { await context.close(); }
+});
+test("turning off recovery deletes its copy without erasing open notes", async () => {
+  const { p, context } = await page();
+  try {
+    await p.goto(base + "/inner-depth.html");
+    await p.check("#consent"); await p.click("#start");
+    await p.check('input[name="age-band"][value="adult"]'); await p.check("#recovery-opt-in"); await p.click("#begin");
+    await p.fill("#notes","local only");
+    await p.click("#recovery-off");
+    assert.equal(await p.inputValue("#notes"),"local only");
+    assert.equal(await p.evaluate(() => localStorage.getItem("deepend-inner-depth-recovery-v1")),null);
+    await p.fill("#notes","still local"); await p.click("#next");
+    assert.equal(await p.evaluate(() => localStorage.getItem("deepend-inner-depth-recovery-v1")),null);
   } finally { await context.close(); }
 });
