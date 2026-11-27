@@ -65,8 +65,8 @@ function disableRecovery(message, remove = true) {
   clearTimeout(recoveryTimer); recoveryTimer = null;
   if (remove && recoveryId) {
     try {
-      const d = readRecovery();
-      if (d && d.id === recoveryId) localStorage.removeItem(RECOVERY_KEY);
+      const raw = localStorage.getItem(RECOVERY_KEY);
+      if (raw && JSON.parse(raw)?.id === recoveryId) localStorage.removeItem(RECOVERY_KEY);
     } catch (_) { message = "Could not remove recovery copy. Clear this site's data if needed."; }
   }
   recoveryId = ""; recoveryExpiry = 0;
