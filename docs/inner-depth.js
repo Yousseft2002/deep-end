@@ -2,7 +2,7 @@
 "use strict";
 // Inner Depth: eight questions, local notes, an optional AI organizer for consenting adults, and a
 // facilitator review where nothing is approved automatically. Everything lives in this closure's
-// memory; erase() clears it, and nothing is ever written to localStorage, sessionStorage or caches.
+// memory by default; adults can separately opt into a short-lived local recovery draft.
 const Q = [
   ["identity", "Identity", "How would you describe yourself right now, in your own words?", "Listen for what they value about themselves. Avoid evaluating their answer."],
   ["being-seen", "Being seen", "When do you feel most like yourself, and when do you feel misunderstood?", "Let them choose the people or situations they want to talk about."],
@@ -19,7 +19,7 @@ const screens = ["intro", "context", "question", "review", "ai-consent", "result
 const API = self.INNER_DEPTH_API || { base: "/api/inner-depth", timeoutMs: 95000 };
 const SAFETY = self.INNER_DEPTH_SAFETY;
 
-// ---- Session state (memory only) -------------------------------------------------------------
+// ---- Session state (memory by default) -------------------------------------------------------------
 let notes = Q.map(() => ""), index = 0, active = false;
 let ageBand = "unknown", prior = "", observed = "", preferences = "", extra = "", unsure = "";
 let drafts = Q.map(() => ""), selected = Q.map(() => false);        // local organizer
@@ -37,41 +37,152 @@ function newSessionId() {
   return [...bytes].map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
+// ---- Optional local recovery -------------------------------------------------------------------
+const RECOVERY_KEY = "deepend-inner-depth-recovery-v1";
+const RECOVERY_TTL = 2 * 60 * 60 * 1000;
+let recoveryId = "", recoveryExpiry = 0, recoveryTimer = null;
+function recoveryStatus(message) { $("recovery-status").textContent = message; }
+function readRecovery() {
+  try {
+    const raw = localStorage.getItem(RECOVERY_KEY);
+    if (!raw) return null;
+    const d = JSON.parse(raw);
+    if (!d || d.version !== 1 || typeof d.id !== "string" || !Number.isFinite(d.expires) ||
+        d.expires <= Date.now() || d.expires > Date.now() + RECOVERY_TTL ||
+        !Number.isInteger(d.index) || d.index < 0 || d.index >= Q.length ||
+        !["question", "review"].includes(d.screen) || !Array.isArray(d.notes) ||
+        d.notes.length !== Q.length || !d.notes.every(n => typeof n === "string" && n.length <= 1600) ||
+        ![["prior",1600],["observed",1200],["preferences",400],["extra",800],["unsure",400]].every(([k,m]) => typeof d[k] === "string" && d[k].length <= m)) {
+      localStorage.removeItem(RECOVERY_KEY); return null;
+    }
+    return d;
+  } catch (_) {
+    try { localStorage.removeItem(RECOVERY_KEY); } catch (_) {}
+    return null;
+  }
+}
+function disableRecovery(message, remove = true) {
+  clearTimeout(recoveryTimer); recoveryTimer = null;
+  if (remove && recoveryId) {
+    try {
+      const d = readRecovery();
+      if (d && d.id === recoveryId) localStorage.removeItem(RECOVERY_KEY);
+    } catch (_) { message = "Could not remove recovery copy. Clear this site's data if needed."; }
+  }
+  recoveryId = ""; recoveryExpiry = 0;
+  $("recovery-off").hidden = true;
+  recoveryStatus(message);
+}
+function scheduleExpiry() {
+  clearTimeout(recoveryTimer);
+  recoveryTimer = setTimeout(() => {
+    if (active && recoveryId) disableRecovery("Recovery expired; your open session remains in memory.");
+    else refreshRecoveryOffer();
+  }, Math.max(0, recoveryExpiry - Date.now()) + 20);
+}
+function saveRecovery(screen) {
+  if (!active || !recoveryId || ageBand !== "adult") return;
+  if (Date.now() >= recoveryExpiry) { disableRecovery("Recovery expired; your open session remains in memory."); return; }
+  try {
+    const d = readRecovery();
+    if (d && d.id !== recoveryId) { disableRecovery("Another recovery draft exists. This session is now memory-only.", false); return; }
+    const target = screen || (!$("question").hidden ? "question" : "review");
+    localStorage.setItem(RECOVERY_KEY, JSON.stringify({version:1,id:recoveryId,expires:recoveryExpiry,index,screen:target,notes,prior,observed,preferences,extra,unsure}));
+    $("recovery-off").hidden = false;
+    recoveryStatus("Local recovery on · expires at " + new Date(recoveryExpiry).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"}));
+  } catch (_) { disableRecovery("Recovery could not save. Your open session is memory-only."); }
+}
+function refreshRecoveryOffer() {
+  if (active) return;
+  const d = readRecovery();
+  $("recovery-offer").hidden = !d;
+  $("restore-draft").disabled = !$("consent").checked || !d;
+  $("start").disabled = !$("consent").checked || !!d;
+  clearTimeout(recoveryTimer);
+  if (d) { recoveryExpiry = d.expires; scheduleExpiry(); }
+}
+function restoreRecovery() {
+  const d = readRecovery();
+  if (!$("consent").checked || !d || active) { refreshRecoveryOffer(); return; }
+  active = true; ageBand = "adult"; ageInputs.forEach(el => el.checked = el.value === "adult");
+  index = d.index; notes = d.notes.slice(); prior = d.prior; observed = d.observed; preferences = d.preferences; extra = d.extra; unsure = d.unsure;
+  $("prior-context").value = prior; $("observed-context").value = observed; $("preferences").value = preferences;
+  recoveryId = d.id; recoveryExpiry = d.expires; scheduleExpiry();
+  $("recovery-offer").hidden = true;
+  if (d.screen === "review") review(); else question();
+}
+
 // ---- Optional, adult-only microphone dictation ------------------------------------------------
 // Browser speech recognition may use a third-party service. Never start silently or store audio.
-const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+// A constructor's presence does not guarantee a working native speech service.
+const appleMobile = /iPad|iPhone|iPod/i.test(navigator.userAgent) ||
+  (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const installed = navigator.standalone === true || matchMedia("(display-mode: standalone)").matches;
+const nativeShell = !!(window.Capacitor?.isNativePlatform?.());
+const Recognition = appleMobile || installed || nativeShell ? null : (window.SpeechRecognition || window.webkitSpeechRecognition);
+const DICTATION_FALLBACK = "Use your keyboard microphone if available, or type.";
+let speechTimer = null, consentPending = false, speechPhase = "idle";
+function speechDiagnostic(code) { console.info("[Inner Depth speech]", code); }
+function clearSpeechTimer() { clearTimeout(speechTimer); speechTimer = null; }
+function speechTimeout(current, ms, code) {
+  clearSpeechTimer();
+  speechTimer = setTimeout(() => {
+    if (recognition !== current) return;
+    cancelDictation("Dictation timed out. " + DICTATION_FALLBACK, code);
+  }, ms);
+}
 let recognition = null;
 function dictationUI(listening, message) {
   $("dictate").setAttribute("aria-pressed", String(listening));
   $("dictate-label").textContent = listening ? "Stop dictation" : "Dictate notes";
   $("dictation-status").textContent = message;
 }
-function cancelDictation() {
+function cancelDictation(message, code) {
   const current = recognition; recognition = null;
-  if (current) { try { current.abort(); } catch (_) { /* already stopped */ } }
-  dictationUI(false, Recognition ? "Optional. Ask permission before speaking." : "Use your keyboard microphone if available, or type.");
+  clearSpeechTimer(); speechPhase = "idle"; consentPending = false;
+  $("dictation-consent").hidden = true;
+  if (current) {
+    current.onstart = current.onresult = current.onerror = current.onend = null;
+    try { current.abort(); } catch (_) { speechDiagnostic("abort-failed"); }
+  }
+  if (code) speechDiagnostic(code);
+  dictationUI(false, message || (Recognition ? "Optional. Ask permission before speaking." : DICTATION_FALLBACK));
 }
 function toggleDictation() {
   if (recognition) {
     const current = recognition;
-    try { dictationUI(true, "Finishing dictation…"); current.stop(); }
-    catch (_) { cancelDictation(); }
+    if (speechPhase === "stopping") { cancelDictation(); return; }
+    if (speechPhase === "starting") { cancelDictation(); return; }
+    try { speechPhase = "stopping"; dictationUI(true, "Finishing dictation…"); speechTimeout(current, 3000, "stop-timeout"); current.stop(); }
+    catch (_) { cancelDictation("Dictation stopped. " + DICTATION_FALLBACK, "stop-failed"); }
     return;
   }
   if (!Recognition || ageBand !== "adult" || !active || $("question").hidden) return;
-  if (!window.confirm("Do both of you agree to microphone dictation for this note? Your browser or device speech service may receive audio and process it remotely under its own privacy policy. Deep End does not store audio. You can type instead.")) return;
+  consentPending = !consentPending;
+  $("dictation-consent").hidden = !consentPending;
+}
+function startDictation() {
+  if (!consentPending || recognition || !Recognition || ageBand !== "adult" || !active || $("question").hidden) return;
+  consentPending = false; $("dictation-consent").hidden = true;
+  capture(); saveRecovery("question");
   const field = $("notes"), questionIndex = index;
   let current;
   try { current = new Recognition(); } catch (_) { dictationUI(false, "Dictation unavailable. You can still type."); return; }
-  recognition = current;
-  current.lang = navigator.language || "en-US";
-  current.continuous = true;
-  current.interimResults = false;
-  current.maxAlternatives = 1;
+  recognition = current; speechPhase = "starting";
+  try {
+    current.lang = navigator.language || "en-US";
+    current.continuous = false;
+    current.interimResults = false;
+    current.maxAlternatives = 1;
+  } catch (_) { cancelDictation("Dictation unavailable. " + DICTATION_FALLBACK, "configure-failed"); return; }
   let message = "Dictation stopped. Review or edit your notes.";
   const isCurrent = () => recognition === current && active && index === questionIndex && !$("question").hidden;
   const handled = new Set();
-  current.onstart = () => { if (isCurrent()) dictationUI(true, "Listening… Tap to stop."); };
+  current.onstart = () => {
+    if (!isCurrent() || speechPhase !== "starting") return;
+    speechPhase = "listening"; dictationUI(true, "Listening… Tap to stop.");
+    speechTimeout(current, 60000, "listen-timeout");
+  };
   current.onresult = e => {
     if (!isCurrent()) return;
     for (let i = e.resultIndex; i < e.results.length; i++) {
@@ -98,13 +209,14 @@ function toggleDictation() {
     message = e.error === "not-allowed" || e.error === "service-not-allowed" ? "Microphone access was not granted. You can still type."
       : e.error === "no-speech" ? "No speech detected. Try again or type."
       : "Dictation unavailable. Check your microphone or connection, or type.";
-    recognition = null;
-    try { current.abort(); } catch (_) { /* already stopped */ }
-    dictationUI(false, message);
+    cancelDictation(message, ["not-allowed","service-not-allowed","no-speech","network","audio-capture","aborted"].includes(e.error) ? e.error : "other-error");
   };
-  current.onend = () => { if (recognition === current) { recognition = null; dictationUI(false, message); } };
-  try { dictationUI(true, "Starting microphone…"); current.start(); }
-  catch (_) { cancelDictation(); dictationUI(false, "Dictation unavailable. You can still type."); }
+  current.onend = () => {
+    if (recognition !== current) return;
+    recognition = null; clearSpeechTimer(); speechPhase = "idle"; dictationUI(false, message);
+  };
+  try { dictationUI(true, "Starting microphone…"); speechTimeout(current, 8000, "start-timeout"); current.start(); }
+  catch (_) { cancelDictation("Dictation unavailable. " + DICTATION_FALLBACK, "start-failed"); }
 }
 
 // ---- Screens -----------------------------------------------------------------------------------
@@ -113,11 +225,14 @@ function show(id, focus) {
   if (id !== "question") cancelDictation();
   for (const screen of screens) $(screen).hidden = screen !== id;
   $("clear").hidden = !active;
+  if (id === "question" || id === "review") saveRecovery(id);
   if (focus) $(focus).focus();
   window.scrollTo(0, 0);
 }
 function updateAge() {
   ageBand = ageInputs.find(el => el.checked)?.value || "unknown";
+  $("recovery-option").hidden = ageBand !== "adult";
+  if (ageBand !== "adult") $("recovery-opt-in").checked = false;
   $("begin").disabled = ageBand === "child"; $("skip-context").disabled = ageBand === "child";
   $("age-guidance").textContent = ageBand === "child" ? "This prototype is not intended for children under 13. End this reflection."
     : ageBand === "adult" ? "Adult reflection; background remains optional. The optional AI organizer is available for adults only."
@@ -127,6 +242,10 @@ function begin(skip) {
   updateAge(); if (ageBand === "child") return;
   prior = skip ? "" : $("prior-context").value; observed = skip ? "" : $("observed-context").value; preferences = skip ? "" : $("preferences").value;
   $("prior-context").value = prior; $("observed-context").value = observed; $("preferences").value = preferences;
+  if (ageBand === "adult" && $("recovery-opt-in").checked) {
+    if (readRecovery()) recoveryStatus("Another recovery draft exists; this session is memory-only.");
+    else { recoveryId = newSessionId(); recoveryExpiry = Date.now() + RECOVERY_TTL; scheduleExpiry(); }
+  }
   index = 0; question();
 }
 function capture() { if (!$("question").hidden) notes[index] = $("notes").value; }
@@ -153,13 +272,13 @@ function review() {
   [["Previously shared", prior, v => { prior = v; $("prior-context").value = v; }], ["Facilitator impressions (not participant statements)", observed, v => { observed = v; $("observed-context").value = v; }]].forEach(([name, value, save], i) => {
     const label = document.createElement("label"); label.htmlFor = "context-review-" + i; label.textContent = name;
     const field = document.createElement("textarea"); field.id = label.htmlFor; field.value = value; field.maxLength = i ? 1200 : 1600;
-    field.addEventListener("input", () => { save(field.value); invalidateDrafts(); }); context.append(label, field);
+    field.addEventListener("input", () => { save(field.value); invalidateDrafts(); saveRecovery("review"); }); context.append(label, field);
   });
   Q.forEach((q, i) => {
     const field = document.createElement("div"); field.className = "review-field";
     const label = document.createElement("label"); label.htmlFor = "review-note-" + i; label.textContent = (i + 1) + ". " + promptFor(i);
     const input = document.createElement("textarea"); input.id = label.htmlFor; input.maxLength = 1600; input.value = notes[i]; input.placeholder = "Not answered";
-    input.addEventListener("input", () => { notes[i] = input.value; invalidateDrafts(i); });
+    input.addEventListener("input", () => { notes[i] = input.value; invalidateDrafts(i); saveRecovery("review"); });
     field.append(label, input); parent.append(field);
   });
   $("extra-notes").value = extra; $("unsure-notes").value = unsure;
@@ -586,7 +705,7 @@ function para(text) { const p = document.createElement("p"); p.textContent = tex
 
 // ---- Erase ---------------------------------------------------------------------------------------
 function erase() {
-  cancelDictation();
+  cancelDictation(); disableRecovery(""); $("recovery-opt-in").checked = false;
   notes = Q.map(() => ""); index = 0; active = false; prior = ""; observed = ""; preferences = ""; extra = ""; unsure = "";
   drafts = Q.map(() => ""); selected = Q.map(() => false);
   status = null; accessCode = ""; sessionId = ""; dossier = null; chat = []; readoutSource = "local"; busy = false;
@@ -596,7 +715,7 @@ function erase() {
   document.querySelector('input[name="routing"][value="adaptive"]').checked = true;
   ageInputs.forEach(el => el.checked = el.value === "unknown"); updateAge();
   $("start").disabled = true; setStatus("ai-status", ""); setStatus("chat-status", "");
-  show("intro", "consent");
+  show("intro", "consent"); refreshRecoveryOffer();
 }
 function hasContent() {
   return notes.some(n => n.trim()) || $("notes").value.trim() || prior.trim() || observed.trim() || $("prior-context").value.trim() || $("observed-context").value.trim() || drafts.some(n => n.trim()) || !!dossier || extra.trim() || unsure.trim();
@@ -604,21 +723,39 @@ function hasContent() {
 function confirmErase() { return !hasContent() || window.confirm("End this reflection and erase all notes, drafts and AI output?"); }
 
 // ---- Wiring --------------------------------------------------------------------------------------
-$("consent").addEventListener("change", () => { $("start").disabled = !$("consent").checked; });
-$("start").addEventListener("click", () => { if (!$("consent").checked) return; active = true; index = 0; updateAge(); show("context", "context-title"); });
+$("consent").addEventListener("change", refreshRecoveryOffer);
+$("restore-draft").addEventListener("click", restoreRecovery);
+$("discard-draft").addEventListener("click", () => {
+  try { localStorage.removeItem(RECOVERY_KEY); recoveryStatus(""); }
+  catch (_) { recoveryStatus("Could not delete the recovery copy. Clear this site's data if needed."); }
+  refreshRecoveryOffer();
+});
+$("recovery-off").addEventListener("click", () => disableRecovery("Recovery off. Open session remains in memory."));
+window.addEventListener("storage", e => {
+  if (e.key !== RECOVERY_KEY && e.key !== null) return;
+  if (!active) refreshRecoveryOffer();
+  else if (recoveryId && readRecovery()?.id !== recoveryId) disableRecovery("Recovery was changed in another tab. Open session is memory-only.", false);
+});
+$("start").addEventListener("click", () => { if (!$("consent").checked || readRecovery()) { refreshRecoveryOffer(); return; } active = true; index = 0; updateAge(); show("context", "context-title"); });
 ageInputs.forEach(el => el.addEventListener("change", updateAge));
 $("begin").addEventListener("click", () => begin(false));
 $("skip-context").addEventListener("click", () => begin(true));
-$("notes").addEventListener("input", () => { capture(); invalidateDrafts(index); });
+$("notes").addEventListener("input", () => { capture(); invalidateDrafts(index); saveRecovery("question"); });
 $("dictate").addEventListener("click", toggleDictation);
-document.addEventListener("visibilitychange", () => { if (document.hidden) cancelDictation(); });
+$("dictation-agree").addEventListener("click", startDictation);
+$("dictation-decline").addEventListener("click", () => cancelDictation());
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) cancelDictation();
+  else if (!active) refreshRecoveryOffer();
+  else if (recoveryId && Date.now() >= recoveryExpiry) disableRecovery("Recovery expired; your open session remains in memory.");
+});
 $("back").addEventListener("click", () => { cancelDictation(); capture(); if (index > 0) { index--; question(); } });
 $("next").addEventListener("click", () => { cancelDictation(); capture(); if (index < Q.length - 1) { index++; question(); } else review(); });
 $("skip").addEventListener("click", () => { cancelDictation(); capture(); if (notes[index].trim() && !window.confirm("Skip this question and remove its notes?")) return; notes[index] = ""; invalidateDrafts(index); $("notes").value = ""; if (index < Q.length - 1) { index++; question(); } else review(); });
 $("finish").addEventListener("click", review);
 $("resume").addEventListener("click", () => { extra = $("extra-notes").value; unsure = $("unsure-notes").value; question(); });
-$("extra-notes").addEventListener("input", () => { extra = $("extra-notes").value; invalidateDrafts(); });
-$("unsure-notes").addEventListener("input", () => { unsure = $("unsure-notes").value; invalidateDrafts(); });
+$("extra-notes").addEventListener("input", () => { extra = $("extra-notes").value; invalidateDrafts(); saveRecovery("review"); });
+$("unsure-notes").addEventListener("input", () => { unsure = $("unsure-notes").value; invalidateDrafts(); saveRecovery("review"); });
 $("organize").addEventListener("click", () => { extra = $("extra-notes").value; unsure = $("unsure-notes").value; organize(); });
 $("organize-ai").addEventListener("click", () => { if (ageBand !== "adult" || !status || !status.enabled) return; if (dossier) { renderDossier(); return; } openAiConsent(); });
 $("edit").addEventListener("click", review);
@@ -640,5 +777,10 @@ $("chat-clear").addEventListener("click", () => { chat = []; renderChat(); });
 $("clear").addEventListener("click", () => { cancelDictation(); if (confirmErase()) erase(); });
 $("done").addEventListener("click", () => { if (confirmErase()) erase(); });
 $("home-link").addEventListener("click", e => { cancelDictation(); if (active && !confirmErase()) { e.preventDefault(); return; } if (active) erase(); });
-window.addEventListener("pagehide", () => { if (active) erase(); });
+window.addEventListener("pagehide", () => {
+  if (!active) return;
+  if (recoveryId) { capture(); saveRecovery(); cancelDictation(); }
+  else erase();
+});
+refreshRecoveryOffer();
 })();
