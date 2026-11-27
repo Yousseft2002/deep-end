@@ -211,9 +211,9 @@ test("optional dictation appends final text, requires consent, stops on navigati
     await p.check("#consent"); await p.click("#start");
     await p.check('input[name="age-band"][value="adult"]'); await p.click("#begin");
     await p.fill("#notes", "typed");
-    p.once("dialog", d => d.dismiss()); await p.click("#dictate");
+    await p.click("#dictate"); await p.click("#dictation-decline");
     assert.equal(await p.evaluate(() => !!window.mockSpeech), false);
-    p.once("dialog", d => d.accept()); await p.click("#dictate");
+    await p.click("#dictate"); await p.click("#dictation-agree");
     assert.equal(await p.getAttribute("#dictate", "aria-pressed"), "true");
     await p.evaluate(() => window.mockSpeech.emit("partial", false));
     assert.equal(await p.inputValue("#notes"), "typed");
@@ -224,7 +224,7 @@ test("optional dictation appends final text, requires consent, stops on navigati
     await p.evaluate(() => window.mockSpeech.emit("late result"));
     assert.equal(await p.inputValue("#notes"), "");
     await p.click("#back"); assert.equal(await p.inputValue("#notes"), "typed spoken");
-    p.once("dialog", d => d.accept()); await p.click("#dictate");
+    await p.click("#dictate"); await p.click("#dictation-agree");
     await p.evaluate(() => window.mockSpeech.onerror({error:"not-allowed"}));
     assert.match(await p.textContent("#dictation-status"), /not granted/);
     assert.equal(await p.inputValue("#notes"), "typed spoken");
@@ -247,5 +247,106 @@ test("dictation is optional when unsupported and is not offered for teens", asyn
     await p.check("#consent"); await p.click("#start");
     await p.check('input[name="age-band"][value="teen"]'); await p.click("#begin");
     assert.equal(await p.isVisible("#dictation-row"), false);
+  } finally { await context.close(); }
+});
+
+test("opt-in adult recovery restores question eight after reload, review edits, and erases", async () => {
+  const { p, context } = await page();
+  try {
+    await p.goto(base + "/inner-depth.html");
+    await p.check("#consent"); await p.click("#start");
+    await p.check('input[name="age-band"][value="adult"]'); await p.check("#recovery-opt-in");
+    await p.click("#begin");
+    for (let i = 0; i < 7; i++) { await p.fill("#notes", "answer " + i); await p.click("#next"); }
+    await p.fill("#notes", "last answer"); await p.reload();
+    await p.check("#consent"); await p.click("#restore-draft");
+    assert.match(await p.textContent("#step"), /Question 8/);
+    assert.equal(await p.inputValue("#notes"), "last answer");
+    await p.click("#next");
+    assert.equal(await p.inputValue("#review-note-0"), "answer 0");
+    await p.fill("#review-note-7", "corrected final"); await p.reload();
+    await p.check("#consent"); await p.click("#restore-draft");
+    assert.equal(await p.inputValue("#review-note-7"), "corrected final");
+    p.once("dialog", d => d.accept()); await p.click("#clear");
+    assert.equal(await p.evaluate(() => localStorage.getItem("deepend-inner-depth-recovery-v1")), null);
+  } finally { await context.close(); }
+});
+test("iPhone first microphone attempt on question eight uses keyboard fallback", async () => {
+  const { p, context } = await page();
+  try {
+    await p.addInitScript(() => {
+      Object.defineProperty(navigator, "userAgent", {get: () => "iPhone"});
+      window.SpeechRecognition = class { constructor() { window.startedSpeech = true; } };
+    });
+    await p.goto(base + "/inner-depth.html");
+    await p.check("#consent"); await p.click("#start");
+    await p.check('input[name="age-band"][value="adult"]'); await p.click("#begin");
+    for (let i=0;i<7;i++) { await p.fill("#notes","answer "+i); await p.click("#next"); }
+    assert.equal(await p.isVisible("#dictate"), false);
+    assert.match(await p.textContent("#dictation-status"), /keyboard microphone/);
+    assert.equal(await p.evaluate(() => !!window.startedSpeech), false);
+    await p.fill("#notes","last"); await p.click("#next");
+    assert.equal(await p.inputValue("#review-note-0"),"answer 0");
+    assert.equal(await p.inputValue("#review-note-7"),"last");
+    assert.equal(await p.evaluate(() => localStorage.getItem("deepend-inner-depth-recovery-v1")), null);
+  } finally { await context.close(); }
+});
+test("expired recovery is not offered and teen recovery is unavailable", async () => {
+  const { p, context } = await page();
+  try {
+    await p.goto(base + "/inner-depth.html");
+    await p.evaluate(() => localStorage.setItem("deepend-inner-depth-recovery-v1", JSON.stringify({version:1,id:"expired",expires:Date.now()-1,index:7,screen:"question",notes:Array(8).fill("expired note"),prior:"",observed:"",preferences:"",extra:"",unsure:""})));
+    await p.reload();
+    assert.equal(await p.isVisible("#recovery-offer"),false);
+    assert.equal(await p.evaluate(() => localStorage.getItem("deepend-inner-depth-recovery-v1")),null);
+    await p.check("#consent"); await p.click("#start"); await p.check('input[name="age-band"][value="teen"]');
+    assert.equal(await p.isVisible("#recovery-opt-in"),false);
+  } finally { await context.close(); }
+});
+test("missing speech start event recovers without losing notes", async () => {
+  const { p, context } = await page();
+  try {
+    await p.addInitScript(() => {
+      window.SpeechRecognition = class { start() {} abort() {} };
+    });
+    await p.goto(base + "/inner-depth.html");
+    await p.check("#consent"); await p.click("#start"); await p.check('input[name="age-band"][value="adult"]'); await p.click("#begin");
+    await p.fill("#notes","keep me"); await p.click("#dictate"); await p.click("#dictation-agree");
+    await p.waitForFunction(() => document.getElementById("dictation-status").textContent.includes("timed out"), null, {timeout:12000});
+    assert.equal(await p.inputValue("#notes"),"keep me");
+    assert.equal(await p.getAttribute("#dictate","aria-pressed"),"false");
+  } finally { await context.close(); }
+});
+
+test("stop watchdog returns to typing when speech never ends; no save without consent", async () => {
+  const { p, context } = await page();
+  try {
+    await p.addInitScript(() => {
+      window.SpeechRecognition = class { start() { this.onstart?.(); } stop() {} abort() {} };
+    });
+    await p.goto(base + "/inner-depth.html");
+    await p.check("#consent"); await p.click("#start");
+    await p.check('input[name="age-band"][value="adult"]'); await p.click("#begin");
+    await p.fill("#notes","keep this");
+    await p.click("#dictate"); await p.click("#dictation-agree"); await p.click("#dictate");
+    await p.waitForFunction(() => document.getElementById("dictation-status").textContent.includes("timed out"), null, {timeout:7000});
+    assert.equal(await p.inputValue("#notes"),"keep this");
+    assert.equal(await p.evaluate(() => localStorage.getItem("deepend-inner-depth-recovery-v1")),null);
+    await p.reload();
+    assert.equal(await p.isVisible("#recovery-offer"),false);
+  } finally { await context.close(); }
+});
+test("turning off recovery deletes its copy without erasing open notes", async () => {
+  const { p, context } = await page();
+  try {
+    await p.goto(base + "/inner-depth.html");
+    await p.check("#consent"); await p.click("#start");
+    await p.check('input[name="age-band"][value="adult"]'); await p.check("#recovery-opt-in"); await p.click("#begin");
+    await p.fill("#notes","local only");
+    await p.click("#recovery-off");
+    assert.equal(await p.inputValue("#notes"),"local only");
+    assert.equal(await p.evaluate(() => localStorage.getItem("deepend-inner-depth-recovery-v1")),null);
+    await p.fill("#notes","still local"); await p.click("#next");
+    assert.equal(await p.evaluate(() => localStorage.getItem("deepend-inner-depth-recovery-v1")),null);
   } finally { await context.close(); }
 });

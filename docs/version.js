@@ -1,8 +1,15 @@
 // Single source of truth for the release. Loaded by the page AND the service worker,
 // so bumping it is what makes installed phones notice an update.
 // Use `python tools/release.py 2.0.1 "What changed"` rather than editing by hand.
-self.DEEPEND_VERSION = "3.8.1";
+self.DEEPEND_VERSION = "3.8.2";
 self.DEEPEND_CHANGES = [
+  {
+    "v": "3.8.2",
+    "date": "2026-11-27",
+    "notes": [
+      "Inner Depth: optional two-hour local crash recovery for consenting adults; safer dictation with keyboard fallback on iPhone and installed apps."
+    ]
+  },
   {
     "v": "3.8.1",
     "date": "2026-11-27",
