@@ -37,9 +37,80 @@ function newSessionId() {
   return [...bytes].map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
+// ---- Optional, adult-only microphone dictation ------------------------------------------------
+// Browser speech recognition may use a third-party service. Never start silently or store audio.
+const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = null;
+function dictationUI(listening, message) {
+  $("dictate").setAttribute("aria-pressed", String(listening));
+  $("dictate-label").textContent = listening ? "Stop dictation" : "Dictate notes";
+  $("dictation-status").textContent = message;
+}
+function cancelDictation() {
+  const current = recognition; recognition = null;
+  if (current) { try { current.abort(); } catch (_) { /* already stopped */ } }
+  dictationUI(false, Recognition ? "Optional. Ask permission before speaking." : "Use your keyboard microphone if available, or type.");
+}
+function toggleDictation() {
+  if (recognition) {
+    const current = recognition;
+    try { current.stop(); dictationUI(true, "Finishing dictation…"); }
+    catch (_) { cancelDictation(); }
+    return;
+  }
+  if (!Recognition || ageBand !== "adult" || !active || $("question").hidden) return;
+  if (!window.confirm("Do both of you agree to microphone dictation for this note? Your browser or device speech service may receive audio and process it remotely under its own privacy policy. Deep End does not store audio. You can type instead.")) return;
+  const field = $("notes"), questionIndex = index;
+  let current;
+  try { current = new Recognition(); } catch (_) { dictationUI(false, "Dictation unavailable. You can still type."); return; }
+  recognition = current;
+  current.lang = navigator.language || "en-US";
+  current.continuous = true;
+  current.interimResults = false;
+  current.maxAlternatives = 1;
+  let message = "Dictation stopped. Review or edit your notes.";
+  const isCurrent = () => recognition === current && active && index === questionIndex && !$("question").hidden;
+  const handled = new Set();
+  current.onstart = () => { if (isCurrent()) dictationUI(true, "Listening… Tap to stop."); };
+  current.onresult = e => {
+    if (!isCurrent()) return;
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (!e.results[i].isFinal || handled.has(i)) continue;
+      handled.add(i);
+      const spoken = String(e.results[i][0].transcript || "").trim();
+      if (!spoken) continue;
+      const spacer = field.value && !/\s$/.test(field.value) ? " " : "";
+      const remaining = field.maxLength - field.value.length;
+      if (remaining > spacer.length) {
+        let addition = (spacer + spoken).slice(0, remaining);
+        // Do not split a surrogate pair at the field limit.
+        if (/[\uD800-\uDBFF]$/.test(addition)) addition = addition.slice(0, -1);
+        field.value += addition;
+        field.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+      if (field.value.length >= field.maxLength || spoken.length + spacer.length > remaining) {
+        cancelDictation(); dictationUI(false, "Note limit reached. Edit or continue to the next question."); return;
+      }
+    }
+  };
+  current.onerror = e => {
+    if (!isCurrent()) return;
+    message = e.error === "not-allowed" || e.error === "service-not-allowed" ? "Microphone access was not granted. You can still type."
+      : e.error === "no-speech" ? "No speech detected. Try again or type."
+      : "Dictation unavailable. Check your microphone or connection, or type.";
+    recognition = null;
+    try { current.abort(); } catch (_) { /* already stopped */ }
+    dictationUI(false, message);
+  };
+  current.onend = () => { if (recognition === current) { recognition = null; dictationUI(false, message); } };
+  try { dictationUI(true, "Starting microphone…"); current.start(); }
+  catch (_) { cancelDictation(); dictationUI(false, "Dictation unavailable. You can still type."); }
+}
+
 // ---- Screens -----------------------------------------------------------------------------------
 function promptFor(i) { return ageBand === "adult" ? Q[i][2] : TEEN_PROMPTS[i] || Q[i][2]; }
 function show(id, focus) {
+  if (id !== "question") cancelDictation();
   for (const screen of screens) $(screen).hidden = screen !== id;
   $("clear").hidden = !active;
   if (focus) $(focus).focus();
@@ -61,6 +132,9 @@ function begin(skip) {
 function capture() { if (!$("question").hidden) notes[index] = $("notes").value; }
 function invalidateDrafts(i) { if (i !== undefined) { drafts[i] = ""; selected[i] = false; } dossier = null; chat = []; }
 function question(focus = true) {
+  cancelDictation();
+  $("dictation-row").hidden = ageBand !== "adult";
+  $("dictate").hidden = !Recognition;
   $("step").textContent = "Question " + (index + 1) + " of " + Q.length;
   $("progress").value = index + 1;
   $("prompt").textContent = promptFor(index);
@@ -72,7 +146,7 @@ function question(focus = true) {
 }
 
 function review() {
-  capture();
+  cancelDictation(); capture();
   const parent = $("review-fields"); parent.replaceChildren();
   const context = $("review-context"); context.replaceChildren();
   const heading = document.createElement("strong"); heading.textContent = "Background — review or remove together"; context.append(heading);
@@ -512,6 +586,7 @@ function para(text) { const p = document.createElement("p"); p.textContent = tex
 
 // ---- Erase ---------------------------------------------------------------------------------------
 function erase() {
+  cancelDictation();
   notes = Q.map(() => ""); index = 0; active = false; prior = ""; observed = ""; preferences = ""; extra = ""; unsure = "";
   drafts = Q.map(() => ""); selected = Q.map(() => false);
   status = null; accessCode = ""; sessionId = ""; dossier = null; chat = []; readoutSource = "local"; busy = false;
@@ -535,9 +610,11 @@ ageInputs.forEach(el => el.addEventListener("change", updateAge));
 $("begin").addEventListener("click", () => begin(false));
 $("skip-context").addEventListener("click", () => begin(true));
 $("notes").addEventListener("input", () => { capture(); invalidateDrafts(index); });
-$("back").addEventListener("click", () => { capture(); if (index > 0) { index--; question(); } });
-$("next").addEventListener("click", () => { capture(); if (index < Q.length - 1) { index++; question(); } else review(); });
-$("skip").addEventListener("click", () => { capture(); if (notes[index].trim() && !window.confirm("Skip this question and remove its notes?")) return; notes[index] = ""; invalidateDrafts(index); $("notes").value = ""; if (index < Q.length - 1) { index++; question(); } else review(); });
+$("dictate").addEventListener("click", toggleDictation);
+document.addEventListener("visibilitychange", () => { if (document.hidden) cancelDictation(); });
+$("back").addEventListener("click", () => { cancelDictation(); capture(); if (index > 0) { index--; question(); } });
+$("next").addEventListener("click", () => { cancelDictation(); capture(); if (index < Q.length - 1) { index++; question(); } else review(); });
+$("skip").addEventListener("click", () => { cancelDictation(); capture(); if (notes[index].trim() && !window.confirm("Skip this question and remove its notes?")) return; notes[index] = ""; invalidateDrafts(index); $("notes").value = ""; if (index < Q.length - 1) { index++; question(); } else review(); });
 $("finish").addEventListener("click", review);
 $("resume").addEventListener("click", () => { extra = $("extra-notes").value; unsure = $("unsure-notes").value; question(); });
 $("extra-notes").addEventListener("input", () => { extra = $("extra-notes").value; invalidateDrafts(); });
@@ -560,8 +637,8 @@ $("ai-read").addEventListener("click", () => { readoutSource = "ai"; readout(); 
 $("chat-send").addEventListener("click", sendChat);
 $("chat-input").addEventListener("keydown", e => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) sendChat(); });
 $("chat-clear").addEventListener("click", () => { chat = []; renderChat(); });
-$("clear").addEventListener("click", () => { if (confirmErase()) erase(); });
+$("clear").addEventListener("click", () => { cancelDictation(); if (confirmErase()) erase(); });
 $("done").addEventListener("click", () => { if (confirmErase()) erase(); });
-$("home-link").addEventListener("click", e => { if (active && !confirmErase()) { e.preventDefault(); return; } if (active) erase(); });
+$("home-link").addEventListener("click", e => { cancelDictation(); if (active && !confirmErase()) { e.preventDefault(); return; } if (active) erase(); });
 window.addEventListener("pagehide", () => { if (active) erase(); });
 })();
