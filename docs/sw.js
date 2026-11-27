@@ -9,6 +9,7 @@ const SHELL = [
   "./", "index.html", "styles.css", "app.js", "questions.js", "version.js",
   "feedback-widget.js", "feedback-config.js", "manifest.webmanifest", "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png",
   "icons/apple-touch-icon.png", "privacy.html", "support.html",
+  "inner-depth.html", "inner-depth.js", "inner-depth-config.js", "inner-depth-safety.js",
   "fonts/bricolage-latin.woff2", "fonts/bricolage-latin-ext.woff2",
   "fonts/young-serif-latin.woff2", "fonts/young-serif-latin-ext.woff2"
 ];
@@ -35,6 +36,8 @@ self.addEventListener("fetch", e => {
   const url = new URL(req.url);
 
   if(url.origin !== location.origin) return;
+  // The Inner Depth AI organizer is never cached or served offline: its answers are per session.
+  if(url.pathname.includes("/api/")) return;
 
   // Everything of ours comes from this release's cache, so a release is all-or-nothing.
   // Except on your own computer, where edits should show on refresh without a release.

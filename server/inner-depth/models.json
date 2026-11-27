@@ -1,0 +1,257 @@
+{
+  "$comment": "Inner Depth model registry. Only entries with status 'approved' may receive participant notes. Capabilities and privacy eligibility are re-verified at runtime against the OpenRouter catalog (see catalog.js); this file records what was verified when the entry was added and the evaluation state. Add a model here as 'candidate', run tools/inner-depth-eval.mjs, review the results, then set status to 'approved'.",
+  "verified_on": "2026-11-27",
+  "privacy_policy": {
+    "require_zdr": true,
+    "data_collection": "deny",
+    "note": "ZDR endpoints only. Gemini models are served by Google as Safety Retention, not ZDR, and are excluded unless INNER_DEPTH_ALLOW_SAFETY_RETENTION=true. Anthropic first-party and OpenAI first-party endpoints are not ZDR on OpenRouter; Claude is served ZDR via Amazon Bedrock and Google Vertex, GPT via Azure."
+  },
+  "models": [
+    {
+      "id": "deepseek/deepseek-v4.1-flash",
+      "display_name": "DeepSeek V4.1 Flash",
+      "tier": "fast",
+      "status": "approved",
+      "approval_basis": "Provisional pilot approval: structured outputs, reasoning and ZDR endpoints verified in the catalog on 2026-11-27 (Fireworks, Together, DeepInfra, Nebius and others). Full evaluation pending.",
+      "capabilities_verified": {
+        "structured_outputs": true,
+        "response_format": true,
+        "reasoning": true,
+        "context_length": 1048576
+      },
+      "privacy": {
+        "zdr_providers_verified": [
+          "Fireworks",
+          "Together",
+          "DeepInfra",
+          "Nebius",
+          "Cloudflare",
+          "Parasail"
+        ],
+        "safety_retention_only": false
+      },
+      "reasoning_effort": "low",
+      "notes": "Economical for rewording, clarifying questions and simple sessions. Many providers; routing may land on any ZDR endpoint.",
+      "evaluation": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "anthropic/claude-haiku-5.5",
+      "display_name": "Claude Haiku 5.5",
+      "tier": "fast",
+      "status": "approved",
+      "approval_basis": "Provisional pilot approval: structured outputs, reasoning and ZDR endpoints (Amazon Bedrock, Google Vertex) verified on 2026-11-27. Full evaluation pending.",
+      "capabilities_verified": {
+        "structured_outputs": true,
+        "response_format": true,
+        "reasoning": true,
+        "context_length": 1000000
+      },
+      "privacy": {
+        "zdr_providers_verified": [
+          "Amazon Bedrock",
+          "Google"
+        ],
+        "safety_retention_only": false
+      },
+      "reasoning_effort": "low",
+      "notes": "Fast tier with strong instruction following for tone work.",
+      "evaluation": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "openai/gpt-6-luna",
+      "display_name": "GPT-6 Luna",
+      "tier": "fast",
+      "status": "approved",
+      "approval_basis": "Provisional pilot approval: structured outputs, reasoning and ZDR endpoint (Azure) verified on 2026-11-27. Full evaluation pending.",
+      "capabilities_verified": {
+        "structured_outputs": true,
+        "response_format": true,
+        "reasoning": true,
+        "context_length": 1050000
+      },
+      "privacy": {
+        "zdr_providers_verified": [
+          "Azure"
+        ],
+        "safety_retention_only": false
+      },
+      "reasoning_effort": "low",
+      "notes": "Low-cost OpenAI model with full effort range.",
+      "evaluation": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "anthropic/claude-sonnet-5.5",
+      "display_name": "Claude Sonnet 5.5",
+      "tier": "balanced",
+      "status": "approved",
+      "approval_basis": "Provisional pilot approval: structured outputs, reasoning and ZDR endpoints (Amazon Bedrock, Google Vertex) verified on 2026-11-27. Full evaluation pending.",
+      "capabilities_verified": {
+        "structured_outputs": true,
+        "response_format": true,
+        "reasoning": true,
+        "context_length": 1000000
+      },
+      "privacy": {
+        "zdr_providers_verified": [
+          "Amazon Bedrock",
+          "Google"
+        ],
+        "safety_retention_only": false
+      },
+      "reasoning_effort": "medium",
+      "notes": "Default for full-session organization and emotionally careful wording.",
+      "evaluation": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "openai/gpt-6.2-sol",
+      "display_name": "GPT-6.2 Sol",
+      "tier": "balanced",
+      "status": "approved",
+      "approval_basis": "Provisional pilot approval: structured outputs, reasoning and ZDR endpoint (Azure) verified on 2026-11-27. Full evaluation pending.",
+      "capabilities_verified": {
+        "structured_outputs": true,
+        "response_format": true,
+        "reasoning": true,
+        "context_length": 1050000
+      },
+      "privacy": {
+        "zdr_providers_verified": [
+          "Azure"
+        ],
+        "safety_retention_only": false
+      },
+      "reasoning_effort": "medium",
+      "notes": "Balanced tier alternative; the model originally requested for this feature.",
+      "evaluation": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "deepseek/deepseek-v4-pro",
+      "display_name": "DeepSeek V4 Pro",
+      "tier": "balanced",
+      "status": "candidate",
+      "approval_basis": null,
+      "capabilities_verified": {
+        "structured_outputs": true,
+        "response_format": true,
+        "reasoning": true,
+        "context_length": 1048576
+      },
+      "privacy": {
+        "zdr_providers_verified": [
+          "DeepInfra",
+          "Azure",
+          "Relace"
+        ],
+        "safety_retention_only": false
+      },
+      "reasoning_effort": "medium",
+      "notes": "Candidate: not yet evaluated on Inner Depth tasks.",
+      "evaluation": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "anthropic/claude-opus-5.5",
+      "display_name": "Claude Opus 5.5",
+      "tier": "advanced",
+      "status": "approved",
+      "approval_basis": "Provisional pilot approval: structured outputs, reasoning and ZDR endpoints (Amazon Bedrock, Google Vertex) verified on 2026-11-27. Full evaluation pending.",
+      "capabilities_verified": {
+        "structured_outputs": true,
+        "response_format": true,
+        "reasoning": true,
+        "context_length": 1000000
+      },
+      "privacy": {
+        "zdr_providers_verified": [
+          "Amazon Bedrock",
+          "Google"
+        ],
+        "safety_retention_only": false
+      },
+      "reasoning_effort": "high",
+      "notes": "Advanced tier for difficult synthesis and multilingual fragments.",
+      "evaluation": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "openai/gpt-5.5",
+      "display_name": "GPT-5.5",
+      "tier": "advanced",
+      "status": "approved",
+      "approval_basis": "Provisional pilot approval: structured outputs, reasoning and ZDR endpoint (Azure) verified on 2026-11-27. Full evaluation pending.",
+      "capabilities_verified": {
+        "structured_outputs": true,
+        "response_format": true,
+        "reasoning": true,
+        "context_length": 1050000
+      },
+      "privacy": {
+        "zdr_providers_verified": [
+          "Azure"
+        ],
+        "safety_retention_only": false
+      },
+      "reasoning_effort": "high",
+      "notes": "Advanced tier alternative.",
+      "evaluation": {
+        "status": "pending"
+      }
+    },
+    {
+      "id": "anthropic/claude-fable-5.2",
+      "display_name": "Claude Fable 5.2",
+      "tier": "advanced",
+      "status": "excluded",
+      "approval_basis": null,
+      "capabilities_verified": {
+        "structured_outputs": true,
+        "response_format": true,
+        "reasoning": true,
+        "context_length": 1000000
+      },
+      "privacy": {
+        "zdr_providers_verified": [],
+        "safety_retention_only": false
+      },
+      "reasoning_effort": "high",
+      "notes": "Excluded on 2026-11-27: no Zero Data Retention endpoint on OpenRouter. Re-check with tools/inner-depth-catalog.mjs; if a ZDR endpoint appears, move to candidate and evaluate.",
+      "evaluation": {
+        "status": "not-run"
+      }
+    },
+    {
+      "id": "google/gemini-3.1-pro-preview",
+      "display_name": "Gemini 3.1 Pro",
+      "tier": "balanced",
+      "status": "excluded",
+      "approval_basis": null,
+      "capabilities_verified": {
+        "structured_outputs": true,
+        "response_format": true,
+        "reasoning": true,
+        "context_length": 1048576
+      },
+      "privacy": {
+        "zdr_providers_verified": [],
+        "safety_retention_only": true
+      },
+      "reasoning_effort": "medium",
+      "notes": "Excluded by default: Google endpoints are Safety Retention, not ZDR. Becomes a candidate only if INNER_DEPTH_ALLOW_SAFETY_RETENTION=true and the owner accepts that retention tier.",
+      "evaluation": {
+        "status": "not-run"
+      }
+    }
+  ]
+}

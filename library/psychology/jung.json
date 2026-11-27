@@ -1,0 +1,46 @@
+[
+  {
+    "id": "jung-persona-and-self",
+    "thinker": "Carl Jung",
+    "concept": "Persona and the fuller self",
+    "summary": "Jung used 'persona' for the face a person presents to meet the expectations of their roles, and contrasted it with a broader sense of who they are. People commonly report a gap between how they appear and how they experience themselves, and between settings where they feel 'most themselves' and settings where they do not. For Jung the persona is necessary, not false; the difficulty is only in mistaking it for the whole.",
+    "source": { "citation": "Jung, C. G. (1966). Two Essays on Analytical Psychology (2nd ed.). Collected Works, Vol. 7. Princeton, NJ: Princeton University Press.", "type": "book", "year": 1966, "identifier": "ISBN 978-0-691-01782-9" },
+    "evidence_limitations": "A clinical and philosophical framework from the early twentieth century, not an empirically tested model. Useful as vocabulary for experiences people describe, not as a claim about psychic structure.",
+    "appropriate_application": "When a participant explicitly contrasts how they appear with how they feel, or names situations where they feel most or least themselves, reflect that contrast in their own words.",
+    "inappropriate_application": "Telling a participant their 'real self' differs from how they act; claiming to see behind a persona; applying the term to someone who did not describe such a gap.",
+    "tags": ["identity", "being-seen", "roles", "authenticity"]
+  },
+  {
+    "id": "jung-tension-of-opposites",
+    "thinker": "Carl Jung",
+    "concept": "Holding the tension of opposites",
+    "summary": "Jung observed that people are often pulled between opposing wishes or attitudes, and he treated the capacity to hold both without prematurely choosing as itself valuable; something new can emerge from the tension. The practical attitude for a listener is to let both sides stand rather than resolving the conflict for the person.",
+    "source": { "citation": "Jung, C. G. (1971). Psychological Types. Collected Works, Vol. 6. Princeton, NJ: Princeton University Press. (Original work published 1921.)", "type": "book", "year": 1971, "identifier": "ISBN 978-0-691-01813-0" },
+    "evidence_limitations": "Interpretive theory; the related idea that tolerating ambivalence is helpful has indirect support in research on ambivalence in behaviour change (e.g., motivational interviewing), but Jung's specific claims are not testable in that form.",
+    "appropriate_application": "When a participant describes two pulls at once, name both sides as they stated them and do not resolve, rank or explain the conflict.",
+    "inappropriate_application": "Diagnosing an inner conflict the participant did not describe; prescribing which side to follow; proposing a 'synthesis' as if it were theirs.",
+    "tags": ["inner-tension", "ambivalence", "conflict", "both-and"]
+  },
+  {
+    "id": "jung-individuation",
+    "thinker": "Carl Jung",
+    "concept": "Individuation as a lifelong process",
+    "summary": "Jung described becoming more fully oneself as a gradual, lifelong process of taking ownership of more of one's experience, including parts one would rather not see. He emphasised that it is the person's own work and proceeds at its own pace. In a reflection this supports an attitude of patience: understanding oneself a little more is a direction, not a task to finish.",
+    "source": { "citation": "Jung, C. G. (Ed.). (1964). Man and His Symbols. London: Aldus Books.", "type": "book", "year": 1964, "identifier": "ISBN 978-0-440-35183-7 (Dell reprint)" },
+    "evidence_limitations": "Not an empirical construct. Comparable ideas about identity development appear in life-span psychology, but with different terms and methods.",
+    "appropriate_application": "Support the 'Looking forward' theme: frame what the participant wants to understand or accept as their own direction, at their pace, with no finish line implied.",
+    "inappropriate_application": "Telling someone which stage they are at; implying they are failing to grow; introducing archetypes, shadow or the unconscious as facts about them.",
+    "tags": ["looking-forward", "growth", "patience", "self-acceptance"]
+  },
+  {
+    "id": "jung-types-as-difference",
+    "thinker": "Carl Jung",
+    "concept": "Typology as one description of difference, not a label to assign",
+    "summary": "Jung proposed that people differ in habitual orientation (toward the outer or inner world) and in preferred ways of taking in and judging experience. He meant it as a map of differences in how people engage, drawn from observation; he warned against using it to pigeonhole individuals. For this tool the lesson is the warning itself.",
+    "source": { "citation": "Jung, C. G. (1971). Psychological Types. Collected Works, Vol. 6. Princeton, NJ: Princeton University Press. (Original work published 1921.)", "type": "book", "year": 1971, "identifier": "ISBN 978-0-691-01813-0" },
+    "evidence_limitations": "Popular type instruments derived from Jung have poor test–retest reliability and weak predictive validity; the underlying dichotomies are not supported as categories.",
+    "appropriate_application": "Only as a reminder that people differ in how they recharge, decide and relate, so reflections stay descriptive of what this participant said.",
+    "inappropriate_application": "Assigning any type, letter code, 'introvert/extravert' label or trait category to the participant.",
+    "tags": ["no-labels", "types", "difference"]
+  }
+]

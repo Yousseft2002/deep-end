@@ -1,0 +1,35 @@
+[
+  {
+    "id": "schwartz-parts-language",
+    "thinker": "Richard Schwartz",
+    "concept": "Parts: a natural multiplicity of mind",
+    "summary": "Internal Family Systems treats it as ordinary that people speak of 'a part of me' that wants one thing while another part wants something else. Schwartz suggests taking this language at face value: each part has its own concerns and often a protective intent, and listening to parts separately reduces the sense of being at war with oneself.",
+    "source": { "citation": "Schwartz, R. C. (2021). No Bad Parts: Healing Trauma and Restoring Wholeness with the Internal Family Systems Model. Boulder, CO: Sounds True.", "type": "book", "year": 2021, "identifier": "ISBN 978-1-68364-668-5" },
+    "evidence_limitations": "IFS has a small number of controlled studies with promising but limited results; it is listed in some evidence registries at a preliminary level. The 'parts' metaphor is a therapeutic frame, not a verified account of mental structure.",
+    "appropriate_application": "When a participant uses 'part of me' language, keep it: 'You said one part of you… while another part…'. Treat both as understandable without choosing between them.",
+    "inappropriate_application": "Introducing parts language to someone who did not use it; naming parts for them (manager, exile, firefighter); interpreting a part's hidden purpose or history.",
+    "tags": ["inner-tension", "parts", "ambivalence", "self-compassion"]
+  },
+  {
+    "id": "schwartz-no-bad-parts",
+    "thinker": "Richard Schwartz",
+    "concept": "No bad parts: protective intent",
+    "summary": "A central IFS stance is that even the sides of oneself one dislikes are usually trying to protect or help, however clumsily. The listener's attitude is curiosity and compassion toward every side a person describes, rather than siding with the 'good' one.",
+    "source": { "citation": "Schwartz, R. C., & Sweezy, M. (2020). Internal Family Systems Therapy (2nd ed.). New York: Guilford Press.", "type": "book", "year": 2020, "identifier": "ISBN 978-1-4625-4146-1" },
+    "evidence_limitations": "A clinical stance with face validity and overlap with self-compassion research, which is better studied; IFS-specific evidence remains limited.",
+    "appropriate_application": "When a participant criticises a side of themselves, reflect the criticism as theirs and leave room for that side's concern as they described it, without reframing it for them.",
+    "inappropriate_application": "Telling a participant that a behaviour 'is protecting you from…'; assigning protective motives; excusing harm to others as a 'part'.",
+    "tags": ["self-compassion", "inner-tension", "acceptance"]
+  },
+  {
+    "id": "schwartz-self-qualities",
+    "thinker": "Richard Schwartz",
+    "concept": "Self-leadership: calm, curiosity, compassion, clarity",
+    "summary": "IFS describes a core, settled stance from which a person can relate to their own parts with curiosity and compassion. Schwartz lists qualities such as calm, curiosity, compassion, confidence and clarity as signs of it. For a facilitator the relevance is posture: the reflection is offered from calm curiosity, and the participant's own moments of calm or clarity are worth hearing when they report them.",
+    "source": { "citation": "Schwartz, R. C. (2021). No Bad Parts: Healing Trauma and Restoring Wholeness with the Internal Family Systems Model. Boulder, CO: Sounds True.", "type": "book", "year": 2021, "identifier": "ISBN 978-1-68364-668-5" },
+    "evidence_limitations": "Descriptive clinical construct; not independently validated.",
+    "appropriate_application": "When a participant describes what helps them feel settled or at peace, reflect those sources in their words under 'Needs and support'.",
+    "inappropriate_application": "Telling someone they are or are not 'in Self'; using IFS vocabulary as a label.",
+    "tags": ["needs-and-support", "calm", "posture"]
+  }
+]

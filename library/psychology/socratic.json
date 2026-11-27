@@ -1,0 +1,35 @@
+[
+  {
+    "id": "socrates-elenchus",
+    "thinker": "Socratic inquiry (Plato)",
+    "concept": "Elenchus: examining what one already believes",
+    "summary": "In Plato's dialogues Socrates examines a person's own statements by asking what they mean and how they fit together, so that the person sees the shape and limits of their own view. The questioner does not supply the answer. Taken as a listening method, it means asking the participant to say more about their own terms rather than offering new ones.",
+    "source": { "citation": "Plato. Apology. In Plato: Complete Works (J. M. Cooper, Ed.; G. M. A. Grube, Trans.). Indianapolis: Hackett, 1997.", "type": "book", "year": -399, "identifier": "ISBN 978-0-87220-349-5" },
+    "evidence_limitations": "A philosophical practice, not a psychological intervention. The modern clinical descendant, guided discovery, has process research behind it (see Braun et al. 2015; Overholser & Beale 2023).",
+    "appropriate_application": "Make follow-up questions open and about the participant's own words: 'You used the word …; what does it mean for you?'. Never leading, never rhetorical.",
+    "inappropriate_application": "Cross-examining the participant; questions designed to lead to a conclusion the facilitator or model has already drawn.",
+    "tags": ["questions", "open-inquiry", "follow-up"]
+  },
+  {
+    "id": "socrates-aporia",
+    "thinker": "Socratic inquiry (Plato)",
+    "concept": "Aporia: the value of not yet knowing",
+    "summary": "Many Socratic conversations end without resolution. Plato presents this state of puzzlement as honest and productive: recognising that one does not yet know is a starting point, not a failure. For this tool it licenses the facilitator and the organizer to leave contradictions and uncertainties standing.",
+    "source": { "citation": "Plato. Meno. In Plato: Complete Works (J. M. Cooper, Ed.; G. M. A. Grube, Trans.). Indianapolis: Hackett, 1997.", "type": "book", "year": -385, "identifier": "ISBN 978-0-87220-349-5" },
+    "evidence_limitations": "Philosophical; tolerance of uncertainty is studied in modern psychology under different constructs.",
+    "appropriate_application": "List ambiguities and contradictions as such; tell the participant they do not have to make sense of everything today.",
+    "inappropriate_application": "Resolving a contradiction on the participant's behalf; treating an unresolved question as a problem to fix.",
+    "tags": ["uncertainty", "contradiction", "closing"]
+  },
+  {
+    "id": "socrates-midwifery",
+    "thinker": "Socratic inquiry (Plato)",
+    "concept": "Midwifery: the understanding belongs to the person",
+    "summary": "In the Theaetetus Socrates compares his role to a midwife's: he helps others bring out what is theirs and tests it, but produces nothing of his own. The image is a reminder that any insight voiced during a reflection is the participant's, and that the facilitator's and the AI's contribution is to organise and ask.",
+    "source": { "citation": "Plato. Theaetetus. In Plato: Complete Works (J. M. Cooper, Ed.; M. J. Levett, Trans., rev. M. Burnyeat). Indianapolis: Hackett, 1997.", "type": "book", "year": -369, "identifier": "ISBN 978-0-87220-349-5" },
+    "evidence_limitations": "Philosophical image; consistent with research on client agency and the alliance but not itself evidence.",
+    "appropriate_application": "Attribute every theme to what the participant said; write the closing so that authority over the reflection stays with them.",
+    "inappropriate_application": "Presenting the organizer's connections as discoveries about the participant; claiming to have found something they did not say.",
+    "tags": ["agency", "attribution", "closing"]
+  }
+]

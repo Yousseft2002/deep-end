@@ -14,3 +14,10 @@ Thumbs.db
 Python/
 # Previews and downloads saved from Claude. Not part of the app.
 Claude outputs/
+
+# Inner Depth server secrets and local scratch
+.env
+.env.local
+.env.*.local
+.vercel/
+test-results/
