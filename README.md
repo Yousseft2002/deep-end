@@ -22,6 +22,7 @@ Play-test with the website. Go to the stores once it feels right. See **[STORE-C
 | `docs/sw.js` | Offline copy and update handling for the website. |
 | `docs/privacy.html`, `support.html` | Privacy policy and help pages. Both stores require them. |
 | `tools/release.py` | Cut a release. |
+| `docs/inner-depth.html`, `api/inner-depth/`, `server/inner-depth/` | Inner Depth guided reflection and its optional AI organizer (OpenRouter, adults only, separate consent). Setup in [INNER-DEPTH-SETUP.md](INNER-DEPTH-SETUP.md). |
 | `tools/make_icons.py` | Redraw icons (`--store` also redraws the 1024 icon and splash in `assets/`). |
 | `capacitor.config.json`, `package.json`, `codemagic.yaml` | Store builds. |
 

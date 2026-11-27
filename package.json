@@ -2,12 +2,22 @@
   "name": "deep-end",
   "version": "2.2.0",
   "private": true,
+  "type": "module",
   "description": "Questions for two. Pick who you're with, then slide to choose how deep you go.",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "serve": "python -m http.server 8123 -d docs",
     "release": "python tools/release.py",
     "assets": "capacitor-assets generate --iconBackgroundColor \"#123F48\" --iconBackgroundColorDark \"#123F48\" --splashBackgroundColor \"#082229\" --splashBackgroundColorDark \"#082229\"",
-    "sync": "cap sync"
+    "sync": "cap sync",
+    "dev:inner-depth": "node tools/inner-depth-dev-server.mjs",
+    "test": "npm run test:unit && npm run test:integration && npm run test:browser",
+    "test:unit": "node --test \"tests/unit/*.test.js\"",
+    "test:integration": "node --test \"tests/integration/*.test.js\"",
+    "test:browser": "node --test \"tests/browser/*.test.js\"",
+    "smoke:inner-depth": "node tools/inner-depth-smoke.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.0.0",
@@ -19,6 +29,7 @@
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
-    "@capacitor/cli": "^8.0.0"
+    "@capacitor/cli": "^8.0.0",
+    "playwright": "^1.65.1"
   }
 }

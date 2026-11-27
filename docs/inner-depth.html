@@ -4,33 +4,44 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b2531">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<!-- connect-src 'self': the AI organizer talks only to this site's own /api/inner-depth/* functions.
+     If the API is hosted on another origin, add that origin here AND in inner-depth-config.js. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>Inner Depth — Deep End</title>
 <style>
-:root{color-scheme:dark;--bg:#0b2531;--panel:#14323d;--ink:#e8eee2;--muted:#aac7c5;--accent:#b6dfcf}
+:root{color-scheme:dark;--bg:#0b2531;--panel:#14323d;--ink:#e8eee2;--muted:#aac7c5;--accent:#b6dfcf;--warn:#f1d99e;--bad:#e8a9a9}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0,#1a4149,var(--bg) 55%);color:var(--ink);font:17px/1.55 system-ui,sans-serif;min-height:100dvh}
-main{max-width:560px;margin:auto;padding:24px 20px max(28px,env(safe-area-inset-bottom))}header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:36px}a{color:var(--accent)}button,textarea{font:inherit}fieldset{border:1px solid #527579;border-radius:12px;padding:12px}input[type=radio]{accent-color:var(--accent)}button{border:1px solid #527579;background:#1d4148;color:var(--ink);border-radius:12px;padding:12px 16px;min-height:48px;cursor:pointer}button.primary{background:var(--accent);color:#102d32;border-color:transparent;font-weight:650}button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,a:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid #f1d99e;outline-offset:3px}.actions{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0}.actions button{flex:1}h1,h2{font-family:Georgia,serif;line-height:1.2;font-weight:400}h1{font-size:3rem;margin:.35em 0}h2{font-size:2rem;margin:.5em 0}.small,.hint{font-size:.88rem;color:var(--muted)}.kicker{letter-spacing:.13em;font-size:.75rem;text-transform:uppercase;color:var(--muted)}.panel{background:var(--panel);border:1px solid #34545a;border-radius:18px;padding:18px;margin:14px 0}textarea{width:100%;min-height:134px;resize:vertical;border:1px solid #57777a;border-radius:12px;background:#102c36;color:var(--ink);padding:12px}textarea::placeholder{color:#a2b5b4}label{display:block;margin:12px 0}input[type=checkbox]{width:20px;height:20px;vertical-align:middle;accent-color:var(--accent)}progress{width:100%;accent-color:var(--accent)}[hidden]{display:none!important}p{overflow-wrap:anywhere}#reflection p{white-space:pre-wrap}.rings{width:140px;height:140px;margin:20px auto;border:1px solid #537e7f;border-radius:50%;display:grid;place-items:center;box-shadow:0 0 0 10px #8bc2b312,0 0 0 22px #8bc2b30a}.rings:before{content:"";width:65px;height:65px;border:1px solid #709a98;border-radius:50%;box-shadow:inset 0 0 0 20px #8bc2b30a}.center{text-align:center}.note-card h3{font-size:1rem;color:var(--accent);margin:0}.note-card p{margin:.6em 0 0}.danger{background:transparent;border-color:#a98585}.review-field{margin:18px 0}.review-field label{font-weight:600}.review-field textarea{min-height:80px}footer{color:var(--muted);font-size:.8rem;margin-top:24px}
+main{max-width:560px;margin:auto;padding:24px 20px max(28px,env(safe-area-inset-bottom))}header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:36px}a{color:var(--accent)}button,textarea,input,select{font:inherit}fieldset{border:1px solid #527579;border-radius:12px;padding:12px;margin:12px 0}legend{padding:0 6px;color:var(--muted);font-size:.85rem}input[type=radio]{accent-color:var(--accent)}button{border:1px solid #527579;background:#1d4148;color:var(--ink);border-radius:12px;padding:12px 16px;min-height:48px;cursor:pointer}button.primary{background:var(--accent);color:#102d32;border-color:transparent;font-weight:650}button.small{min-height:40px;padding:8px 12px;font-size:.9rem}button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,a:focus-visible,textarea:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--warn);outline-offset:3px}.actions{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0}.actions button{flex:1}h1,h2{font-family:Georgia,serif;line-height:1.2;font-weight:400}h1{font-size:3rem;margin:.35em 0}h2{font-size:2rem;margin:.5em 0}h3{font-size:1.05rem;margin:0 0 .4em}.small,.hint{font-size:.88rem;color:var(--muted)}.kicker{letter-spacing:.13em;font-size:.75rem;text-transform:uppercase;color:var(--muted)}.panel{background:var(--panel);border:1px solid #34545a;border-radius:18px;padding:18px;margin:14px 0}.panel.soft{background:transparent}textarea,input[type=text],input[type=password],input[type=number],select{width:100%;border:1px solid #57777a;border-radius:12px;background:#102c36;color:var(--ink);padding:12px}textarea{min-height:134px;resize:vertical}textarea::placeholder,input::placeholder{color:#a2b5b4}label{display:block;margin:12px 0}label.inline{display:flex;align-items:center;gap:10px;margin:8px 0}input[type=checkbox]{width:20px;height:20px;vertical-align:middle;accent-color:var(--accent);flex:none}progress{width:100%;accent-color:var(--accent)}[hidden]{display:none!important}p{overflow-wrap:anywhere}.rings{width:140px;height:140px;margin:20px auto;border:1px solid #537e7f;border-radius:50%;display:grid;place-items:center;box-shadow:0 0 0 10px #8bc2b312,0 0 0 22px #8bc2b30a}.rings:before{content:"";width:65px;height:65px;border:1px solid #709a98;border-radius:50%;box-shadow:inset 0 0 0 20px #8bc2b30a}.center{text-align:center}.note-card h3{color:var(--accent)}.note-card p{margin:.6em 0 0}.danger{background:transparent;border-color:#a98585}.review-field{margin:18px 0}.review-field label{font-weight:600}.review-field textarea{min-height:80px}footer{color:var(--muted);font-size:.8rem;margin-top:24px}
+.badge{display:inline-block;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;border:1px solid #527579;border-radius:999px;padding:2px 9px;margin:0 6px 6px 0;color:var(--muted)}.badge.ok{border-color:#6fae9a;color:#b6dfcf}.badge.warn{border-color:#c9b36a;color:var(--warn)}.badge.bad{border-color:#b07a7a;color:var(--bad)}
+details{margin:10px 0}summary{cursor:pointer;color:var(--accent);font-size:.92rem}details .small{margin:.4em 0}.card-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.card-actions button{flex:1 1 auto}.evidence{border-left:3px solid #527579;padding:6px 12px;margin:8px 0;font-size:.92rem;color:var(--muted);white-space:pre-wrap}.status{min-height:1.4em;color:var(--warn)}.status.ok{color:var(--accent)}.status.bad{color:var(--bad)}.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:.9rem}.kv dt{color:var(--muted)}.kv dd{margin:0}
+.chat-log{display:flex;flex-direction:column;gap:10px;max-height:50vh;overflow:auto}.msg{border-radius:14px;padding:10px 14px;max-width:92%;white-space:pre-wrap}.msg.me{align-self:flex-end;background:#1d4148}.msg.ai{align-self:flex-start;background:#102c36;border:1px solid #34545a}.msg .small{display:block;margin-top:6px}.safety{border-color:#c9b36a;background:#2a2b1f}.safety h3{color:var(--warn)}.safety li{margin:.5em 0}.spinner{display:inline-block;width:1em;height:1em;border:2px solid #527579;border-top-color:var(--accent);border-radius:50%;animation:spin .9s linear infinite;vertical-align:-2px;margin-right:8px}@keyframes spin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.spinner{animation:none}}
 </style>
+<script src="inner-depth-config.js" defer></script>
+<script src="inner-depth-safety.js" defer></script>
 <script src="inner-depth.js" defer></script>
 </head>
 <body>
 <main>
 <header><a href="index.html" id="home-link">Deep End</a><button id="clear" class="danger" hidden>End &amp; erase</button></header>
+
 <section id="intro">
 <div class="center"><p class="kicker">Guided self-examination</p><div class="rings" aria-hidden="true"></div><h1>Inner Depth</h1><p>A conversation with yourself, in the presence of someone you trust.</p><p class="small">8 questions · At your own pace · No scores or labels</p></div>
-<div class="panel"><strong>Before you begin</strong><p>Ask if the other person wants to reflect together. They can skip, stop or correct anything. This is not therapy or a psychological assessment.</p><p>Take short notes only with permission. This prototype keeps notes in this page's memory; closing or refreshing it clears them. No AI or network requests are used.</p><label><input id="consent" type="checkbox"> We both agree to this conversation and temporary note-taking.</label></div>
+<div class="panel"><strong>Before you begin</strong><p>Ask if the other person wants to reflect together. They can skip, stop or correct anything. This is not therapy or a psychological assessment.</p><p>Take short notes only with permission. Notes stay in this page's memory; closing or refreshing it clears them. Nothing leaves this device unless you both later choose the optional AI organizer, which asks for separate consent.</p><label class="inline"><input id="consent" type="checkbox"> We both agree to this conversation and temporary note-taking.</label></div>
 <div class="actions"><button id="start" class="primary" disabled>Continue</button></div>
 </section>
+
 <section id="context" hidden>
 <p class="kicker">Before the conversation</p><h2 id="context-title" tabindex="-1">Who are you sitting with?</h2>
 <p>Optional background, with the participant's permission. Use broad details rather than names, addresses or exact locations. Distinguish what they told you from your own impressions.</p>
-<fieldset><legend>Age group</legend><label><input type="radio" name="age-band" value="unknown" checked> Not specified</label><label><input type="radio" name="age-band" value="adult"> Adult (18+)</label><label><input type="radio" name="age-band" value="teen"> Teen (13–17)</label><label><input type="radio" name="age-band" value="child"> Under 13</label></fieldset>
+<fieldset><legend>Age group</legend><label class="inline"><input type="radio" name="age-band" value="unknown" checked> Not specified</label><label class="inline"><input type="radio" name="age-band" value="adult"> Adult (18+)</label><label class="inline"><input type="radio" name="age-band" value="teen"> Teen (13–17)</label><label class="inline"><input type="radio" name="age-band" value="child"> Under 13</label></fieldset>
 <p class="small" id="age-guidance" role="status">If age is unknown, use the more cautious conversation guidance.</p>
 <label for="prior-context">Previously shared by the participant</label><textarea id="prior-context" maxlength="1600" autocomplete="off" placeholder="Family responsibilities, interests, recent changes, goals…"></textarea>
 <label for="observed-context">Your impressions or uncertainties (not facts)</label><textarea id="observed-context" maxlength="1200" autocomplete="off" placeholder="Things you've noticed, or aren't sure about…"></textarea>
+<label for="preferences">How they like to be spoken to (optional)</label><input id="preferences" type="text" maxlength="400" autocomplete="off" placeholder="Plain words, no jargon; faith matters; English is a second language…">
 <p class="small">You can skip this entirely. Prior context is not automatically included in the read-aloud reflection. For minors, use only the local tool with age-appropriate assent and any necessary parent or guardian permission. Do not ask them to keep disclosures secret.</p>
 <div class="actions"><button id="skip-context">Skip background</button><button id="begin" class="primary">Begin questions</button></div>
 </section>
+
 <section id="question" hidden>
 <p class="kicker" id="step"></p><progress id="progress" max="8" value="1" aria-label="Question progress"></progress>
 <h2 id="prompt" tabindex="-1"></h2><p class="hint" id="listen"></p>
@@ -38,23 +49,88 @@ main{max-width:560px;margin:auto;padding:24px 20px max(28px,env(safe-area-inset-
 <div class="actions"><button id="back">Back</button><button id="skip">Skip</button><button id="next" class="primary">Next</button></div>
 <button id="finish">Finish here</button>
 </section>
+
 <section id="review" hidden>
-<p class="kicker">Review together</p><h2 tabindex="-1" id="review-title">Did we hear you correctly?</h2><p>Let the speaker edit or remove any notes before organizing them. No one owes an answer to every question.</p><div id="review-context" class="panel"></div><div id="review-fields"></div>
-<div class="actions"><button id="resume">Back to questions</button><button id="organize" class="primary">Organize reflection</button></div>
+<p class="kicker">Review together</p><h2 tabindex="-1" id="review-title">Did we hear you correctly?</h2><p>Let the speaker edit or remove any notes before organizing them. No one owes an answer to every question.</p>
+<div id="review-context" class="panel"></div>
+<div id="review-fields"></div>
+<div class="review-field"><label for="extra-notes">Anything else they volunteered</label><textarea id="extra-notes" maxlength="800" placeholder="Things said outside the questions, in their words"></textarea></div>
+<div class="review-field"><label for="unsure-notes">Things we are not sure we heard right</label><textarea id="unsure-notes" maxlength="400" placeholder="Shorthand to check, words we may have misheard"></textarea></div>
+<div class="panel soft" id="organize-choice">
+  <strong>How would you like to organize this?</strong>
+  <p class="small" id="ai-availability" role="status"></p>
+  <div class="actions"><button id="organize">Organize locally</button><button id="organize-ai" class="primary" hidden>Organize with AI…</button></div>
+  <div class="actions"><button id="resume">Back to questions</button></div>
+</div>
 </section>
+
+<section id="ai-consent" hidden>
+<p class="kicker">Optional AI organizer</p><h2 id="ai-consent-title" tabindex="-1">Send the reviewed notes to an AI?</h2>
+<div class="panel">
+  <p><strong>What it does.</strong> A language model reads only the notes you both just reviewed and drafts a set of short reflections in your voice, each tied to the answers it came from. You choose what, if anything, to read aloud. The participant can correct or reject every line.</p>
+  <p><strong>What is sent.</strong> The age group, the reviewed answers, anything volunteered, your marked uncertainties, the optional background and your separately labelled impressions, and communication preferences. Emails, phone numbers, links and long numbers are removed automatically; please check there are no names.</p>
+  <p><strong>Where it goes.</strong> <span id="retention-text">Checking…</span></p>
+  <p><strong>What it never does.</strong> It does not diagnose, type, or explain causes. It does not keep a history. Nothing is saved on the server, and nothing here is saved on this device.</p>
+</div>
+<label class="inline"><input id="ai-consent-participant" type="checkbox"> The participant has reviewed the notes and agrees to this.</label>
+<label class="inline"><input id="ai-consent-facilitator" type="checkbox"> I (the facilitator) confirm the participant is an adult and there are no names or identifying details in the notes.</label>
+<label for="access-code">Facilitator access code</label><input id="access-code" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Given to you by the Deep End owner">
+<details id="ai-settings"><summary>AI settings: model choice and budget</summary>
+  <fieldset><legend>Intelligence</legend>
+    <label class="inline"><input type="radio" name="routing" value="adaptive" checked> Adaptive Intelligence (recommended): picks a tier from the shape of the notes</label>
+    <label class="inline"><input type="radio" name="routing" value="economy"> Economy: cheapest capable eligible models</label>
+    <label class="inline"><input type="radio" name="routing" value="deep"> Deep Reasoning: strongest eligible models</label>
+    <label class="inline"><input type="radio" name="routing" value="manual"> Manual: choose a verified model</label>
+    <label for="manual-model" class="small">Model</label><select id="manual-model" disabled></select>
+  </fieldset>
+  <label for="budget">Session budget (USD)</label><input id="budget" type="number" min="0.05" step="0.05" value="1.00">
+  <p class="small" id="budget-hint"></p>
+  <div id="model-table" class="small"></div>
+</details>
+<div class="panel soft"><div class="kv" id="estimate-kv"></div><p class="status" id="ai-status" role="status"></p></div>
+<div class="actions"><button id="ai-back">Back to review</button><button id="ai-estimate">Estimate cost</button><button id="ai-generate" class="primary" disabled>Agree and generate</button></div>
+</section>
+
 <section id="result" hidden>
-<p class="kicker">Facilitator review · local organizer</p><h2 tabindex="-1" id="result-title">Choose what to share</h2><p class="small">Review the source notes, write or edit a direct second-person reflection for each topic, and select only what you can faithfully share. No AI interpretation is active in this prototype.</p>
+<p class="kicker">Facilitator review · local organizer</p><h2 tabindex="-1" id="result-title">Choose what to share</h2><p class="small">Review the source notes, write or edit a direct second-person reflection for each topic, and select only what you can faithfully share. No AI is involved on this screen.</p>
 <div class="panel"><strong>To read aloud</strong><p>Thank you for trusting me with this. I want to make sure I heard you correctly. These are the things we wrote down together, and you can change or reject any of them. You don't have to make sense of everything today.</p></div>
 <div id="reflection"></div>
 <div class="actions"><button id="edit">Edit source notes</button><button id="read" class="primary">Preview selected reflections</button></div>
 </section>
+
+<section id="ai-result" hidden>
+<p class="kicker">Facilitator review · AI draft</p><h2 tabindex="-1" id="ai-result-title">Choose what to share</h2>
+<p class="small">Nothing here is approved yet. Open each card, check the supporting answers, edit the wording, and select only what you can say faithfully. The participant keeps the final word.</p>
+<div class="panel soft" id="routing-panel"></div>
+<div id="ai-safety" class="panel safety" hidden></div>
+<div id="ai-insufficient" class="panel" hidden></div>
+<div id="ai-body">
+  <div class="panel"><label for="ai-opening"><strong>Opening</strong> <span class="small">(read aloud, editable)</span></label><textarea id="ai-opening" maxlength="600"></textarea></div>
+  <div id="ai-themes"></div>
+  <div class="panel" id="ai-questions-panel"><strong>Optional questions</strong> <span class="small">Open questions the participant may decline. Select to include.</span><div id="ai-questions"></div></div>
+  <div class="panel"><label for="ai-closing"><strong>Closing</strong> <span class="small">(read aloud, editable)</span></label><textarea id="ai-closing" maxlength="600"></textarea></div>
+  <details class="panel soft" id="ai-ambiguities-wrap"><summary>Unclear points for you to check (facilitator only)</summary><div id="ai-ambiguities"></div></details>
+  <details class="panel soft" id="ai-rejected-wrap" hidden><summary>Drafts the validator rejected</summary><div id="ai-rejected"></div></details>
+</div>
+<div class="panel" id="chat-panel">
+  <strong>Ask about this session</strong> <span class="small">A facilitator-only assistant grounded in the reviewed notes. It is not a therapist and does not speak to the participant.</span>
+  <div class="chat-log" id="chat-log" aria-live="polite"></div>
+  <label for="chat-input" class="small">Your question</label><textarea id="chat-input" maxlength="1200" placeholder="Can you make theme 2 gentler? What connects answers 2 and 5? What would be a non-leading follow-up?" style="min-height:70px"></textarea>
+  <div class="card-actions"><button id="chat-send" class="small">Ask</button><button id="chat-clear" class="small">Clear conversation</button></div>
+  <p class="status small" id="chat-status" role="status"></p>
+</div>
+<div class="actions"><button id="ai-refine">Refine with deeper reasoning</button><button id="ai-edit-notes">Edit source notes</button></div>
+<div class="actions"><button id="ai-local">Use local organizer instead</button><button id="ai-read" class="primary">Preview selected</button></div>
+</section>
+
 <section id="readout" hidden>
 <p class="kicker">Your reflection · read aloud</p><h2 id="read-title" tabindex="-1">What I heard from you</h2>
-<div class="panel"><p>Thank you for trusting me with this. I want to check that I've understood you. You can disagree with anything I say, and you don't have to make sense of everything today.</p></div>
+<div class="panel" id="readout-opening"><p>Thank you for trusting me with this. I want to check that I've understood you. You can disagree with anything I say, and you don't have to make sense of everything today.</p></div>
 <div id="readout-items"></div>
-<div class="panel"><strong>An invitation, not a conclusion</strong><p>What feels true to you here? Is there anything you would change? What, if anything, would you like to carry forward?</p></div>
+<div class="panel" id="readout-closing"><strong>An invitation, not a conclusion</strong><p>What feels true to you here? Is there anything you would change? What, if anything, would you like to carry forward?</p></div>
 <div class="actions"><button id="back-selection">Back to selection</button><button id="done" class="primary">End &amp; erase</button></div>
 </section>
+
 <footer>Inspired by person-centered listening, open inquiry and reflective psychology. Not a substitute for professional support.</footer>
 </main>
 </body></html>

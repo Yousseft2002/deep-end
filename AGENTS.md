@@ -18,6 +18,10 @@ The owner is play-testing it with friends and will submit it to the stores. Keep
 | `docs/version.js` | `DEEPEND_VERSION` + `DEEPEND_CHANGES`. Read by the page AND the service worker. |
 | `docs/sw.js` | Offline cache per release + update flow. |
 | `docs/privacy.html`, `docs/support.html` | Required by both stores. Linked from the in-app menu. |
+| `docs/inner-depth.html`, `inner-depth.js`, `inner-depth-config.js`, `inner-depth-safety.js` | Inner Depth: eight-question guided reflection with a local organizer and an optional, adult-only AI organizer. Memory only; nothing in localStorage. |
+| `api/inner-depth/`, `server/inner-depth/` | The AI organizer's serverless functions (Vercel) and modules: OpenRouter client, adaptive router, model registry, cost controls, validation. Secrets only in env. See `INNER-DEPTH-SETUP.md`. |
+| `library/psychology/` | Curated reference library (original summaries, verified sources) sent to the model as context. |
+| `tools/inner-depth-*.mjs`, `tests/` | Dev server, smoke test, evaluation suite, catalog refresh; unit, integration and Playwright tests. |
 | `docs/fonts/` | Self-hosted Bricolage Grotesque + Young Serif (OFL; keep the license files). |
 | `tools/release.py` | Bumps the version and adds a "What's new" entry. |
 | `tools/make_icons.py` | Draws all icons (`--store` also draws `assets/` for store builds). |
@@ -30,9 +34,11 @@ The owner is play-testing it with friends and will submit it to the stores. Keep
    life-ring knob, the gradient track, the 30px rail insets, the spring on release, tap-to-snap and
    drag-to-glide. The water colour deepening with the level is part of it.
 2. **No build step, no frameworks, no npm packages in the web app.** Plain HTML/CSS/JS in `docs/` that runs
-   by opening it from a static server. npm is only for the Capacitor store builds.
+   by opening it from a static server. npm is for the Capacitor store builds, the Inner Depth server functions and the tests only.
 3. **Everything works offline and makes no network requests while playing.** No CDNs, no analytics, no
    remote fonts. The privacy policy promises this; if that ever changes, update `docs/privacy.html` in the same change.
+   The one exception is Inner Depth's optional AI organizer: adults only, separate consent on its own page, one explicit
+   request at a time through `api/inner-depth/`. No automatic calls, nothing during the questions, nothing in the game.
 4. **Every new file the app needs goes into the `SHELL` list in `docs/sw.js`**, or installed copies break offline.
 5. **Shipping a change = `python tools/release.py X.Y.Z "note players will read"`**, then commit and push.
    Without a version bump, installed phones never see the update. Notes are shown to players verbatim: plain words.

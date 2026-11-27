@@ -1,4 +1,17 @@
-# Inner Depth — AI integration contract (draft)
+# Inner Depth — AI integration contract
+
+**Status (27 November 2026): implemented on `feature/inner-depth`.** The contract below is now the behaviour of
+`api/inner-depth/*` and `server/inner-depth/*`, with OpenRouter as the provider and an adaptive router choosing
+among approved, Zero-Data-Retention-eligible models. Setup, security, tests and open items are in
+[INNER-DEPTH-SETUP.md](INNER-DEPTH-SETUP.md). What is still outstanding: a real-API smoke test (no key was
+available when this was built), the synthetic model evaluation, and the owner's approval before any public deploy.
+
+Where the implementation differs from the original draft:
+- Provider is OpenRouter (`chat/completions`, strict `json_schema`, `provider: { zdr, data_collection: "deny", require_parameters }`), not a direct OpenAI key.
+- Three reasoning tiers (fast, balanced, advanced) selected by a local structural assessment of the notes and the task; bounded retry/escalation; never past a refusal.
+- Per-session budgets and request counts, per-request cost caps, daily caps, actual cost from `usage.cost`.
+- A facilitator-facing conversational assistant on the same temporary context (no provider-side threads).
+- Themes are dynamic (count and titles from the session), each with evidence ids, grounding score, cited library principles and facilitator notes.
 
 Inner Depth is a voluntary, nonclinical facilitated reflection tool. AI generation is adult-only in the initial release; teenagers and unspecified ages use a limited, age-appropriate local organizer only, with assent and any necessary guardian permission. Under-13 sessions are not supported in this prototype. It is not an assessment, a therapy session, or a psychological profile. The initial static prototype uses in-memory notes and no network.
 

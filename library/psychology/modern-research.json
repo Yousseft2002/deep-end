@@ -1,0 +1,79 @@
+[
+  {
+    "id": "research-empathy-outcome",
+    "thinker": "Elliott, Bohart, Watson and Murphy",
+    "concept": "Therapist empathy is reliably associated with outcome",
+    "summary": "An updated meta-analysis of 82 studies found a moderate association between therapist empathy, especially as rated by clients, and treatment outcome, across theoretical orientations. The authors recommend that helpers work to understand the person's experience from their perspective, check that understanding, and adjust rather than assume.",
+    "source": { "citation": "Elliott, R., Bohart, A. C., Watson, J. C., & Murphy, D. (2018). Therapist empathy and client outcome: An updated meta-analysis. Psychotherapy, 55(4), 399–410.", "type": "journal-article", "year": 2018, "doi": "10.1037/pst0000175" },
+    "evidence_limitations": "Correlational; studies are of trained therapists in treatment, not peer facilitators. Client-perceived empathy matters more than observer-rated empathy.",
+    "appropriate_application": "Prefer wording the participant will recognise as their own experience; invite them to say where it misses.",
+    "inappropriate_application": "Citing this as evidence that the reflection itself is therapeutic or validated.",
+    "tags": ["empathy", "evidence", "checking"]
+  },
+  {
+    "id": "research-relationship-factors",
+    "thinker": "Norcross and Lambert",
+    "concept": "Relationship elements that demonstrably help",
+    "summary": "The third Interdivisional Task Force review judged the alliance, collaboration, goal consensus, empathy and positive regard as demonstrably effective relationship elements, and recommended tailoring to the individual rather than applying a method uniformly.",
+    "source": { "citation": "Norcross, J. C., & Lambert, M. J. (2018). Psychotherapy relationships that work III. Psychotherapy, 55(4), 303–315.", "type": "journal-article", "year": 2018, "doi": "10.1037/pst0000193" },
+    "evidence_limitations": "Synthesis of correlational meta-analyses in psychotherapy; generalisation to informal facilitated reflection is an assumption, not a finding.",
+    "appropriate_application": "Collaborate: the participant chooses what to keep; adapt wording to stated communication preferences.",
+    "inappropriate_application": "Implying Inner Depth is a form of treatment or has outcome evidence.",
+    "tags": ["collaboration", "evidence", "preferences"]
+  },
+  {
+    "id": "research-active-listening-experiment",
+    "thinker": "Weger, Castle Bell, Minei and Robinson",
+    "concept": "Active listening responses are felt as more understanding",
+    "summary": "In an experiment with initial conversations, people who received active listening responses (paraphrase plus acknowledgement of feeling) rated the listener as more understanding and felt more satisfied than those who received advice or simple acknowledgements, though they did not necessarily perceive the listener as more socially attractive.",
+    "source": { "citation": "Weger, H., Castle Bell, G., Minei, E. M., & Robinson, M. C. (2014). The relative effectiveness of active listening in initial interactions. International Journal of Listening, 28(1), 13–31.", "type": "journal-article", "year": 2014, "doi": "10.1080/10904018.2013.813234" },
+    "evidence_limitations": "Single laboratory study with student participants and modest effects.",
+    "appropriate_application": "Supports paraphrasing over advising when the facilitator reads a theme aloud.",
+    "inappropriate_application": "Overstating the effect or treating it as clinical evidence.",
+    "tags": ["listening", "paraphrase", "evidence"]
+  },
+  {
+    "id": "research-socratic-questioning-process",
+    "thinker": "Braun, Strunk, Sasso and Cooper",
+    "concept": "Socratic questioning and within-treatment change",
+    "summary": "Observer ratings of therapists' Socratic questioning in a session predicted symptom improvement by the next session in cognitive therapy for depression, over and above the alliance. The authors treat it as evidence that guided questions, as opposed to telling, carry some of the active ingredient.",
+    "source": { "citation": "Braun, J. D., Strunk, D. R., Sasso, K. E., & Cooper, A. A. (2015). Therapist use of Socratic questioning predicts session-to-session symptom change in cognitive therapy for depression. Behaviour Research and Therapy, 70, 32–37.", "type": "journal-article", "year": 2015, "doi": "10.1016/j.brat.2015.05.004" },
+    "evidence_limitations": "One clinical sample, depression treatment, observational; cannot establish causality or generalise to nonclinical reflection.",
+    "appropriate_application": "Offer a few open questions rather than conclusions; let the participant decline them.",
+    "inappropriate_application": "Using questions to steer the participant toward a 'correct' reinterpretation.",
+    "tags": ["questions", "guided-discovery", "evidence"]
+  },
+  {
+    "id": "research-guided-discovery-consensus",
+    "thinker": "Kazantzis and colleagues",
+    "concept": "Expert consensus on Socratic dialogue and guided discovery",
+    "summary": "A modified Delphi panel of cognitive-behavioural experts agreed that Socratic dialogue should be collaborative, curious and non-leading; that the aim is for the person to reach their own conclusions by examining their own experience; and that questions should be asked with genuine not-knowing.",
+    "source": { "citation": "Kazantzis, N., Beck, J. S., Clark, D. A., Dobson, K. S., Hofmann, S. G., Leahy, R. L., & Wong, C. W. (2018). Socratic dialogue and guided discovery in cognitive behavioral therapy: A modified Delphi panel. International Journal of Cognitive Therapy, 11(2), 140–157.", "type": "journal-article", "year": 2018, "doi": "10.1007/s41811-018-0012-2" },
+    "evidence_limitations": "Consensus of experts, not outcome data.",
+    "appropriate_application": "Write follow-up questions from genuine not-knowing, about the participant's own words, with no implied answer.",
+    "inappropriate_application": "Rhetorical or leading questions; questions that embed an interpretation.",
+    "tags": ["questions", "non-leading", "guided-discovery"]
+  },
+  {
+    "id": "research-socratic-review",
+    "thinker": "Overholser and Beale",
+    "concept": "Research review of Socratic questioning and guided discovery",
+    "summary": "A 2023 review of research on Socratic questioning in psychotherapy concludes that systematic questioning, inductive reasoning from the person's own examples, and collaborative discovery are associated with better engagement and outcomes, while noting the evidence base is still modest and mostly from cognitive therapy.",
+    "source": { "citation": "Overholser, J. C., & Beale, E. (2023). The art and science behind Socratic questioning and guided discovery: A research review. Psychotherapy Research, 33(7), 946–956.", "type": "journal-article", "year": 2023, "doi": "10.1080/10503307.2023.2183154", "identifier": "PMID 36878221" },
+    "evidence_limitations": "Narrative review; heterogeneous studies; findings are from clinical rather than peer settings.",
+    "appropriate_application": "Ground any connection across answers in the participant's own examples, and present it as a question or tentative observation.",
+    "inappropriate_application": "Presenting cross-question connections as established facts about the participant.",
+    "tags": ["guided-discovery", "cross-question", "evidence"]
+  },
+  {
+    "id": "research-reflective-listening-mi",
+    "thinker": "Miller and Rollnick",
+    "concept": "Reflective listening and the spirit of partnership",
+    "summary": "Motivational interviewing describes a repertoire of reflections (simple, complex, double-sided) offered as statements the person can accept or amend, within a spirit of partnership, acceptance, compassion and evocation. Double-sided reflections hold two stated positions at once without resolving them. Miller and Rollnick warn against the 'righting reflex', the helper's urge to fix.",
+    "source": { "citation": "Miller, W. R., & Rollnick, S. (2013). Motivational Interviewing: Helping People Change (3rd ed.). New York: Guilford Press.", "type": "book", "year": 2013, "identifier": "ISBN 978-1-60918-227-4" },
+    "evidence_limitations": "MI has a large outcome literature in behaviour change, but Inner Depth has no change goal; what transfers is the listening technique, not the outcomes.",
+    "appropriate_application": "Use double-sided wording for stated tensions ('On one hand you said…, and you also said…'); avoid fixing or advising.",
+    "inappropriate_application": "Evoking 'change talk' or steering toward a behaviour change the participant did not raise.",
+    "tags": ["reflection", "ambivalence", "no-advice", "inner-tension"]
+  }
+]

@@ -1,0 +1,46 @@
+[
+  {
+    "id": "rogers-core-conditions",
+    "thinker": "Carl Rogers",
+    "concept": "Necessary and sufficient conditions: empathy, unconditional positive regard, congruence",
+    "summary": "Rogers argued that constructive personal change happens in a relationship where the listener is genuine (congruent), accepts the speaker without conditions of worth, and communicates an accurate, felt understanding of the speaker's own frame of reference. The listener's job is to understand the world as the speaker experiences it, and to check that understanding, not to evaluate, advise or interpret. He treated these as attitudes shown through behaviour, not techniques.",
+    "source": { "citation": "Rogers, C. R. (1957). The necessary and sufficient conditions of therapeutic personality change. Journal of Consulting Psychology, 21(2), 95–103.", "type": "journal-article", "year": 1957, "doi": "10.1037/h0045357" },
+    "evidence_limitations": "Empathy and the alliance are among the best-replicated relationship factors in psychotherapy outcome research, but 'sufficient' has not been upheld: these conditions are helpful, not a complete account, and most evidence comes from clinical settings rather than peer conversations.",
+    "appropriate_application": "Word every reflection from inside the participant's own account; prefer 'You described…' and 'It sounds like…, does that fit?'; accept what was said without adding judgement; invite correction.",
+    "inappropriate_application": "Treating acceptance as agreement with every claim; using the posture of empathy to deliver a hidden interpretation; implying the facilitator is providing therapy.",
+    "tags": ["listening", "empathy", "acceptance", "second-person", "checking"]
+  },
+  {
+    "id": "rogers-reflection-of-feeling",
+    "thinker": "Carl Rogers",
+    "concept": "Reflection and testing understandings",
+    "summary": "Rogers later described what others called 'reflection of feeling' as his way of testing whether he had understood: offering back the speaker's meaning in slightly different words so they could confirm, correct or deepen it. The reflection belongs to the speaker; when it misses, the correction is the useful part. Short, tentative, in their language.",
+    "source": { "citation": "Rogers, C. R. (1961). On Becoming a Person: A Therapist's View of Psychotherapy. Boston: Houghton Mifflin.", "type": "book", "year": 1961, "identifier": "ISBN 978-0-395-75531-0 (1995 Mariner reprint)" },
+    "evidence_limitations": "Process research supports reflective statements as a marker of empathic listening and of client openness in the following turn, mostly in counselling and motivational interviewing contexts.",
+    "appropriate_application": "Paraphrase in the participant's terms, mark tentativeness, and end themes or follow-ups with a genuine check such as 'Does that feel accurate to you?'.",
+    "inappropriate_application": "Parroting words back mechanically; dressing an inference as a reflection; reflecting feelings the participant did not report.",
+    "tags": ["reflection", "paraphrase", "checking", "tentative"]
+  },
+  {
+    "id": "rogers-organismic-valuing",
+    "thinker": "Carl Rogers",
+    "concept": "The person's own valuing process and locus of evaluation",
+    "summary": "Rogers held that people have their own ongoing sense of what fits and matters to them, and that distress often involves living by externally imposed conditions of worth instead. The listener keeps the locus of evaluation with the speaker: the speaker decides what is true and what to do with it.",
+    "source": { "citation": "Rogers, C. R. (1951). Client-Centered Therapy: Its Current Practice, Implications and Theory. Boston: Houghton Mifflin.", "type": "book", "year": 1951, "identifier": "ISBN 978-1-84119-840-8 (2003 Constable reprint)" },
+    "evidence_limitations": "A humanistic theory of the person, not a measured construct; related research on autonomy support (self-determination theory) is supportive but distinct.",
+    "appropriate_application": "Hand authority back to the participant in the closing; frame values and priorities as what they themselves said matters; let them decide what, if anything, to carry forward.",
+    "inappropriate_application": "Telling the participant what they 'really' value; ranking their values; implying they live inauthentically.",
+    "tags": ["values", "agency", "autonomy", "closing"]
+  },
+  {
+    "id": "rogers-active-listening",
+    "thinker": "Carl Rogers and Richard Farson",
+    "concept": "Active listening",
+    "summary": "In a short training paper, Rogers and Farson described active listening as attending to total meaning (content plus feeling), responding to feeling where it is present, noting all cues, and testing for understanding, while avoiding the common blocks of judging, probing, reassuring and advising.",
+    "source": { "citation": "Rogers, C. R., & Farson, R. E. (1957). Active Listening. Chicago: Industrial Relations Center, University of Chicago.", "type": "report", "year": 1957 },
+    "evidence_limitations": "A practice guide rather than a study; later experimental work (see Weger et al. 2014) finds active listening responses are perceived as more understanding than advice or simple acknowledgement, with modest effect sizes.",
+    "appropriate_application": "Organise what was said without adding advice or reassurance; keep feeling words only where the participant used them or clearly reported them.",
+    "inappropriate_application": "Inventing an emotional subtext; moving from listening to advising.",
+    "tags": ["listening", "feelings", "no-advice"]
+  }
+]

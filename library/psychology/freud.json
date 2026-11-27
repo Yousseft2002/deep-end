@@ -1,0 +1,35 @@
+[
+  {
+    "id": "freud-ambivalence",
+    "thinker": "Sigmund Freud",
+    "concept": "Ambivalence: opposed feelings toward the same person or thing",
+    "summary": "Freud brought the term ambivalence into wide use for the ordinary experience of holding love and resentment, wish and dread, toward the same person or situation at once. His lectures present it as common rather than pathological. For a listener, the useful part is permission: both feelings can be stated without one cancelling the other.",
+    "source": { "citation": "Freud, S. (1963). Introductory Lectures on Psycho-Analysis (J. Strachey, Trans.). Standard Edition, Vols. 15–16. London: Hogarth Press. (Original work published 1916–1917.)", "type": "book", "year": 1917, "identifier": "ISBN 978-0-393-00848-8 (Norton edition)" },
+    "evidence_limitations": "Freud's wider theories of drives and the unconscious are largely untestable or unsupported in their original form; the observation that mixed feelings are common and tolerable is uncontroversial and does not depend on them.",
+    "appropriate_application": "When a participant reports mixed feelings, reflect both as reported: 'You mentioned feeling both… and…'. Do not explain where the mix comes from.",
+    "inappropriate_application": "Inferring a hidden feeling behind a stated one; attributing repression; interpreting the 'real' feeling.",
+    "tags": ["emotions", "ambivalence", "mixed-feelings"]
+  },
+  {
+    "id": "freud-defence-as-coping",
+    "thinker": "Sigmund Freud and Anna Freud",
+    "concept": "Defences as ways people manage painful feeling",
+    "summary": "The psychoanalytic tradition catalogued habitual ways people keep distressing feelings at a distance: changing the subject, making light of things, throwing themselves into work. Later research reframed many of these as coping styles. The listening lesson is restraint: people often describe how they handle hard moments ('I shut down', 'I keep busy'), and that description is theirs to make.",
+    "source": { "citation": "Freud, A. (1936). The Ego and the Mechanisms of Defence. London: Hogarth Press; Freud, S. (1926). Inhibitions, Symptoms and Anxiety. Standard Edition, Vol. 20.", "type": "book", "year": 1936, "identifier": "ISBN 978-1-85575-038-4 (Karnac edition of A. Freud)" },
+    "evidence_limitations": "Defence-mechanism constructs have some psychometric support (e.g., defence style questionnaires) but low inter-rater agreement for individual mechanisms; naming someone's defence is unreliable and often experienced as accusatory.",
+    "appropriate_application": "When a participant describes what happens inside them when life is difficult, reflect the described pattern in their words only.",
+    "inappropriate_application": "Labelling a response as denial, avoidance, projection or any other mechanism; suggesting what the response protects against.",
+    "tags": ["emotions", "coping", "difficulty", "no-interpretation"]
+  },
+  {
+    "id": "freud-listening-stance",
+    "thinker": "Sigmund Freud",
+    "concept": "The talking cure: letting the person speak without steering",
+    "summary": "Whatever one makes of its theory, psychoanalysis established the practice of letting a person speak at length about themselves to an attentive listener who does not fill silences or steer. Freud advised listeners to hold their attention evenly rather than hunting for what fits a theory, a caution still worth taking seriously.",
+    "source": { "citation": "Freud, S. (1912). Recommendations to physicians practising psycho-analysis. Standard Edition, Vol. 12, pp. 109–120. London: Hogarth Press.", "type": "book-chapter", "year": 1912 },
+    "evidence_limitations": "A practice recommendation. Contemporary research on therapist responsiveness and alliance is consistent with attentive, non-steering listening but does not test Freud's specific prescriptions.",
+    "appropriate_application": "Resist organising the notes around a theory; take what the participant chose to talk about as the map, including topics they skipped.",
+    "inappropriate_application": "Interpreting silence, skipped questions or word choice as meaningful; claiming to hear what was 'really' being said.",
+    "tags": ["listening", "restraint", "skipped-questions"]
+  }
+]
