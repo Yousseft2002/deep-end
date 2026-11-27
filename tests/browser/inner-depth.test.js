@@ -195,3 +195,57 @@ test("a wrong access code is rejected without leaking anything, and the code fie
   assert.ok(!stored.includes("definitely-the-wrong-code"));
   await context.close();
 });
+
+test("optional dictation appends final text, requires consent, stops on navigation and erases", async () => {
+  const { p, context, errors } = await page();
+  await p.addInitScript(() => {
+    window.SpeechRecognition = class {
+      start() { window.mockSpeech = this; this.onstart?.(); }
+      stop() { this.onend?.(); }
+      abort() { this.aborted = true; this.onend?.(); }
+      emit(text, final = true) { const result = [{ transcript: text }]; result.isFinal = final; this.onresult?.({ resultIndex: 0, results: [result] }); }
+    };
+  });
+  try {
+    await p.goto(base + "/inner-depth.html");
+    await p.check("#consent"); await p.click("#start");
+    await p.check('input[name="age-band"][value="adult"]'); await p.click("#begin");
+    await p.fill("#notes", "typed");
+    p.once("dialog", d => d.dismiss()); await p.click("#dictate");
+    assert.equal(await p.evaluate(() => !!window.mockSpeech), false);
+    p.once("dialog", d => d.accept()); await p.click("#dictate");
+    assert.equal(await p.getAttribute("#dictate", "aria-pressed"), "true");
+    await p.evaluate(() => window.mockSpeech.emit("partial", false));
+    assert.equal(await p.inputValue("#notes"), "typed");
+    await p.evaluate(() => window.mockSpeech.emit("spoken"));
+    assert.equal(await p.inputValue("#notes"), "typed spoken");
+    await p.click("#next");
+    assert.equal(await p.evaluate(() => window.mockSpeech.aborted), true);
+    await p.evaluate(() => window.mockSpeech.emit("late result"));
+    assert.equal(await p.inputValue("#notes"), "");
+    await p.click("#back"); assert.equal(await p.inputValue("#notes"), "typed spoken");
+    p.once("dialog", d => d.accept()); await p.click("#dictate");
+    await p.evaluate(() => window.mockSpeech.onerror({error:"not-allowed"}));
+    assert.match(await p.textContent("#dictation-status"), /not granted/);
+    assert.equal(await p.inputValue("#notes"), "typed spoken");
+    p.once("dialog", d => d.accept()); await p.click("#clear");
+    assert.equal(await p.inputValue("#notes"), "");
+    assert.deepEqual(errors.filter(e => !/favicon|sw\.js|ServiceWorker/i.test(e)), []);
+  } finally { await context.close(); }
+});
+test("dictation is optional when unsupported and is not offered for teens", async () => {
+  const { p, context } = await page();
+  await p.addInitScript(() => { window.SpeechRecognition = undefined; window.webkitSpeechRecognition = undefined; });
+  try {
+    await p.goto(base + "/inner-depth.html");
+    await p.check("#consent"); await p.click("#start");
+    await p.check('input[name="age-band"][value="adult"]'); await p.click("#begin");
+    assert.equal(await p.isVisible("#dictate"), false);
+    assert.match(await p.textContent("#dictation-status"), /keyboard microphone/);
+    await p.fill("#notes", "manual"); assert.equal(await p.inputValue("#notes"), "manual");
+    p.once("dialog", d => d.accept()); await p.click("#clear");
+    await p.check("#consent"); await p.click("#start");
+    await p.check('input[name="age-band"][value="teen"]'); await p.click("#begin");
+    assert.equal(await p.isVisible("#dictation-row"), false);
+  } finally { await context.close(); }
+});
