@@ -54,7 +54,7 @@ function cancelDictation() {
 function toggleDictation() {
   if (recognition) {
     const current = recognition;
-    try { current.stop(); dictationUI(true, "Finishing dictation…"); }
+    try { dictationUI(true, "Finishing dictation…"); current.stop(); }
     catch (_) { cancelDictation(); }
     return;
   }
